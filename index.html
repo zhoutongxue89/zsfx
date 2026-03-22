@@ -128,7 +128,9 @@
         .week-num { background: #667eea; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75em; margin-right: 12px; font-weight: bold; }
         .week-item.locked .week-num { background: #ccc; }
         .week-text { flex: 1; font-size: 0.9em; }
-        .week-lock { font-size: 1em; }
+        .week-lock { font-size: 1em; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-left: 10px; }
+        .week-lock.open { background: #28a745; color: white; font-size: 0.8em; }
+        .week-lock:not(.open) { background: #ddd; color: #999; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -295,42 +297,42 @@
                 <a href="python-week1.html" class="week-item">
                     <span class="week-num">1</span>
                     <span class="week-text">环境搭建与第一个程序</span>
-                    <span class="week-lock">🔓</span>
+                    <span class="week-lock open">✓</span>
                 </a>
                 <a href="python-week2.html" class="week-item">
                     <span class="week-num">2</span>
                     <span class="week-text">变量、数据类型与运算符</span>
-                    <span class="week-lock">🔓</span>
+                    <span class="week-lock open">✓</span>
                 </a>
                 <div class="week-item locked">
                     <span class="week-num">3</span>
                     <span class="week-text">条件判断if-elif-else</span>
-                    <span class="week-lock">🔒</span>
+                    <span class="week-lock">✕</span>
                 </div>
                 <div class="week-item locked">
                     <span class="week-num">4</span>
                     <span class="week-text">循环结构for & while</span>
-                    <span class="week-lock">🔒</span>
+                    <span class="week-lock">✕</span>
                 </div>
                 <div class="week-item locked">
                     <span class="week-num">5</span>
                     <span class="week-text">列表list与元组tuple</span>
-                    <span class="week-lock">🔒</span>
+                    <span class="week-lock">✕</span>
                 </div>
                 <div class="week-item locked">
                     <span class="week-num">6</span>
                     <span class="week-text">字典dict与集合set</span>
-                    <span class="week-lock">🔒</span>
+                    <span class="week-lock">✕</span>
                 </div>
                 <div class="week-item locked">
                     <span class="week-num">7</span>
                     <span class="week-text">函数基础</span>
-                    <span class="week-lock">🔒</span>
+                    <span class="week-lock">✕</span>
                 </div>
                 <div class="week-item locked">
                     <span class="week-num">8</span>
                     <span class="week-text">字符串进阶与文件操作</span>
-                    <span class="week-lock">🔒</span>
+                    <span class="week-lock">✕</span>
                 </div>
             </div>
         </div>
