@@ -8,75 +8,83 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; line-height: 1.8; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
         .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+        
         header { background: white; padding: 50px 40px; text-align: center; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 40px; }
         header h1 { font-size: 3em; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
         header p { font-size: 1.3em; color: #666; }
-        .subtitle { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 25px; border-radius: 50px; margin-top: 20px; font-size: 0.95em; }
+        
+        .pill { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 25px; border-radius: 50px; font-size: 0.95em; }
+        
+        .stats { display: flex; justify-content: center; gap: 30px; margin: 30px 0; flex-wrap: wrap; }
+        .stat-pill { background: #f8f9fa; padding: 15px 30px; border-radius: 50px; text-align: center; display: flex; align-items: center; gap: 10px; }
+        .stat-num { font-size: 2em; font-weight: bold; color: #667eea; }
+        .stat-label { color: #666; font-size: 0.9em; }
         
         .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
-        .card-header { padding: 30px; text-align: center; }
+        .card-header { padding: 30px; text-align: center; border-radius: 20px 20px 0 0; }
         .card-header.python { background: linear-gradient(135deg, #3776ab, #ffd43b); }
         .card-header.mysql { background: linear-gradient(135deg, #00758f, #f29111); }
         .card-header.other { background: linear-gradient(135deg, #764ba2, #667eea); }
-        .card-icon { font-size: 4em; margin-bottom: 10px; }
-        .card-title { color: white; font-size: 1.8em; font-weight: bold; }
-        .card-body { padding: 30px; }
-        .card-desc { color: #666; margin-bottom: 20px; }
-        .card-link { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; transition: transform 0.2s; font-weight: bold; }
-        .card-link:hover { transform: scale(1.05); text-decoration: none; color: white; }
+        .card-icon { font-size: 3.5em; margin-bottom: 10px; }
+        .card-title { color: white; font-size: 1.6em; font-weight: bold; }
+        .card-body { padding: 25px; }
+        .card-desc { color: #666; margin-bottom: 20px; font-size: 0.95em; }
         
-        .tool-list { margin-top: 15px; }
-        .tool-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .tool-item:last-child { border-bottom: none; }
-        .tool-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3em; margin-right: 15px; flex-shrink: 0; }
-        .tool-icon.vscode { background: linear-gradient(135deg, #007acc, #005fa5); }
-        .tool-icon.pycharm { background: linear-gradient(135deg, #000000, #333333); }
-        .tool-icon.git { background: linear-gradient(135deg, #f05032, #e84d31); }
-        .tool-icon.python { background: linear-gradient(135deg, #3776ab, #ffd43b); }
-        .tool-text { color: #333; flex: 1; }
-        .tool-text span { display: block; font-size: 0.85em; color: #999; }
-        .tool-status { font-size: 0.85em; padding: 3px 12px; border-radius: 20px; }
-        .tool-status.done { background: #d4edda; color: #155724; }
+        .section-label { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.75em; margin-bottom: 15px; font-weight: bold; }
         
-        .tool-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
-        .tool-card { display: flex; align-items: center; padding: 15px; border-radius: 12px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; background: #f8f9fa; }
-        .tool-card:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); text-decoration: none; }
-        .tool-card-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; margin-right: 12px; flex-shrink: 0; }
-        .tool-card-info { flex: 1; }
-        .tool-card-title { color: #333; font-weight: bold; font-size: 0.95em; }
-        .tool-card-desc { color: #666; font-size: 0.8em; }
+        .phases { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .phase-pill { display: flex; align-items: center; background: #f8f9fa; padding: 12px 18px; border-radius: 50px; transition: all 0.2s; }
+        .phase-pill:hover { background: #e9ecef; transform: translateX(5px); }
+        .phase-num { background: linear-gradient(135deg, #667eea, #764ba2); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8em; margin-right: 12px; flex-shrink: 0; font-weight: bold; }
+        .phase-text { color: #333; flex: 1; font-size: 0.9em; }
+        .phase-weeks { color: #999; font-size: 0.8em; }
+        .phase-status { font-size: 0.75em; padding: 4px 12px; border-radius: 20px; margin-left: 10px; }
+        .phase-status.done { background: #d4edda; color: #155724; }
+        .phase-status.doing { background: #fff3cd; color: #856404; }
+        .phase-status.todo { background: #f8f9fa; color: #999; }
+        
+        .week-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+        .week-pill { background: #f8f9fa; padding: 6px 14px; border-radius: 20px; font-size: 0.8em; color: #666; transition: all 0.2s; }
+        .week-pill:hover { background: #667eea; color: white; }
+        .week-pill.done { background: #d4edda; color: #155724; }
+        .week-pill.doing { background: #fff3cd; color: #856404; }
+        
+        .tool-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px; }
+        .tool-pill { display: flex; align-items: center; padding: 14px; border-radius: 50px; text-decoration: none; transition: all 0.2s; background: #f8f9fa; }
+        .tool-pill:hover { background: #e9ecef; transform: scale(1.03); text-decoration: none; }
+        .tool-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; margin-right: 10px; flex-shrink: 0; color: white; font-weight: bold; }
+        .tool-name { color: #333; font-size: 0.85em; font-weight: bold; }
+        
+        .view-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; justify-content: center; }
+        .view-link { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-size: 0.85em; font-weight: bold; transition: all 0.2s; }
+        .view-link:hover { transform: scale(1.05); color: white; text-decoration: none; }
         
         footer { text-align: center; padding: 40px; color: rgba(255,255,255,0.8); font-size: 0.95em; }
-        footer a { color: white; text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
-        
-        .stats { display: flex; justify-content: center; gap: 40px; margin: 30px 0; }
-        .stat { text-align: center; }
-        .stat-num { font-size: 2.5em; font-weight: bold; color: #667eea; }
-        .stat-label { color: #666; font-size: 0.9em; }
+        footer a { color: white; text-decoration: none; padding: 5px 15px; background: rgba(255,255,255,0.2); border-radius: 20px; margin: 0 5px; transition: all 0.2s; }
+        footer a:hover { background: rgba(255,255,255,0.3); text-decoration: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>📚 周同学的知识分享</h1>
+            <h1> 周同学的知识分享</h1>
             <p>学习笔记、技术分享、项目记录</p>
-            <span class="subtitle">持续更新中...</span>
+            <span class="pill">持续更新中...</span>
             
             <div class="stats">
-                <div class="stat">
-                    <div class="stat-num">7</div>
-                    <div class="stat-label">本周天数</div>
+                <div class="stat-pill">
+                    <span class="stat-num">7</span>
+                    <span class="stat-label">本周天数</span>
                 </div>
-                <div class="stat">
-                    <div class="stat-num">2</div>
-                    <div class="stat-label">已发布周数</div>
+                <div class="stat-pill">
+                    <span class="stat-num">2</span>
+                    <span class="stat-label">已发布周数</span>
                 </div>
-                <div class="stat">
-                    <div class="stat-num">48</div>
-                    <div class="stat-label">学习总周数</div>
+                <div class="stat-pill">
+                    <span class="stat-num">52</span>
+                    <span class="stat-label">学习总周数</span>
                 </div>
             </div>
         </header>
@@ -89,38 +97,63 @@
                     <div class="card-title">Python学习之路</div>
                 </div>
                 <div class="card-body">
-                    <p class="card-desc">从零开始，系统学习Python编程。每周更新学习笔记，循序渐进，掌握Python开发技能。</p>
+                    <p class="card-desc">从零开始，系统学习Python编程。52周循序渐进，掌握Python开发技能。</p>
                     
-                    <div class="week-list">
-                        <div class="week-item">
-                            <span class="week-num">1</span>
-                            <span class="week-text">环境搭建 & 编程入门</span>
-                            <span class="week-status done">已完成</span>
+                    <span class="section-label">6大阶段</span>
+                    <div class="phases">
+                        <div class="phase-pill">
+                            <span class="phase-num">1</span>
+                            <span class="phase-text">环境搭建 & 入门起步</span>
+                            <span class="phase-weeks">1-2周</span>
+                            <span class="phase-status doing">进行中</span>
                         </div>
-                        <div class="week-item">
-                            <span class="week-num">2</span>
-                            <span class="week-text">数据类型 & 流程控制</span>
-                            <span class="week-status doing">进行中</span>
+                        <div class="phase-pill">
+                            <span class="phase-num">2</span>
+                            <span class="phase-text">Python基础语法</span>
+                            <span class="phase-weeks">3-8周</span>
+                            <span class="phase-status todo">待更新</span>
                         </div>
-                        <div class="week-item">
-                            <span class="week-num">3</span>
-                            <span class="week-text">数据容器</span>
-                            <span class="week-status todo">待更新</span>
+                        <div class="phase-pill">
+                            <span class="phase-num">3</span>
+                            <span class="phase-text">面向对象 & 模块化</span>
+                            <span class="phase-weeks">9-14周</span>
+                            <span class="phase-status todo">待更新</span>
                         </div>
-                        <div class="week-item">
-                            <span class="week-num">4</span>
-                            <span class="week-text">函数基础</span>
-                            <span class="week-status todo">待更新</span>
+                        <div class="phase-pill">
+                            <span class="phase-num">4</span>
+                            <span class="phase-text">进阶特性 & 工程实践</span>
+                            <span class="phase-weeks">15-24周</span>
+                            <span class="phase-status todo">待更新</span>
                         </div>
-                        <div class="week-item">
-                            <span class="week-num">5</span>
-                            <span class="week-text">面向对象</span>
-                            <span class="week-status todo">待更新</span>
+                        <div class="phase-pill">
+                            <span class="phase-num">5</span>
+                            <span class="phase-text">方向选择 & 专项深入</span>
+                            <span class="phase-weeks">25-40周</span>
+                            <span class="phase-status todo">待更新</span>
+                        </div>
+                        <div class="phase-pill">
+                            <span class="phase-num">6</span>
+                            <span class="phase-text">项目实战 & 求职准备</span>
+                            <span class="phase-weeks">41-52周</span>
+                            <span class="phase-status todo">待更新</span>
                         </div>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 25px;">
-                        <a href="python-week1.html" class="card-link">📖 查看第一周笔记</a>
+                    <span class="section-label">本周内容</span>
+                    <div class="week-pills">
+                        <span class="week-pill done">第1周</span>
+                        <span class="week-pill doing">第2周</span>
+                        <span class="week-pill">第3周</span>
+                        <span class="week-pill">第4周</span>
+                        <span class="week-pill">第5周</span>
+                        <span class="week-pill">第6周</span>
+                        <span class="week-pill">第7周</span>
+                        <span class="week-pill">第8周</span>
+                    </div>
+                    
+                    <div class="view-links">
+                        <a href="python-week1.html" class="view-link">📖 第一周笔记</a>
+                        <a href="python-week2.html" class="view-link">📖 第二周笔记</a>
                     </div>
                 </div>
             </div>
@@ -132,28 +165,20 @@
                     <div class="card-title">原理剖析</div>
                 </div>
                 <div class="card-body">
-                    <p class="card-desc">深入理解技术原理，剖析底层机制。让学习不止于表面，知其然更知其所以然。</p>
+                    <p class="card-desc">深入理解技术原理，剖析底层机制。知其然更知其所以然。</p>
                     
-                    <div class="week-list">
-                        <div class="week-item">
-                            <span class="week-num">1</span>
-                            <span class="week-text">Python解释器原理</span>
-                            <span class="week-status todo">待更新</span>
-                        </div>
-                        <div class="week-item">
-                            <span class="week-num">2</span>
-                            <span class="week-text">内存管理机制</span>
-                            <span class="week-status todo">待更新</span>
-                        </div>
-                        <div class="week-item">
-                            <span class="week-num">3</span>
-                            <span class="week-text">数据类型底层实现</span>
-                            <span class="week-status todo">待更新</span>
-                        </div>
+                    <span class="section-label">计划内容</span>
+                    <div class="week-pills">
+                        <span class="week-pill">Python解释器原理</span>
+                        <span class="week-pill">内存管理机制</span>
+                        <span class="week-pill">数据类型底层实现</span>
+                        <span class="week-pill">函数调用栈</span>
+                        <span class="week-pill">模块导入机制</span>
+                        <span class="week-pill">异常处理原理</span>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 25px;">
-                        <a href="#" class="card-link">🔬 敬请期待</a>
+                    <div class="view-links">
+                        <a href="#" class="view-link">🔬 敬请期待</a>
                     </div>
                 </div>
             </div>
@@ -165,36 +190,25 @@
                     <div class="card-title">技术工具</div>
                 </div>
                 <div class="card-body">
-                    <p class="card-desc">实用的技术工具和学习资源分享。包括开发环境配置、高效工具推荐等。</p>
+                    <p class="card-desc">实用的技术工具和学习资源分享，开发环境配置指南。</p>
                     
+                    <span class="section-label">工具导航</span>
                     <div class="tool-cards">
-                        <a href="vscode-guide.html" class="tool-card">
-                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #007acc, #005fa5); color: white;">VS</div>
-                            <div class="tool-card-info">
-                                <div class="tool-card-title">VS Code</div>
-                                <div class="tool-card-desc">代码编辑器配置</div>
-                            </div>
+                        <a href="vscode-guide.html" class="tool-pill">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #007acc, #005fa5);">VS</div>
+                            <span class="tool-name">VS Code</span>
                         </a>
-                        <a href="pycharm-guide.html" class="tool-card">
-                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #000000, #444444); color: white;">PC</div>
-                            <div class="tool-card-info">
-                                <div class="tool-card-title">PyCharm</div>
-                                <div class="tool-card-desc">Python IDE指南</div>
-                            </div>
+                        <a href="pycharm-guide.html" class="tool-pill">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #000000, #444444);">PC</div>
+                            <span class="tool-name">PyCharm</span>
                         </a>
-                        <a href="git-tutorial.html" class="tool-card">
-                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #f05032, #e84d31); color: white;">G</div>
-                            <div class="tool-card-info">
-                                <div class="tool-card-title">Git</div>
-                                <div class="tool-card-desc">版本控制教程</div>
-                            </div>
+                        <a href="git-tutorial.html" class="tool-pill">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #f05032, #e84d31);">G</div>
+                            <span class="tool-name">Git</span>
                         </a>
-                        <a href="python-libraries.html" class="tool-card">
-                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #3776ab, #ffd43b); color: white;">Py</div>
-                            <div class="tool-card-info">
-                                <div class="tool-card-title">Python库</div>
-                                <div class="tool-card-desc">常用库推荐</div>
-                            </div>
+                        <a href="python-libraries.html" class="tool-pill">
+                            <div class="tool-icon" style="background: linear-gradient(135deg, #3776ab, #ffd43b); color: #333;">Py</div>
+                            <span class="tool-name">Python库</span>
                         </a>
                     </div>
                 </div>
@@ -203,11 +217,12 @@
         
         <footer>
             <p>📅 最后更新：2026-03-22</p>
-            <p>💪 学习之路，始于足下</p>
             <p style="margin-top: 15px;">
-                <a href="https://github.com/zhoutongxue89/zsfx" target="_blank">GitHub仓库</a> · 
+                <a href="https://github.com/zhoutongxue89/zsfx" target="_blank">GitHub仓库</a>
                 <a href="python-week1.html">Python第一周</a>
+                <a href="python-week2.html">Python第二周</a>
             </p>
+            <p style="margin-top: 20px;">💪 学习之路，始于足下</p>
         </footer>
     </div>
 </body>
