@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路 · 第二周：数据类型详解</title>
+    <style>
+        :root {
+            --primary: #306998;
+            --secondary: #FFD43B;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333;
+            --code-bg: #2d2d2d;
+            --success: #28a745;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.8; }
+        .navbar { background: linear-gradient(135deg, var(--primary), #16436e); color: white; padding: 20px 40px; position: sticky; top: 0; z-index: 100; }
+        .navbar h1 { font-size: 1.5rem; }
+        .week-tag { background: var(--secondary); color: var(--primary); padding: 3px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; }
+        .progress-bar { margin-top: 15px; background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden; }
+        .progress-bar .fill { background: var(--secondary); height: 100%; width: 14.3%; border-radius: 4px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
+        .day-card { background: var(--card-bg); border-radius: 12px; padding: 30px; margin-bottom: 25px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); border-left: 4px solid var(--primary); }
+        .day-card h2 { color: var(--primary); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; }
+        .day-card h3 { color: #16436e; margin: 25px 0 15px; }
+        .day-card h4 { color: #333; margin: 20px 0 10px; }
+        p { margin-bottom: 15px; }
+        pre { background: var(--code-bg); color: #f8f8f2; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 15px 0; font-family: Consolas, monospace; font-size: 0.95rem; line-height: 1.6; }
+        code { font-family: Consolas, monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #e83e8c; }
+        pre code { background: none; padding: 0; color: inherit; }
+        .keyword { color: #ff79c6; }
+        .function { color: #50fa7b; }
+        .string { color: #f1fa8c; }
+        .number { color: #bd93f9; }
+        .comment { color: #6272a4; }
+        ul, ol { margin: 15px 0 15px 25px; }
+        li { margin-bottom: 8px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid #e0e0e0; }
+        th { background: var(--primary); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .tip-box { background: linear-gradient(135deg, #e7f3ff, #d4edfc); border-left: 4px solid var(--info); padding: 15px 20px; border-radius: 0 8px 8px 0; margin: 20px 0; }
+        .tip-box.warning { background: linear-gradient(135deg, #fff3cd, #ffeeba); border-left-color: var(--warning); }
+        .tip-box.success { background: linear-gradient(135deg, #d4edda, #c3e6cb); border-left-color: var(--success); }
+        .tip-box strong { display: block; margin-bottom: 5px; color: var(--primary); }
+        .example-box { background: #fafafa; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; margin: 15px 0; }
+        .example-box h4 { color: var(--primary); margin-bottom: 10px; }
+        .output { background: #1e1e1e; color: #d4d4d4; padding: 15px; border-radius: 6px; margin-top: 10px; font-family: Consolas, monospace; }
+        .output::before { content: "输出结果: "; color: #6a9955; font-weight: bold; }
+        .exercise { background: linear-gradient(135deg, #f8f9fa, #e9ecef); border: 2px dashed #e0e0e0; border-radius: 10px; padding: 25px; margin: 30px 0; }
+        .exercise h3 { color: var(--primary); margin-bottom: 15px; }
+        details { background: #f8f9fa; border-radius: 8px; margin: 15px 0; }
+        summary { padding: 15px; cursor: pointer; font-weight: bold; color: var(--primary); }
+        details > div { padding: 15px; }
+        .nav-footer { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px solid #e0e0e0; }
+        .nav-btn { background: var(--primary); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: bold; transition: all 0.3s; }
+        .nav-btn:hover { background: #16436e; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Python学习之路</h1>
+        <span class="week-tag">第 2 周</span>
+        <p style="margin-top:10px; opacity:0.9;">数据类型详解 · 字符串操作 · f-string格式化 · 类型转换</p>
+        <div class="progress-bar"><div class="fill"></div></div>
+    </nav>
+    
+    <div class="container">
+        <div class="day-card">
+            <h2>本周课程介绍</h2>
+            <p>欢迎来到Python学习的第二周！本周我们将深入学习Python中最核心的概念——<strong>数据类型</strong>。数据类型是编程的基础，掌握它们就像学会了字母和语法。</p>
+            <div class="tip-box success">
+                <strong>学习目标</strong>
+                <ul>
+                    <li>理解Python中常用的数据类型</li>
+                    <li>掌握数字类型的运算和转换</li>
+                    <li>熟练使用字符串的各种操作</li>
+                    <li>学会使用f-string进行格式化输出</li>
+                    <li>掌握类型检查和类型转换的方法</li>
+                </ul>
+            </div>
+            <table>
+                <thead><tr><th>天数</th><th>主题</th><th>核心知识点</th></tr></thead>
+                <tbody>
+                    <tr><td>Day 1</td><td>数据类型初识</td><td>认识常见数据类型、type()函数</td></tr>
+                    <tr><td>Day 2</td><td>数字类型</td><td>int整数、float浮点数、运算</td></tr>
+                    <tr><td>Day 3</td><td>字符串基础</td><td>字符串定义、索引、切片</td></tr>
+                    <tr><td>Day 4</td><td>字符串操作</td><td>常用方法、大小写、分割</td></tr>
+                    <tr><td>Day 5</td><td>f-string格式化</td><td>格式化输出、对齐、数字格式化</td></tr>
+                    <tr><td>Day 6</td><td>布尔值与None</td><td>True/False、逻辑运算、None</td></tr>
+                    <tr><td>Day 7</td><td>类型转换</td><td>str/int/float转换、类型检查</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="day-card">
+            <h2>Day 1: 数据类型初识</h2>
+            <h3>什么是数据类型？</h3>
+            <p>数据类型是编程语言中用于区分不同种类数据的基本概念。就像现实生活中有不同的物品分类，程序中的数据也有不同的类型。</p>
+            <h3>Python常用数据类型一览</h3>
+            <table>
+                <thead><tr><th>类型名</th><th>中文名</th><th>示例</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>int</code></td><td>整数</td><td><code>42</code>, <code>-7</code></td><td>没有小数点的数字</td></tr>
+                    <tr><td><code>float</code></td><td>浮点数</td><td><code>3.14</code></td><td>带小数点的数字</td></tr>
+                    <tr><td><code>str</code></td><td>字符串</td><td><code>"Hello"</code></td><td>文本数据</td></tr>
+                    <tr><td><code>bool</code></td><td>布尔值</td><td><code>True</code>, <code>False</code></td><td>真/假</td></tr>
+                    <tr><td><code>NoneType</code></td><td>空值</td><td><code>None</code></td><td>表示"什么都没有"</td></tr>
+                </tbody>
+            </table>
+            <h3>使用type()查看数据类型</h3>
+            <div class="example-box">
+<pre><code><span class="comment"># 基本用法</span>
+<span class="function">print</span>(<span class="function">type</span>(<span class="number">42</span>))      <span class="comment"># &lt;class 'int'&gt;</span>
+<span class="function">print</span>(<span class="function">type</span>(<span class="number">3.14</span>))     <span class="comment"># &lt;class 'float'&gt;</span>
+<span class="function">print</span>(<span class="function">type</span>(<span class="string">"Hello"</span>))  <span class="comment"># &lt;class 'str'&gt;</span>
+<span class="function">print</span>(<span class="function">type</span>(<span class="keyword">True</span>))     <span class="comment"># &lt;class 'bool'&gt;</span></code></pre>
+                <div class="output">
+&lt;class 'int'&gt;
+&lt;class 'float'&gt;
+&lt;class 'str'&gt;
+&lt;class 'bool'&gt;</div>
+            </div>
+            <h3>使用isinstance()检查类型</h3>
+            <div class="example-box">
+<pre><code>x = <span class="number">42</span>
+<span class="function">print</span>(<span class="function">isinstance</span>(x, <span class="built-in">int</span>))        <span class="comment"># True</span>
+<span class="function">print</span>(<span class="function">isinstance</span>(x, <span class="built-in">str</span>))        <span class="comment"># False</span>
+<span class="function">print</span>(<span class="function">isinstance</span>(x, (<span class="built-in">int</span>, <span class="built-in">float</span>)))  <span class="comment"># True (检查多个类型)</span></code></pre>
+            </div>
+        </div>
+        
+        <div class="day-card">
+            <h2>Day 2: 数字类型</h2>
+            <h3>整数(int)</h3>
+            <p>整数是<strong>没有小数部分的数字</strong>，可以是正数、负数或零。Python中的整数没有大小限制。</p>
+            <div class="example-box">
+<pre><code>a = <span class="number">42</span>           <span class="comment"># 正整数</span>
+b = <span class="number">-7</span>           <span class="comment"># 负整数</span>
+million = <span class="number">1_000_000</span>  <span class="comment"># 下划线分隔(3.6+)</span>
+<span class="function">print</span>(million)    <span class="comment"># 1000000</span></code></pre>
+            </div>
+            <h3>浮点数(float)</h3>
+            <p>浮点数是<strong>带小数部分的数字</strong>，用于表示实数。</p>
+            <div class="example-box">
+<pre><code>pi = <span class="number">3.14159</span>
+<span class="comment"># 科学计数法</span>
+avogadro = <span class="number">6.02e23</span>  <span class="comment"># 6.02 × 10²³</span>
+electron = <span class="number">1.6e-19</span> <span class="comment"># 1.6 × 10⁻¹⁹</span></code></pre>
+            </div>
+            <h3>算术运算符</h3>
+            <table>
+                <thead><tr><th>运算符</th><th>名称</th><th>示例</th><th>结果</th></tr></thead>
+                <tbody>
+                    <tr><td><code>+</code></td><td>加法</td><td><code>10 + 3</code></td><td>13</td></tr>
+                    <tr><td><code>-</code></td><td>减法</td><td><code>10 - 3</code></td><td>7</td></tr>
+                    <tr><td><code>*</code></td><td>乘法</td><td><code>10 * 3</code></td><td>30</td></tr>
+                    <tr><td><code>/</code></td><td>除法</td><td><code>10 / 3</code></td><td>3.333...</td></tr>
+                    <tr><td><code>//</code></td><td>整除</td><td><code>10 // 3</code></td><td>3</td></tr>
+                    <tr><td><code>%</code></td><td>取模</td><td><code>10 % 3</code></td><td>1</td></tr>
+                    <tr><td><code>**</code></td><td>幂运算</td><td><code>10 ** 3</code></td><td>1000</td></tr>
+                </tbody>
+            </table>
+            <div class="example-box">
+<pre><code>a, b = <span class="number">17</span>, <span class="number">5</span>
+<span class="function">print</span>(<span class="string">f"{a} + {b} = {a + b}"</span>)   <span class="comment"># 22</span>
+<span class="function">print</span>(<span class="string">f"{a} // {b} = {a // b}"</span>) <span class="comment"># 3</span>
+<span class="function">print</span>(<span class="string">f"{a} % {b} = {a % b}"</span>)   <span class="comment"># 2</span>
+<span class="function">print</span>(<span class="string">f"{a} ** {b} = {a ** b}"</span>) <span class="comment"># 1419857</span></code></pre>
+            </div>
+            <h3>赋值运算符</h3>
+            <div class="example-box">
+<pre><code>x = <span class="number">10</span>
+x += <span class="number">5</span>   <span class="comment"># x = x + 5  → 15</span>
+x *= <span class="number">2</span>   <span class="comment"># x = x * 2  → 30</span>
+x /= <span class="number">4</span>   <span class="comment"># x = x / 4  → 7.5</span></code></pre>
+            </div>
+            <div class="tip-box warning">
+                <strong>注意：浮点数精度问题</strong>
+                <p><code>0.1 + 0.2</code> 的结果是 <code>0.30000000000000004</code>，不是精确的0.3！这是计算机表示浮点数的固有问题。</p>
+            </div>
+        </div>
+        
+        <div class="day-card">
+            <h2>Day 3: 字符串基础</h2>
+            <h3>字符串的定义</h3>
+            <p>字符串是<strong>用引号包裹的文本数据</strong>。Python中可以用单引号 <code>' '</code> 或双引号 <code>" "</code> 来定义。</p>
+            <div class="example-box">
+<pre><code>s1 = <span class="string">'Hello, World!'</span>        <span class="comment"># 单引号</span>
+s2 = <span class="string">"Python is fun!"</span>       <span class="comment"># 双引号</span>
+s3 = <span class="string">'''多行
+字符串'''</span>                    <span class="comment"># 三引号</span></code></pre>
+            </div>
+            <h3>转义字符</h3>
+            <table>
+                <thead><tr><th>转义字符</th><th>含义</th></tr></thead>
+                <tbody>
+                    <tr><td><code>\\</code></td><td>反斜杠</td></tr>
+                    <tr><td><code>\'</code></td><td>单引号</td></tr>
+                    <tr><td><code>\"</code></td><td>双引号</td></tr>
+                    <tr><td><code>\n</code></td><td>换行</td></tr>
+                    <tr><td><code>\t</code></td><td>Tab</td></tr>
+                </tbody>
+            </table>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="string">"第一行\n第二行"</span>)    <span class="comment"># 换行输出</span>
+<span class="function">print</span>(<span class="string">"C:\\Users\\Admin"</span>) <span class="comment"># C:\Users\Admin</span>
+<span class="comment"># 原始字符串</span>
+<span class="function">print</span>(<span class="string">r"C:\Users\Admin"</span>) <span class="comment"># C:\Users\Admin</span></code></pre>
+            </div>
+            <h3>字符串索引</h3>
+            <p>字符串是由字符组成的序列，每个字符都有一个<strong>索引</strong>（从0开始）。</p>
+            <div class="example-box">
+<pre><code>s = <span class="string">"Python"</span>
+<span class="comment">#  P    y    t    h    o    n</span>
+<span class="comment">#  0    1    2    3    4    5    (正向)</span>
+<span class="comment"># -6   -5   -4   -3   -2   -1    (负向)</span>
+
+<span class="function">print</span>(s[<span class="number">0</span>])    <span class="comment"># P</span>
+<span class="function">print</span>(s[-<span class="number">1</span>])   <span class="comment"># n</span>
+<span class="function">print</span>(s[<span class="number">0</span>:<span class="number">3</span>])   <span class="comment"># Pyt (索引0-2)</span>
+<span class="function">print</span>(s[<span class="number">::-<span class="number">1</span>])]) <span class="comment"># nohtyP (反转)</span></code></pre>
+            </div>
+            <div class="tip-box success">
+                <strong>切片记忆技巧</strong>
+                <p>切片遵循"左闭右开"原则：<code>s[0:3]</code> 表示索引0,1,2，共3个字符。</p>
+            </div>
+        </div>
+        
+        <div class="day-card">
+            <h2>Day 4: 字符串操作</h2>
+            <h3>字符串拼接</h3>
+            <div class="example-box">
+<pre><code><span class="comment"># 方法1: + 拼接</span>
+<span class="function">print</span>(<span class="string">"Hello"</span> + <span class="string">", "</span> + <span class="string">"World"</span>)   <span class="comment"># Hello, World</span>
+
+<span class="comment"># 方法2: * 重复</span>
+<span class="function">print</span>(<span class="string">"-"</span> * <span class="number">20</span>)                <span class="comment"># --------------------</span>
+
+<span class="comment"># 方法3: join() 连接列表</span>
+words = [<span class="string">"Python"</span>, <span class="string">"is"</span>, <span class="string">"awesome"</span>]
+<span class="function">print</span>(<span class="string">" "</span>.join(words))           <span class="comment"># Python is awesome</span></code></pre>
+            </div>
+            <h3>大小写转换</h3>
+            <table>
+                <thead><tr><th>方法</th><th>作用</th><th>示例</th></tr></thead>
+                <tbody>
+                    <tr><td><code>.upper()</code></td><td>全部大写</td><td><code>"hello".upper()</code> → <code>"HELLO"</code></td></tr>
+                    <tr><td><code>.lower()</code></td><td>全部小写</td><td><code>"HELLO".lower()</code> → <code>"hello"</code></td></tr>
+                    <tr><td><code>.capitalize()</code></td><td>首字母大写</td><td><code>"hello".capitalize()</code> → <code>"Hello"</code></td></tr>
+                    <tr><td><code>.title()</code></td><td>每个单词首字母大写</td><td><code>"hello world".title()</code> → <code>"Hello World"</code></td></tr>
+                </tbody>
+            </table>
+            <h3>查找与判断方法</h3>
+            <div class="example-box">
+<pre><code>s = <span class="string">"Hello, Hello, Hello!"</span>
+
+<span class="comment"># 查找</span>
+<span class="function">print</span>(s.<span class="function">find</span>(<span class="string">"Hello"</span>))    <span class="comment"># 0 (第一次位置)</span>
+<span class="function">print</span>(s.<span class="function">rfind</span>(<span class="string">"Hello"</span>))   <span class="comment"># 14 (最后位置)</span>
+<span class="function">print</span>(s.<span class="function">count</span>(<span class="string">"Hello"</span>))   <span class="comment"># 3 (出现次数)</span>
+
+<span class="comment"># 判断</span>
+<span class="function">print</span>(s.startswith(<span class="string">"Hello"</span>))  <span class="comment"># True</span>
+<span class="function">print</span>(s.endswith(<span class="string">"!"</span>))      <span class="comment"># True</span>
+<span class="function">print</span>(<span class="string">"123"</span>.<span class="function">isdigit</span>())     <span class="comment"># True</span></code></pre>
+            </div>
+            <h3>替换、分割、合并</h3>
+            <div class="example-box">
+<pre><code><span class="comment"># replace - 替换</span>
+<span class="function">print</span>(<span class="string">"Hello".replace(<span class="string">"l"</span>, <span class="string">"L"</span>)</span>)  <span class="comment"># HeLLo</span>
+
+<span class="comment"># split - 分割</span>
+<span class="function">print</span>(<span class="string">"a,b,c"</span>.<span class="function">split</span>(<span class="string">","</span>))     <span class="comment"># ['a', 'b', 'c']</span>
+
+<span class="comment"># join - 合并</span>
+<span class="function">print</span>(<span class="string">"-".join([<span class="string">"2024"</span>,<span class="string">"03"</span>,<span class="string">"22"</span>]))  <span class="comment"># 2024-03-22</span>
+
+<span class="comment"># strip - 去除空白</span>
+<span class="function">print</span>(<span class="string">"  hi  ".strip()</span>)      <span class="comment"># hi</span></code></pre>
+            </div>
+        </div>
+        
+        <div class="day-card">
+            <h2>Day 5: f-string格式化</h2>
+            <p>f-string是Python 3.6+引入的<strong>最推荐的字符串格式化方法</strong>，以<code>f</code>或<code>F</code>开头，在字符串中使用<code>{}</code>包裹变量或表达式。</p>
+            <div class="tip-box success">
+                <strong>f-string优势：语法简洁、可读性强、支持表达式、性能最优</strong>
+            </div>
+            <h3>基本用法</h3>
+            <div class="example-box">
+<pre><code>name, age = <span class="string">"小明"</span>, <span class="number">18</span>
+<span class="function">print</span>(<span class="string">f"我叫{name}，今年{age}岁"</span>)  <span class="comment"># 我叫小明，今年18岁</span>
+
+<span class="comment"># 可以在{}中使用表达式</span>
+<span class="function">print</span>(<span class="string">f"{10} + {3} = {10 + 3}"</span>)    <span class="comment"># 10 + 3 = 13</span>
+<span class="function">print</span>(<span class="string">f"{'hello'.upper()}"</span>)        <span class="comment"># HELLO</span></code></pre>
+            </div>
+            <h3>格式化数字</h3>
+            <div class="example-box">
+<pre><code>import math
+pi = math.pi
+
+<span class="comment"># 保留小数位</span>
+<span class="function">print</span>(<span class="string">f"π ≈ {pi:.2f}"</span>)    <span class="comment"># π ≈ 3.14</span>
+<span class="function">print</span>(<span class="string">f"{0.756:.1%}"</span>)     <span class="comment"># 75.6%</span>
+
+<span class="comment"># 数字前导零</span>
+<span class="function">print</span>(<span class="string">f"{42:05d}"</span>)       <span class="comment"># 00042</span>
+
+<span class="comment"># 千位分隔符</span>
+<span class="function">print</span>(<span class="string">f"{1234567:,}"</span>)     <span class="comment"># 1,234,567</span>
+
+<span class="comment"># 进制转换</span>
+<span class="function">print</span>(<span class="string">f"{255:#b}"</span>)       <span class="comment"># 0b11111111</span>
+<span class="function">print</span>(<span class="string">f"{255:x}"</span>)       <span class="comment"># ff</span></code></pre>
+            </div>
+            <h3>对齐与填充</h3>
+            <div class="example-box">
+<pre><code>s = <span class="string">"Hi"</span>
+<span class="function">print</span>(<span class="string">f"|{s:<10}|"</span>)   <span class="comment"># |Hi        | 左对齐</span>
+<span class="function">print</span>(<span class="string">f"|{s:>10}|"</span>)   <span class="comment"># |        Hi| 右对齐</span>
+<span class="function">print</span>(<span class="string">f"|{s:^10}|"</span>)   <span class="comment"># |    Hi    | 居中</span>
+<span class="function">print</span>(<span class="string">f"|{s:-^10}|"</span>)  <span class="comment"># |----Hi----| 用-填充</span></code></pre>
+            </div>
+            <h3>打印花括号</h3>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="string">f"{{}}"</span>)          <span class="comment"># {}</span>
+<span class="function">print</span>(<span class="string">f"{{1}} + {{2}} = 3"</span>)  <span class="comment"># {1} + {2} = 3</span></code></pre>
+            </div>
+        </div>
+        
+        <div class="day-card">
+            <h2>Day 6: 布尔值与None</h2>
+            <h3>布尔值(bool)</h3>
+            <p>布尔值是表示<strong>真(True)</strong>和<strong>假(False)</strong>的数据类型，用于条件判断和逻辑运算。</p>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="keyword">True</span>)   <span class="comment"># True</span>
+<span class="function">print</span>(<span class="keyword">False</span>)  <span class="comment"># False</span>
+<span class="function">print</span>(<span class="keyword">True</span> == <span class="number">1</span>)   <span class="comment"># True (True等于1)</span>
+<span class="function">print</span>(<span class="keyword">False</span> == <span class="number">0</span>)  <span class="comment"># True (False等于0)</span></code></pre>
+            </div>
+            <h3>哪些值相当于False？</h3>
+            <table>
+                <thead><tr><th>值</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>False</code></td><td>布尔值False</td></tr>
+                    <tr><td><code>None</code></td><td>空值</td></tr>
+                    <tr><td><code>0</code>, <code>0.0</code></td><td>数字零</td></tr>
+                    <tr><td><code>""</code></td><td>空字符串</td></tr>
+                    <tr><td><code>[]</code>, <code>{}</code>, <code>()</code></td><td>空容器</td></tr>
+                </tbody>
+            </table>
+            <h3>比较运算符</h3>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="number">10</span> == <span class="number">10</span>)   <span class="comment"># True</span>
+<span class="function">print</span>(<span class="number">5</span> > <span class="number">3</span>)     <span class="comment"># True</span>
+<span class="function">print</span>(<span class="number">1</span> < <span class="number">2</span> < <span class="number">3</span>)   <span class="comment"># True (链式比较)</span></code></pre>
+            </div>
+            <h3>逻辑运算符</h3>
+            <table>
+                <thead><tr><th>运算符</th><th>含义</th><th>说明</th></tr></thead>
+                <tbody>
+                    <tr><td><code>and</code></td><td>逻辑与</td><td>两边都为True才为True</td></tr>
+                    <tr><td><code>or</code></td><td>逻辑或</td><td>任一边为True就为True</td></tr>
+                    <tr><td><code>not</code></td><td>逻辑非</td><td>取反</td></tr>
+                </tbody>
+            </table>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="keyword">True</span> <span class="keyword">and</span> <span class="keyword">False</span>)   <span class="comment"># False</span>
+<span class="function">print</span>(<span class="keyword">True</span> <span class="keyword">or</span> <span class="keyword">False</span>)    <span class="comment"># True</span>
+<span class="function">print</span>(<span class="keyword">not</span> <span class="keyword">True</span>)       <span class="comment"># False</span>
+
+<span class="comment"># 短路特性</span>
+name = <span class="string">""</span>
+<span class="function">print</span>(name <span class="keyword">or</span> <span class="string">"匿名"</span>)    <span class="comment"># 匿名 (空字符串为False)</span></code></pre>
+            </div>
+            <h3>None类型</h3>
+            <p><code>None</code> 表示<strong>空、无、什么都没有</strong>，它不等于0、空字符串或空列表。</p>
+            <div class="example-box">
+<pre><code>x = <span class="keyword">None</span>
+<span class="function">print</span>(x <span class="keyword">is</span> <span class="keyword">None</span>)     <span class="comment"># True (推荐用is)</span>
+<span class="function">print</span>(x == <span class="keyword">None</span>)     <span class="comment"># True (也可以，但不推荐)</span>
+
+<span class="comment"># 处理可选参数</span>
+<span class="keyword">def</span> <span class="function">greet</span>(name=<span class="keyword">None</span>):
+    <span class="keyword">if</span> name <span class="keyword">is</span> <span class="keyword">None</span>:
+        <span class="function">print</span>(<span class="string">"你好！"</span>)
+    <span class="keyword">else</span>:
+        <span class="function">print</span>(<span class="string">f"你好，{name}！"</span>)</code></pre>
+            </div>
+            <div class="tip-box warning">
+                <strong>is 与 == 的区别</strong>
+                <p><code>==</code> 比较值是否相等，<code>is</code> 比较是否是同一个对象（内存地址相同）。</p>
+            </div>
+        </div>
+        
+        <div class="day-card">
+            <h2>Day 7: 类型转换</h2>
+            <p>Python遵循"显式优于隐式"的原则，类型转换必须显式调用转换函数。</p>
+            <h3>转换为整数：int()</h3>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="function">int</span>(<span class="string">"123"</span>))         <span class="comment"># 123</span>
+<span class="function">print</span>(<span class="function">int</span>(<span class="number">3.7</span>))           <span class="comment"># 3 (截断，不是四舍五入)</span>
+<span class="function">print</span>(<span class="function">int</span>(<span class="string">"1010"</span>, <span class="number">2</span>))      <span class="comment"># 10 (二进制转十进制)</span>
+<span class="function">print</span>(<span class="function">int</span>(<span class="string">"FF"</span>, <span class="number">16</span>))      <span class="comment"># 255 (十六进制)</span></code></pre>
+            </div>
+            <h3>转换为浮点数：float()</h3>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="function">float</span>(<span class="string">"3.14"</span>))     <span class="comment"># 3.14</span>
+<span class="function">print</span>(<span class="function">float</span>(<span class="string">"123"</span>))      <span class="comment"># 123.0</span>
+<span class="function">print</span>(<span class="function">float</span>(<span class="number">42</span>))        <span class="comment"># 42.0</span></code></pre>
+            </div>
+            <h3>转换为字符串：str()</h3>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="function">str</span>(<span class="number">123</span>))         <span class="comment"># "123"</span>
+<span class="function">print</span>(<span class="function">str</span>(<span class="number">3.14</span>))        <span class="comment"># "3.14"</span>
+<span class="function">print</span>(<span class="function">str</span>(<span class="keyword">True</span>))        <span class="comment"># "True"</span></code></pre>
+            </div>
+            <h3>转换为布尔值：bool()</h3>
+            <div class="example-box">
+<pre><code><span class="function">print</span>(<span class="keyword">bool</span>(<span class="number">0</span>))      <span class="comment"># False</span>
+<span class="function">print</span>(<span class="keyword">bool</span>(<span class="number">123</span>))     <span class="comment"># True</span>
+<span class="function">print</span>(<span class="keyword">bool</span>(<span class="string">""</span>))     <span class="comment"># False</span>
+<span class="function">print</span>(<span class="keyword">bool</span>(<span class="string">"0"</span>))     <span class="comment"># True ("0"是非空字符串)</span></code></pre>
+            </div>
+            <h3>实战：用户输入的类型转换</h3>
+            <div class="example-box">
+<pre><code><span class="comment"># input()返回的永远是字符串</span>
+age = <span class="function">int</span>(<span class="function">input</span>(<span class="string">"请输入年龄: "</span>))  <span class="comment"># 输入"25" → 25</span>
+height = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"请输入身高: "</span>))  <span class="comment"># 输入"1.75" → 1.75</span>
+confirm = <span class="function">input</span>(<span class="string">"确认?(yes/no): "</span>).lower() == <span class="string">"yes"</span>
+<span class="function">print</span>(<span class="string">f"年龄:{age}, 身高:{height}, 确认:{confirm}"</span>)</code></pre>
+            </div>
+            <div class="tip-box warning">
+                <strong>常见错误</strong>
+<pre><code><span class="comment"># int("3.14") 会报错！</span>
+<span class="function">int</span>(<span class="function">float</span>(<span class="string">"3.14"</span>))  <span class="comment"># 正确：先转float再转int</span>
+
+<span class="comment"># 字符串和数字不能直接相加</span>
+<span class="comment"># "年龄: " + 18  # 报错！</span>
+<span class="function">print</span>(<span class="string">"年龄: "</span> + <span class="function">str</span>(<span class="number">18</span>))  <span class="comment"># 正确</span></code></pre>
+            </div>
+        </div>
+        
+        <div class="exercise">
+            <h3>练习题</h3>
+            <ol>
+                <li><strong>数据类型判断</strong>：让用户输入一个数字，判断它是整数还是浮点数</li>
+                <li><strong>字符串操作</strong>：输入一个句子，统计其中字母、数字、空格的个数</li>
+                <li><strong>f-string练习</strong>：格式化输出商品价格清单（名称、单价、数量、总价）</li>
+                <li><strong>温度转换</strong>：输入华氏温度，转换为摄氏温度（C = (F-32) * 5/9）</li>
+                <li><strong>闰年判断</strong>：判断一个年份是否是闰年（能被4整除且不能被100整除，或者能被400整除）</li>
+            </ol>
+            <details>
+                <summary>点击查看参考答案</summary>
+                <div>
+<pre><code><span class="comment"># 练习1</span>
+user_input = <span class="function">input</span>(<span class="string">"请输入数字: "</span>)
+<span class="keyword">try</span>:
+    n = <span class="function">int</span>(user_input); <span class="function">print</span>(<span class="string">f"{n}是整数"</span>)
+<span class="keyword">except</span>:
+    <span class="keyword">try</span>:
+        n = <span class="function">float</span>(user_input); <span class="function">print</span>(<span class="string">f"{n}是浮点数"</span>)
+    <span class="keyword">except</span>: <span class="function">print</span>(<span class="string">"无效数字"</span>)
+
+<span class="comment"># 练习2</span>
+text = <span class="function">input</span>(<span class="string">"输入句子: "</span>)
+letters = <span class="function">sum</span>(c.<span class="function">isalpha</span>() <span class="keyword">for</span> c <span class="keyword">in</span> text)
+digits = <span class="function">sum</span>(c.<span class="function">isdigit</span>() <span class="keyword">for</span> c <span class="keyword">in</span> text)
+spaces = <span class="function">sum</span>(c.<span class="function">isspace</span>() <span class="keyword">for</span> c <span class="keyword">in</span> text)
+<span class="function">print</span>(<span class="string">f"字母:{letters}, 数字:{digits}, 空格:{spaces}"</span>)
+
+<span class="comment"># 练习3</span>
+items = [{<span class="string">"name"</span>: <span class="string">"苹果"</span>, <span class="string">"price"</span>: <span class="number">5.8</span>, <span class="string">"qty"</span>: <span class="number">3</span>},{<span class="string">"name"</span>: <span class="string">"香蕉"</span>, <span class="string">"price"</span>: <span class="number">3.5</span>, <span class="string">"qty"</span>: <span class="number">2</span>}]
+<span class="function">print</span>(<span class="string">f"{'商品':^10}{'单价':>10}{'数量':>6}{'总价':>10}"</span>)
+<span class="keyword">for</span> item <span class="keyword">in</span> items:
+    <span class="function">print</span>(<span class="string">f"{item['name']:^10}¥{item['price']:>8.2f}{item['qty']:>6}¥{item['price']*item['qty']:>8.2f}"</span>)
+
+<span class="comment"># 练习4</span>
+f = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"华氏温度: "</span>))
+<span class="function">print</span>(<span class="string">f"{f}°F = {(f-32)*5/9:.2f}°C"</span>)
+
+<span class="comment"># 练习5</span>
+year = <span class="function">int</span>(<span class="function">input</span>(<span class="string">"年份: "</span>))
+<span class="function">print</span>(<span class="string">f"{year}年是{'闰' if (year%4==0 and year%100!=0) or year%400==0 else '平'}年"</span>)</code></pre>
+                </div>
+            </details>
+        </div>
+        
+        <div class="day-card">
+            <h2>本周知识总结</h2>
+            <table>
+                <thead><tr><th>类型</th><th>示例</th><th>核心方法/运算</th></tr></thead>
+                <tbody>
+                    <tr><td><code>int</code></td><td><code>42</code>, <code>-7</code></td><td>算术运算: + - * / // % **</td></tr>
+                    <tr><td><code>float</code></td><td><code>3.14</code></td><td>round(), 精度问题注意</td></tr>
+                    <tr><td><code>str</code></td><td><code>"hello"</code></td><td>upper/lower/split/replace/find</td></tr>
+                    <tr><td><code>bool</code></td><td><code>True</code>, <code>False</code></td><td>and, or, not</td></tr>
+                    <tr><td><code>None</code></td><td><code>None</code></td><td>is None</td></tr>
+                </tbody>
+            </table>
+            <h3>类型转换速查</h3>
+            <table>
+                <thead><tr><th>函数</th><th>示例</th></tr></thead>
+                <tbody>
+                    <tr><td><code>int(x)</code></td><td><code>int("42")</code> → <code>42</code></td></tr>
+                    <tr><td><code>float(x)</code></td><td><code>float("3.14")</code> → <code>3.14</code></td></tr>
+                    <tr><td><code>str(x)</code></td><td><code>str(42)</code> → <code>"42"</code></td></tr>
+                    <tr><td><code>bool(x)</code></td><td><code>bool("")</code> → <code>False</code></td></tr>
+                </tbody>
+            </table>
+            <p style="margin-top:20px; text-align:center; color:#666;">恭喜完成第二周学习！继续加油！</p>
+        </div>
+        
+        <div class="nav-footer">
+            <a href="python-week1.html" class="nav-btn">← 第一周</a>
+            <a href="python-week3.html" class="nav-btn">第三周 →</a>
+        </div>
+    </div>
+</body>
+</html>
