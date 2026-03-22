@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git使用教程 - 技术工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; line-height: 1.9; color: #333; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { background: linear-gradient(135deg, #f05032, #c0392b); color: white; padding: 50px 40px; border-radius: 20px; margin-bottom: 40px; }
+        header h1 { font-size: 2.5em; margin-bottom: 15px; }
+        header p { opacity: 0.9; font-size: 1.1em; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 20px; opacity: 0.8; }
+        .back-link:hover { opacity: 1; }
+        .content { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { color: #f05032; margin: 35px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        h3 { color: #333; margin: 25px 0 15px 0; }
+        p { margin: 15px 0; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin: 8px 0; }
+        code { background: #f4f4f4; padding: 2px 8px; border-radius: 4px; font-family: "Consolas", "Monaco", monospace; color: #e83e8c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 10px; overflow-x: auto; margin: 20px 0; font-size: 0.95em; }
+        pre code { background: none; color: inherit; padding: 0; }
+        .tip { background: #fff3cd; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107; }
+        .warning { background: #f8d7da; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #dc3545; }
+        .success { background: #d4edda; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #28a745; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #f05032; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .nav-links { display: flex; gap: 15px; margin: 30px 0; flex-wrap: wrap; }
+        .nav-btn { display: inline-block; background: #f05032; color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; transition: transform 0.2s; }
+        .nav-btn:hover { transform: scale(1.05); color: white; }
+        footer { text-align: center; padding: 40px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← 返回首页</a>
+            <h1>📚 Git使用教程</h1>
+            <p>版本控制神器，程序员的必备技能</p>
+        </header>
+        
+        <div class="content">
+            <h2>📋 目录</h2>
+            <ul>
+                <li><a href="#intro">Git简介</a></li>
+                <li><a href="#install">安装与配置</a></li>
+                <li><a href="#basics">基础操作</a></li>
+                <li><a href="#branch">分支管理</a></li>
+                <li><a href="#remote">远程仓库</a></li>
+                <li><a href="#github">GitHub使用</a></li>
+                <li><a href="#tips">实用技巧</a></li>
+            </ul>
+
+            <h2 id="intro">1. Git简介</h2>
+            
+            <h3>什么是Git？</h3>
+            <p>Git是一个分布式版本控制系统，用于跟踪文件和目录的变化，方便团队协作开发。最早由Linux之父Linus Torvalds创建。</p>
+
+            <h3>核心概念</h3>
+            <ul>
+                <li><strong>仓库（Repository）</strong>：存放项目文件的地方</li>
+                <li><strong>提交（Commit）</strong>：保存文件的某个状态</li>
+                <li><strong>分支（Branch）</strong>：从主线分离出来的工作线</li>
+                <li><strong>合并（Merge）</strong>：将不同分支的内容合并</li>
+                <li><strong>远程仓库（Remote）</strong>：托管在服务器上的仓库</li>
+            </ul>
+
+            <h3>工作流程</h3>
+            <pre><code>工作目录(Working Directory)
+        ↓ git add
+暂存区(Staging Area)
+        ↓ git commit
+本地仓库(Local Repository)
+        ↓ git push
+远程仓库(Remote Repository)</code></pre>
+
+            <h2 id="install">2. 安装与配置</h2>
+
+            <h3>Windows安装</h3>
+            <ol>
+                <li>访问 <a href="https://git-scm.com/download/win" target="_blank">Git官网</a></li>
+                <li>下载Windows版本的Git</li>
+                <li>运行安装程序，一路Next即可</li>
+                <li>安装完成后，右键菜单会有Git Bash Here选项</li>
+            </ol>
+
+            <h3>macOS安装</h3>
+            <pre><code># 方式1：使用Homebrew
+brew install git
+
+# 方式2：安装Xcode命令行工具
+xcode-select --install</code></pre>
+
+            <h3>Linux安装</h3>
+            <pre><code># Ubuntu/Debian
+sudo apt update
+sudo apt install git
+
+# CentOS/RHEL
+sudo yum install git</code></pre>
+
+            <h3>基础配置</h3>
+            <pre><code># 设置用户名（必填）
+git config --global user.name "你的名字"
+
+# 设置邮箱（必填）
+git config --global user.email "your@email.com"
+
+# 设置默认编辑器
+git config --global core.editor vscode
+
+# 查看配置
+git config --list</code></pre>
+
+            <div class="tip">
+                <strong>💡 提示：</strong>每次提交都需要用户名和邮箱，这些信息会出现在你的提交记录中。
+            </div>
+
+            <h2 id="basics">3. 基础操作</h2>
+
+            <h3>创建仓库</h3>
+            <pre><code># 在当前目录创建仓库
+git init
+
+# 克隆远程仓库
+git clone https://github.com/username/repo.git</code></pre>
+
+            <h3>查看状态</h3>
+            <pre><code># 查看工作区状态
+git status
+
+# 简化输出
+git status -s</code></pre>
+
+            <h3>添加文件</h3>
+            <pre><code># 添加单个文件
+git add filename.py
+
+# 添加所有文件
+git add .
+
+# 添加所有.py文件
+git add *.py
+
+# 交互式添加
+git add -i</code></pre>
+
+            <h3>提交</h3>
+            <pre><code># 提交并写消息
+git commit -m "提交说明"
+
+# 提交已跟踪的文件（跳过git add）
+git commit -am "提交说明"
+
+# 修改最后一次提交（还没push时）
+git commit --amend -m "新的提交说明"
+
+# 查看提交历史
+git log
+
+# 简洁模式
+git log --oneline</code></pre>
+
+            <h3>撤销操作</h3>
+            <pre><code># 取消暂存（从暂存区移回工作区）
+git reset HEAD filename.py
+
+# 取消所有暂存
+git reset HEAD
+
+# 丢弃工作区的修改（慎用！）
+git checkout -- filename.py
+
+# 或者（新语法）
+git restore filename.py
+
+# 删除文件并提交
+git rm filename.py
+git commit -m "删除文件"</code></pre>
+
+            <div class="warning">
+                <strong>⚠️ 注意：</strong>git checkout会丢弃未提交的修改，请确保已经保存了重要更改。
+            </div>
+
+            <h3>查看差异</h3>
+            <pre><code># 查看工作区vs暂存区的差异
+git diff
+
+# 查看暂存区vs仓库的差异
+git diff --staged
+
+# 查看两个分支的差异
+git diff branch1..branch2
+
+# 查看某个文件的变化
+git diff filename.py</code></pre>
+
+            <h2 id="branch">4. 分支管理</h2>
+
+            <h3>创建和切换分支</h3>
+            <pre><code># 查看所有分支
+git branch
+
+# 查看远程分支
+git branch -r
+
+# 创建新分支
+git branch feature-login
+
+# 切换分支
+git checkout feature-login
+
+# 创建并切换（新语法）
+git switch -c feature-login
+
+# 切换到主分支
+git checkout main
+# 或
+git switch main</code></pre>
+
+            <h3>合并分支</h3>
+            <pre><code># 1. 切换到要合并到的分支（通常是main）
+git checkout main
+
+# 2. 合并指定分支
+git merge feature-login
+
+# 3. 删除已合并的分支
+git branch -d feature-login</code></pre>
+
+            <h3>解决冲突</h3>
+            <p>当两个分支修改了同一文件的同一位置时，会产生冲突：</p>
+            <pre><code><<<<<<< HEAD
+当前分支的内容
+=======
+要合并的分支的内容
+>>>>>>> feature-branch</code></pre>
+            <p>解决方法：手动编辑文件，保留想要的内容，然后：</p>
+            <pre><code>git add filename.py
+git commit -m "解决冲突"</code></pre>
+
+            <h3>储藏工作</h3>
+            <pre><code># 储藏当前工作
+git stash
+
+# 查看储藏列表
+git stash list
+
+# 恢复储藏
+git stash apply
+
+# 恢复并删除
+git stash pop
+
+# 删除储藏
+git stash drop</code></pre>
+
+            <h2 id="remote">5. 远程仓库</h2>
+
+            <h3>添加远程仓库</h3>
+            <pre><code># 添加远程仓库
+git remote add origin https://github.com/username/repo.git
+
+# 查看远程仓库
+git remote -v
+
+# 重命名远程仓库
+git remote rename origin upstream</code></pre>
+
+            <h3>推送和拉取</h3>
+            <pre><code># 推送到远程仓库（首次推送）
+git push -u origin main
+
+# 推送（之后可以省略-u）
+git push
+
+# 拉取远程更新
+git pull
+
+# 获取但不合并
+git fetch</code></pre>
+
+            <h3>SSH密钥配置</h3>
+            <ol>
+                <li>生成SSH密钥：
+                    <pre><code>ssh-keygen -t ed25519 -C "your@email.com"</code></pre>
+                </li>
+                <li>查看公钥：
+                    <pre><code>cat ~/.ssh/id_ed25519.pub</code></pre>
+                </li>
+                <li>复制公钥到GitHub：Settings → SSH and GPG keys → New SSH key</li>
+                <li>测试连接：
+                    <pre><code>ssh -T git@github.com</code></pre>
+                </li>
+            </ol>
+
+            <h2 id="github">6. GitHub使用</h2>
+
+            <h3>创建仓库</h3>
+            <ol>
+                <li>登录GitHub，点击右上角 + → New repository</li>
+                <li>填写仓库名称、描述</li>
+                <li>选择Public或Private</li>
+                <li>点击Create repository</li>
+            </ol>
+
+            <h3>推送本地代码到GitHub</h3>
+            <pre><code># 1. 初始化本地仓库
+git init
+
+# 2. 添加文件
+git add .
+git commit -m "Initial commit"
+
+# 3. 添加远程仓库
+git remote add origin https://github.com/username/repo.git
+
+# 4. 推送
+git push -u origin main</code></pre>
+
+            <h3>GitHub Flow工作流</h3>
+            <pre><code># 1. 从远程拉取最新代码
+git checkout main
+git pull origin main
+
+# 2. 创建新分支
+git checkout -b feature/new-feature
+
+# 3. 开发并提交
+git add .
+git commit -m "Add new feature"
+
+# 4. 推送到远程
+git push origin feature/new-feature
+
+# 5. 在GitHub上创建Pull Request
+# 6. 代码审查后合并到main分支</code></pre>
+
+            <h3>常用GitHub操作</h3>
+            <table>
+                <tr>
+                    <th>操作</th>
+                    <th>命令</th>
+                </tr>
+                <tr>
+                    <td>克隆仓库</td>
+                    <td><code>git clone URL</code></td>
+                </tr>
+                <tr>
+                    <td>更新Fork的仓库</td>
+                    <td><code>git remote add upstream URL</code><br><code>git pull upstream main</code></td>
+                </tr>
+                <tr>
+                    <td>删除远程分支</td>
+                    <td><code>git push origin --delete branch-name</code></td>
+                </tr>
+                <tr>
+                    <td>强制推送</td>
+                    <td><code>git push -f</code>（慎用！）</td>
+                </tr>
+            </table>
+
+            <h2 id="tips">7. 实用技巧</h2>
+
+            <h3>别名设置</h3>
+            <pre><code># 设置简短别名
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.ci commit
+
+# 高级别名
+git config --global alias.lg "log --oneline --graph --all"</code></pre>
+
+            <h3>忽略文件</h3>
+            <p>创建 <code>.gitignore</code> 文件：</p>
+            <pre><code># Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db</code></pre>
+
+            <h3>清理和优化</h3>
+            <pre><code># 删除已合并的分支
+git branch --merged main | grep -v "main" | xargs git branch -d
+
+# 垃圾回收
+git gc
+
+# 检查仓库问题
+git fsck</code></pre>
+
+            <h3>查看修改者</h3>
+            <pre><code># 查看某行代码的最后修改者
+git blame filename.py
+
+# 查看最近一周的提交
+git log --since="1 week ago"
+
+# 查看某个作者的提交
+git log --author="Author Name"</code></pre>
+
+            <h3>标签管理</h3>
+            <pre><code># 创建标签
+git tag v1.0.0
+
+# 推送标签
+git push origin v1.0.0
+
+# 推送所有标签
+git push origin --tags
+
+# 删除标签
+git tag -d v1.0.0
+git push origin --delete v1.0.0</code></pre>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn">🏠 返回首页</a>
+                <a href="vscode-guide.html" class="nav-btn">📚 VS Code指南</a>
+                <a href="python-libraries.html" class="nav-btn">📚 Python库</a>
+                <a href="pycharm-guide.html" class="nav-btn">📚 PyCharm指南</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>📅 最后更新：2026-03-22</p>
+            <p>💪 掌握Git，协作无忧</p>
+        </footer>
+    </div>
+</body>
+</html>
