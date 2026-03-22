@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python常用库 - 技术工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; line-height: 1.9; color: #333; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { background: linear-gradient(135deg, #3776ab, #ffd43b); color: white; padding: 50px 40px; border-radius: 20px; margin-bottom: 40px; }
+        header h1 { font-size: 2.5em; margin-bottom: 15px; }
+        header p { opacity: 0.9; font-size: 1.1em; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 20px; opacity: 0.8; }
+        .back-link:hover { opacity: 1; }
+        .content { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { color: #3776ab; margin: 35px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        h3 { color: #333; margin: 25px 0 15px 0; }
+        p { margin: 15px 0; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin: 8px 0; }
+        code { background: #f4f4f4; padding: 2px 8px; border-radius: 4px; font-family: "Consolas", "Monaco", monospace; color: #e83e8c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 10px; overflow-x: auto; margin: 20px 0; font-size: 0.95em; }
+        pre code { background: none; color: inherit; padding: 0; }
+        .tip { background: #fff3cd; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107; }
+        .warning { background: #f8d7da; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #dc3545; }
+        .success { background: #d4edda; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #28a745; }
+        .card { background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 15px 0; border-left: 4px solid #3776ab; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #3776ab; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .nav-links { display: flex; gap: 15px; margin: 30px 0; flex-wrap: wrap; }
+        .nav-btn { display: inline-block; background: #3776ab; color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; transition: transform 0.2s; }
+        .nav-btn:hover { transform: scale(1.05); color: white; }
+        footer { text-align: center; padding: 40px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← 返回首页</a>
+            <h1>📚 Python常用库</h1>
+            <p>pip使用、虚拟环境、必备第三方库</p>
+        </header>
+        
+        <div class="content">
+            <h2>📋 目录</h2>
+            <ul>
+                <li><a href="#pip">pip包管理器</a></li>
+                <li><a href="#venv">虚拟环境</a></li>
+                <li><a href="#web">Web开发</a></li>
+                <li><a href="#data">数据分析</a></li>
+                <li><a href="#crawler">网络爬虫</a></li>
+                <li><a href="#ai">AI与机器学习</a></li>
+                <li><a href="#tools">工具库</a></li>
+            </ul>
+
+            <h2 id="pip">1. pip包管理器</h2>
+
+            <h3>pip简介</h3>
+            <p>pip是Python的包安装器，用于安装和管理Python包。Python 3.4+自带pip。</p>
+
+            <h3>基础命令</h3>
+            <pre><code># 查看pip版本
+pip --version
+pip3 --version
+
+# 升级pip
+python -m pip install --upgrade pip
+
+# 安装包
+pip install requests
+pip install numpy
+
+# 安装指定版本
+pip install requests==2.28.0
+pip install "requests>=2.28.0"
+
+# 升级包
+pip install --upgrade requests
+
+# 卸载包
+pip uninstall requests
+
+# 查看已安装的包
+pip list
+
+# 导出依赖列表
+pip freeze > requirements.txt
+
+# 从文件安装
+pip install -r requirements.txt</code></pre>
+
+            <h3>国内镜像源</h3>
+            <p>国内访问PyPI较慢，建议使用镜像源：</p>
+            <pre><code># 临时使用
+pip install requests -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 永久设置（清华镜像）
+pip install pip -U
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 其他镜像源
+# 阿里云: https://mirrors.aliyun.com/pypi/simple/
+# 腾讯云: https://mirrors.cloud.tencent.com/pypi/simple/
+# 华为云: https://repo.huaweicloud.com/repository/pypi/simple/</code></pre>
+
+            <div class="tip">
+                <strong>💡 推荐：</strong>创建一个 <code>pip.conf</code> 文件永久配置镜像：
+                <pre><code># Windows: C:\Users\用户名\pip\pip.ini
+# Linux/Mac: ~/.pip/pip.conf
+
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+trusted-host = pypi.tuna.tsinghua.edu.cn</code></pre>
+            </div>
+
+            <h2 id="venv">2. 虚拟环境</h2>
+
+            <h3>为什么需要虚拟环境？</h3>
+            <p>不同项目可能依赖不同版本的包，虚拟环境可以为每个项目创建独立的Python环境，避免版本冲突。</p>
+
+            <h3>创建虚拟环境</h3>
+            <pre><code># 使用venv模块（Python 3内置）
+python -m venv myenv
+
+# 指定Python版本（需要已安装）
+python3.11 -m venv myenv
+
+# 在当前目录创建
+python -m venv .venv</code></pre>
+
+            <h3>激活虚拟环境</h3>
+            <pre><code># Windows
+myenv\Scripts\activate
+# 或
+.\myenv\Scripts\Activate.ps1  # PowerShell
+
+# Linux/Mac
+source myenv/bin/activate</code></pre>
+
+            <h3>使用虚拟环境</h3>
+            <pre><code># 激活后，安装的包只在该环境中有效
+pip install requests
+
+# 退出虚拟环境
+deactivate</code></pre>
+
+            <h3>使用virtualenv</h3>
+            <pre><code># 安装virtualenv
+pip install virtualenv
+
+# 创建虚拟环境
+virtualenv myenv
+
+# 指定Python版本
+virtualenv -p python3.11 myenv
+
+# 激活和使用同上</code></pre>
+
+            <h3>推荐：使用venv</h3>
+            <pre><code># 项目目录结构建议
+myproject/
+├── .venv/              # 虚拟环境
+├── src/                # 源代码
+├── tests/              # 测试代码
+├── requirements.txt    # 依赖列表
+└── README.md</code></pre>
+
+            <h2 id="web">3. Web开发</h2>
+
+            <h3>Flask - 轻量级Web框架</h3>
+            <div class="card">
+                <p><strong>特点：</strong>简单、灵活、易扩展</p>
+            </div>
+            <pre><code># 安装
+pip install flask
+
+# 示例代码
+from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def hello():
+    return 'Hello, World!'
+
+if __name__ == '__main__':
+    app.run(debug=True)</code></pre>
+
+            <h3>Django - 全功能Web框架</h3>
+            <div class="card">
+                <p><strong>特点：</strong>功能完善、ORM内置、管理后台</p>
+            </div>
+            <pre><code># 安装
+pip install django
+
+# 创建项目
+django-admin startproject myproject
+cd myproject
+python manage.py runserver</code></pre>
+
+            <h3>FastAPI - 现代Web框架</h3>
+            <div class="card">
+                <p><strong>特点：</strong>高性能、自动文档、类型提示</p>
+            </div>
+            <pre><code># 安装
+pip install fastapi uvicorn
+
+# 示例代码
+from fastapi import FastAPI
+app = FastAPI()
+
+@app.get('/')
+def read_root():
+    return {'message': 'Hello, World!'}
+
+# 运行：uvicorn main:app --reload</code></pre>
+
+            <h3>requests - HTTP请求库</h3>
+            <pre><code># 安装
+pip install requests
+
+# 示例
+import requests
+
+# GET请求
+response = requests.get('https://api.github.com')
+print(response.json())
+
+# POST请求
+data = {'key': 'value'}
+response = requests.post('https://httpbin.org/post', json=data)
+
+# 带参数
+params = {'page': 1, 'per_page': 10}
+response = requests.get('https://api.example.com/items', params=params)</code></pre>
+
+            <h2 id="data">4. 数据分析</h2>
+
+            <h3>NumPy - 数值计算</h3>
+            <div class="card">
+                <p><strong>特点：</strong>高性能多维数组库，线性代数计算</p>
+            </div>
+            <pre><code># 安装
+pip install numpy
+
+# 示例
+import numpy as np
+
+# 创建数组
+arr = np.array([1, 2, 3, 4, 5])
+print(arr * 2)  # [2, 4, 6, 8, 10]
+
+# 矩阵运算
+matrix = np.array([[1, 2], [3, 4]])
+print(np.dot(matrix, matrix))</code></pre>
+
+            <h3>Pandas - 数据分析</h3>
+            <div class="card">
+                <p><strong>特点：</strong>数据处理和分析的核心库，DataFrame数据结构</p>
+            </div>
+            <pre><code># 安装
+pip install pandas
+
+# 示例
+import pandas as pd
+
+# 读取数据
+df = pd.read_csv('data.csv')
+print(df.head())
+
+# 基本统计
+print(df.describe())
+
+# 数据筛选
+filtered = df[df['age'] > 25]</code></pre>
+
+            <h3>Matplotlib - 数据可视化</h3>
+            <pre><code># 安装
+pip install matplotlib
+
+# 示例
+import matplotlib.pyplot as plt
+
+plt.plot([1, 2, 3, 4], [1, 4, 9, 16])
+plt.xlabel('X轴')
+plt.ylabel('Y轴')
+plt.title('简单图表')
+plt.show()</code></pre>
+
+            <h3>Seaborn - 统计可视化</h3>
+            <pre><code># 安装
+pip install seaborn
+
+# 示例
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# 加载数据
+tips = sns.load_dataset('tips')
+
+# 绑制
+sns.barplot(x='day', y='total_bill', data=tips)
+plt.show()</code></pre>
+
+            <h2 id="crawler">5. 网络爬虫</h2>
+
+            <h3>requests - 基础HTTP库</h3>
+            <p>见上方Web开发部分</p>
+
+            <h3>BeautifulSoup - HTML解析</h3>
+            <pre><code># 安装
+pip install beautifulsoup4 lxml
+
+# 示例
+from bs4 import BeautifulSoup
+import requests
+
+response = requests.get('https://example.com')
+soup = BeautifulSoup(response.text, 'lxml')
+
+# 查找元素
+titles = soup.find_all('h1')
+for title in titles:
+    print(title.text)
+
+# CSS选择器
+content = soup.select('div.article h2.title')</code></pre>
+
+            <h3>Selenium - 浏览器自动化</h3>
+            <pre><code># 安装
+pip install selenium
+
+# 示例
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+
+driver = webdriver.Chrome()
+driver.get('https://example.com')
+
+# 查找元素
+element = driver.find_element(By.ID, 'username')
+element.send_keys('myusername')
+
+# 点击按钮
+button = driver.find_element(By.CLASS_NAME, 'submit')
+button.click()</code></pre>
+
+            <h3>Scrapy - 爬虫框架</h3>
+            <pre><code># 安装
+pip install scrapy
+
+# 创建项目
+scrapy startproject myproject
+
+# 创建爬虫
+cd myproject
+scrapy genspider example example.com
+
+# 运行爬虫
+scrapy crawl example</code></pre>
+
+            <h2 id="ai">6. AI与机器学习</h2>
+
+            <h3>TensorFlow - 深度学习</h3>
+            <pre><code># 安装
+pip install tensorflow
+
+# 示例
+import tensorflow as tf
+
+# 创建模型
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(10)
+])
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
+model.fit(x_train, y_train, epochs=5)</code></pre>
+
+            <h3>PyTorch - 深度学习</h3>
+            <pre><code># 安装
+pip install torch
+
+# 示例
+import torch
+
+# 创建张量
+x = torch.tensor([1.0, 2.0, 3.0])
+y = torch.tensor([2.0, 4.0, 6.0])
+
+# 定义模型
+model = torch.nn.Linear(1, 1)
+optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+
+# 训练
+for epoch in range(100):
+    pred = model(x.reshape(-1, 1))
+    loss = torch.nn.functional.mse_loss(pred, y.reshape(-1, 1))
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()</code></pre>
+
+            <h3>Scikit-learn - 机器学习</h3>
+            <pre><code># 安装
+pip install scikit-learn
+
+# 示例
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+clf = RandomForestClassifier()
+clf.fit(iris.data, iris.target)
+
+# 预测
+prediction = clf.predict([[5.1, 3.5, 1.4, 0.2]])</code></pre>
+
+            <h2 id="tools">7. 工具库</h2>
+
+            <h3>Python-dotenv - 环境变量</h3>
+            <pre><code># 安装
+pip install python-dotenv
+
+# .env文件
+# API_KEY=your_api_key_here
+# DEBUG=true
+
+# 代码中使用
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+api_key = os.getenv('API_KEY')</code></pre>
+
+            <h3>Logging - 日志记录</h3>
+            <pre><code>import logging
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
+logger.info('这是一条信息日志')
+logger.warning('这是一条警告日志')</code></pre>
+
+            <h3>JSON - JSON处理</h3>
+            <pre><code>import json
+
+# Python对象转JSON字符串
+data = {'name': '张三', 'age': 18}
+json_str = json.dumps(data, ensure_ascii=False, indent=2)
+
+# JSON字符串转Python对象
+data = json.loads(json_str)
+
+# 读写JSON文件
+with open('data.json', 'w', encoding='utf-8') as f:
+    json.dump(data, f, ensure_ascii=False, indent=2)
+
+with open('data.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)</code></pre>
+
+            <h3>Datetime - 日期时间</h3>
+            <pre><code>from datetime import datetime, timedelta
+
+# 获取当前时间
+now = datetime.now()
+
+# 格式化
+print(now.strftime('%Y-%m-%d %H:%M:%S'))
+print(now.strftime('%Y年%m月%d日'))
+
+# 解析字符串
+date = datetime.strptime('2024-01-01', '%Y-%m-%d')
+
+# 时间计算
+tomorrow = now + timedelta(days=1)
+yesterday = now - timedelta(days=1)</code></pre>
+
+            <h3>Pathlib - 路径处理</h3>
+            <pre><code>from pathlib import Path
+
+# 路径操作
+p = Path('C:/Users/test/documents/file.txt')
+
+print(p.name)      # file.txt
+print(p.stem)      # file
+print(p.suffix)     # .txt
+print(p.parent)     # C:/Users/test/documents
+
+# 创建目录
+Path('new_folder').mkdir(exist_ok=True)
+
+# 遍历文件
+for f in Path('.').glob('*.py'):
+    print(f)</code></pre>
+
+            <h3>Urllib - URL处理</h3>
+            <pre><code>from urllib.parse import urlparse, urlencode, quote
+
+# URL解析
+url = 'https://example.com/path?param=value'
+parsed = urlparse(url)
+print(parsed.scheme, parsed.netloc, parsed.path)
+
+# URL编码
+query = urlencode({'name': '张三', 'age': 18})
+print(quote('Hello World'))
+
+# 下载文件
+from urllib.request import urlretrieve
+urlretrieve('https://example.com/file.txt', 'local_file.txt')</code></pre>
+
+            <h2>常用库速查表</h2>
+            <table>
+                <tr>
+                    <th>类别</th>
+                    <th>库名</th>
+                    <th>用途</th>
+                </tr>
+                <tr>
+                    <td rowspan="3">Web开发</td>
+                    <td>Flask</td>
+                    <td>轻量级Web框架</td>
+                </tr>
+                <tr>
+                    <td>Django</td>
+                    <td>全功能Web框架</td>
+                </tr>
+                <tr>
+                    <td>FastAPI</td>
+                    <td>现代高性能API框架</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">数据处理</td>
+                    <td>NumPy</td>
+                    <td>数值计算</td>
+                </tr>
+                <tr>
+                    <td>Pandas</td>
+                    <td>数据分析</td>
+                </tr>
+                <tr>
+                    <td rowspan="2">爬虫</td>
+                    <td>BeautifulSoup</td>
+                    <td>HTML解析</td>
+                </tr>
+                <tr>
+                    <td>Scrapy</td>
+                    <td>爬虫框架</td>
+                </tr>
+                <tr>
+                    <td rowspan="3">AI/ML</td>
+                    <td>TensorFlow</td>
+                    <td>深度学习</td>
+                </tr>
+                <tr>
+                    <td>PyTorch</td>
+                    <td>深度学习</td>
+                </tr>
+                <tr>
+                    <td>Scikit-learn</td>
+                    <td>机器学习</td>
+                </tr>
+            </table>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn">🏠 返回首页</a>
+                <a href="vscode-guide.html" class="nav-btn">📚 VS Code指南</a>
+                <a href="git-tutorial.html" class="nav-btn">📚 Git教程</a>
+                <a href="pycharm-guide.html" class="nav-btn">📚 PyCharm指南</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>📅 最后更新：2026-03-22</p>
+            <p>💪 善用工具，事半功倍</p>
+        </footer>
+    </div>
+</body>
+</html>
