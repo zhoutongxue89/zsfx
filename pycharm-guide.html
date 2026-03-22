@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PyCharm配置及使用指南 - 技术工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; line-height: 1.9; color: #333; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        header { background: linear-gradient(135deg, #000, #333); color: white; padding: 50px 40px; border-radius: 20px; margin-bottom: 40px; }
+        header h1 { font-size: 2.5em; margin-bottom: 15px; }
+        header p { opacity: 0.9; font-size: 1.1em; }
+        .back-link { display: inline-block; color: white; text-decoration: none; margin-bottom: 20px; opacity: 0.8; }
+        .back-link:hover { opacity: 1; }
+        .content { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        h2 { color: #000; margin: 35px 0 20px 0; padding-bottom: 10px; border-bottom: 2px solid #eee; }
+        h3 { color: #333; margin: 25px 0 15px 0; }
+        p { margin: 15px 0; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin: 8px 0; }
+        code { background: #f4f4f4; padding: 2px 8px; border-radius: 4px; font-family: "Consolas", "Monaco", monospace; color: #e83e8c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 10px; overflow-x: auto; margin: 20px 0; font-size: 0.95em; }
+        pre code { background: none; color: inherit; padding: 0; }
+        .tip { background: #fff3cd; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #ffc107; }
+        .warning { background: #f8d7da; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #dc3545; }
+        .success { background: #d4edda; padding: 15px 20px; border-radius: 10px; margin: 20px 0; border-left: 4px solid #28a745; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #000; color: white; }
+        tr:nth-child(even) { background: #f9f9f9; }
+        .nav-links { display: flex; gap: 15px; margin: 30px 0; flex-wrap: wrap; }
+        .nav-btn { display: inline-block; background: #000; color: white; padding: 12px 25px; border-radius: 50px; text-decoration: none; transition: transform 0.2s; }
+        .nav-btn:hover { transform: scale(1.05); color: white; }
+        footer { text-align: center; padding: 40px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="back-link">← 返回首页</a>
+            <h1>📚 PyCharm配置及使用指南</h1>
+            <p>专业的Python IDE，功能强大的开发环境</p>
+        </header>
+        
+        <div class="content">
+            <h2>📋 目录</h2>
+            <ul>
+                <li><a href="#intro">PyCharm简介</a></li>
+                <li><a href="#install">下载与安装</a></li>
+                <li><a href="#project">创建项目</a></li>
+                <li><a href="#settings">基础配置</a></li>
+                <li><a href="#shortcuts">常用快捷键</a></li>
+                <li><a href="#debug">调试功能</a></li>
+                <li><a href="#git">Git集成</a></li>
+                <li><a href="#plugins">推荐插件</a></li>
+                <li><a href="#tips">实用技巧</a></li>
+            </ul>
+
+            <h2 id="intro">1. PyCharm简介</h2>
+
+            <h3>两个版本</h3>
+            <table>
+                <tr>
+                    <th>版本</th>
+                    <th>价格</th>
+                    <th>特点</th>
+                </tr>
+                <tr>
+                    <td><strong>PyCharm Community</strong></td>
+                    <td>免费</td>
+                    <td>适合Python开发，基础功能完善</td>
+                </tr>
+                <tr>
+                    <td><strong>PyCharm Professional</strong></td>
+                    <td>付费/学生免费</td>
+                    <td>Web开发、数据科学、Django/Flask支持</td>
+                </tr>
+            </table>
+
+            <h3>主要功能</h3>
+            <ul>
+                <li><strong>智能代码补全</strong> - 基于语义的代码补全</li>
+                <li><strong>代码重构</strong> - 安全可靠的代码重构工具</li>
+                <li><strong>调试器</strong> - 强大的调试功能</li>
+                <li><strong>版本控制</strong> - 内置Git/ SVN支持</li>
+                <li><strong>远程开发</strong> - 支持SSH、Docker等远程环境</li>
+                <li><strong>数据库工具</strong> - 数据库管理和SQL支持</li>
+            </ul>
+
+            <h2 id="install">2. 下载与安装</h2>
+
+            <h3>下载地址</h3>
+            <p>访问 <a href="https://www.jetbrains.com/pycharm/download/" target="_blank">JetBrains官网</a></p>
+
+            <h3>Windows安装</h3>
+            <ol>
+                <li>下载 <code>.exe</code> 安装包</li>
+                <li>运行安装程序</li>
+                <li>建议勾选：
+                    <ul>
+                        <li>Create Desktop Shortcut</li>
+                        <li>Create Associations (.py)</li>
+                        <li>Add launchers dir to PATH</li>
+                    </ul>
+                </li>
+                <li>安装完成，首次启动会引导配置</li>
+            </ol>
+
+            <h3>学生免费申请</h3>
+            <ol>
+                <li>访问 <a href="https://www.jetbrains.com/shop/eform/students" target="_blank">学生申请页面</a></li>
+                <li>使用学校邮箱注册或上传学生证明</li>
+                <li>审核通过后获得一年免费使用权</li>
+            </ol>
+
+            <div class="success">
+                <strong>✅ 提示：</strong>如果你是学生，使用学校邮箱（.edu结尾）可以免费申请PyCharm Professional！
+            </div>
+
+            <h2 id="project">3. 创建项目</h2>
+
+            <h3>新建项目</h3>
+            <ol>
+                <li>启动PyCharm，点击 <strong>New Project</strong></li>
+                <li>设置项目位置和名称</li>
+                <li>选择Python解释器：
+                    <ul>
+                        <li><strong>New virtualenv</strong> - 创建新的虚拟环境</li>
+                        <li><strong>Existing interpreter</strong> - 使用已安装的Python</li>
+                        <li><strong>Conda Environment</strong> - 使用Conda环境</li>
+                    </ul>
+                </li>
+                <li>点击 <strong>Create</strong> 创建项目</li>
+            </ol>
+
+            <h3>项目结构</h3>
+            <pre><code>myproject/
+├── .idea/              # PyCharm配置（不要手动修改）
+├── venv/               # 虚拟环境
+├── src/                # 源代码目录
+│   └── main.py         # 主程序文件
+├── tests/              # 测试代码
+├── requirements.txt    # 依赖列表
+└── README.md           # 项目说明</code></pre>
+
+            <h3>运行代码</h3>
+            <pre><code># 方式1：右键运行
+# 在编辑区右键点击 → Run 'main'
+
+# 方式2：使用快捷键
+Shift + F10
+
+# 方式3：使用工具栏
+点击右上角的绿色三角形按钮</code></pre>
+
+            <h2 id="settings">4. 基础配置</h2>
+
+            <h3>打开设置</h3>
+            <p>Windows: <code>File → Settings</code> 或 <code>Ctrl+Alt+S</code></p>
+            <p>macOS: <code>PyCharm → Preferences</code> 或 <code>Cmd+,</code></p>
+
+            <h3>外观设置</h3>
+            <pre><code># 主题设置
+Settings → Appearance
+- Theme: 选择深色/浅色主题
+- Font: 设置编辑器字体
+
+# 编辑器字体
+Settings → Editor → Font
+- Font: JetBrains Mono 或 Consolas
+- Size: 14
+- Line height: 1.2</code></pre>
+
+            <h3>Python解释器设置</h3>
+            <pre><code>Settings → Project → Python Interpreter
+
+# 添加新的解释器
+1. 点击齿轮图标 → Add
+2. 选择解释器类型：
+   - System Interpreter：系统Python
+   - Virtualenv Environment：虚拟环境
+   - Conda Environment：Conda环境
+
+# 安装包
+1. 在包列表下方点击 +
+2. 搜索包名并安装</code></pre>
+
+            <h3>代码风格设置</h3>
+            <pre><code>Settings → Editor → Code Style → Python
+
+# 缩进
+- Tab size: 4
+- Indent: 4
+- Continuation indent: 8
+
+# 行长度
+- Hard wrap at: 120
+
+# 导入排序
+Settings → Editor → Code Style → Python → Imports
+- Sort imports by length: ✓
+- Force rearrange: ✓</code></pre>
+
+            <h3>自动保存和备份</h3>
+            <pre><code>Settings → Appearance & Behavior → System Settings
+- Save files automatically: ✓
+- Save files on frame deactivation: ✓
+
+Settings → Appearance & Behavior → System Settings → Backup
+- Automatically save backups: ✓</code></pre>
+
+            <h2 id="shortcuts">5. 常用快捷键</h2>
+
+            <h3>导航快捷键</h3>
+            <table>
+                <tr>
+                    <th>快捷键</th>
+                    <th>功能</th>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + N</code></td>
+                    <td>搜索类</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Shift + N</code></td>
+                    <td>搜索文件</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Shift + F</code></td>
+                    <td>全局搜索</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + F</code></td>
+                    <td>当前文件搜索</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + R</code></td>
+                    <td>查找替换</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + G</code></td>
+                    <td>跳转到指定行</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + B</code></td>
+                    <td>跳转到定义</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Alt + Left</code></td>
+                    <td>返回上一个位置</td>
+                </tr>
+            </table>
+
+            <h3>编辑快捷键</h3>
+            <table>
+                <tr>
+                    <th>快捷键</th>
+                    <th>功能</th>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + D</code></td>
+                    <td>复制当前行</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Y</code></td>
+                    <td>删除当前行</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + /</code></td>
+                    <td>注释/取消注释</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Alt + I</code></td>
+                    <td>自动缩进</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Alt + O</code></td>
+                    <td>优化导入</td>
+                </tr>
+                <tr>
+                    <td><code>Shift + Alt + Up/Down</code></td>
+                    <td>移动代码行</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Shift + U</code></td>
+                    <td>大小写切换</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Shift + J</code></td>
+                    <td>合并行</td>
+                </tr>
+            </table>
+
+            <h3>重构快捷键</h3>
+            <table>
+                <tr>
+                    <th>快捷键</th>
+                    <th>功能</th>
+                </tr>
+                <tr>
+                    <td><code>Shift + F6</code></td>
+                    <td>重命名</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Alt + V</code></td>
+                    <td>提取变量</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Alt + M</code></td>
+                    <td>提取方法</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + Alt + F</code></td>
+                    <td>提取字段</td>
+                </tr>
+            </table>
+
+            <h3>运行和调试</h3>
+            <table>
+                <tr>
+                    <th>快捷键</th>
+                    <th>功能</th>
+                </tr>
+                <tr>
+                    <td><code>Shift + F10</code></td>
+                    <td>运行</td>
+                </tr>
+                <tr>
+                    <td><code>Shift + F9</code></td>
+                    <td>调试</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + F2</code></td>
+                    <td>停止运行</td>
+                </tr>
+                <tr>
+                    <td><code>F8</code></td>
+                    <td>单步跳过</td>
+                </tr>
+                <tr>
+                    <td><code>F7</code></td>
+                    <td>单步进入</td>
+                </tr>
+                <tr>
+                    <td><code>Shift + F8</code></td>
+                    <td>跳出方法</td>
+                </tr>
+                <tr>
+                    <td><code>Ctrl + F8</code></td>
+                    <td>切换断点</td>
+                </tr>
+            </table>
+
+            <h2 id="debug">6. 调试功能</h2>
+
+            <h3>设置断点</h3>
+            <ol>
+                <li>点击代码行号左侧的空白区域</li>
+                <li>或使用快捷键 <code>Ctrl + F8</code></li>
+            </ol>
+
+            <h3>断点类型</h3>
+            <ul>
+                <li><strong>普通断点</strong> - 暂停执行</li>
+                <li><strong>条件断点</strong> - 右键断点 → 设置条件（如 <code>i > 10</code>）</li>
+                <li><strong>日志断点</strong> - 打印日志而不暂停</li>
+                <li><strong>异常断点</strong> - 在出错误时暂停</li>
+            </ul>
+
+            <h3>调试面板</h3>
+            <pre><code># 调试时的面板
+- Frames: 调用栈
+- Variables: 当前变量值
+- Watches: 自定义监视表达式
+- Console: Python交互控制台
+
+# 调试时执行代码
+1. 在Debug Console中
+2. 可以输入表达式查看结果
+3. 可以修改变量值</code></pre>
+
+            <h3>Attach to Process</h3>
+            <p>如果需要调试正在运行的Python进程：</p>
+            <pre><code>Run → Attach to Process
+# 或 Ctrl + Alt + F5</code></pre>
+
+            <h2 id="git">7. Git集成</h2>
+
+            <h3>启用版本控制</h3>
+            <ol>
+                <li><code>VCS → Import into Version Control → Create Git Repository</code></li>
+                <li>选择项目目录</li>
+            </ol>
+
+            <h3>Git面板</h3>
+            <pre><code># 打开Git面板
+View → Tool Windows → Git
+# 或 Alt + 9
+
+# 显示内容
+- Log: 提交历史
+- Local Changes: 未提交的更改
+- Console: Git命令输出</code></pre>
+
+            <h3>常用操作</h3>
+            <pre><code># 提交
+1. VCS → Commit（或 Ctrl + K）
+2. 选择要提交的文件
+3. 填写提交信息
+4. 点击 Commit
+
+# 推送
+VCS → Git → Push
+或 Ctrl + Shift + K
+
+# 拉取
+VCS → Git → Pull
+
+# 分支
+VCS → Git → Branches
+或右下角的分支图标</code></pre>
+
+            <h3>解决冲突</h3>
+            <ol>
+                <li>合并时出现冲突，点击 <strong>Merge</strong></li>
+                <li>左侧是你的版本，中间是结果，右侧是合并版本</li>
+                <li>点击 ← 或 → 接受对应版本</li>
+                <li>或手动编辑中间区域</li>
+                <li>点击 <strong>Apply</strong> 完成</li>
+            </ol>
+
+            <h2 id="plugins">8. 推荐插件</h2>
+
+            <h3>安装插件</h3>
+            <p><code>File → Settings → Plugins</code> → 搜索插件名 → Install</p>
+
+            <h3>必装插件</h3>
+            <ul>
+                <li><strong>Chinese (Simplified)</strong> - 中文语言包</li>
+                <li><strong>Pythonid</strong> - Python增强</li>
+                <li><strong>Rainbow Brackets</strong> - 彩虹括号</li>
+            </ul>
+
+            <h3>代码质量</h3>
+            <ul>
+                <li><strong>SonarLint</strong> - 代码质量检查</li>
+                <li><strong>Pylint</strong> - Python代码分析</li>
+            </ul>
+
+            <h3>主题和外观</h3>
+            <ul>
+                <li><strong>One Dark theme</strong> - 深色主题</li>
+                <li><strong>Material Theme UI</strong> - Material风格</li>
+                <li><strong>Ideolog</strong> - 日志高亮</li>
+            </ul>
+
+            <h3>效率工具</h3>
+            <ul>
+                <li><strong>Key Promoter X</strong> - 快捷键提示</li>
+                <li><strong>GitToolBox</strong> - Git增强</li>
+                <li><strong>Markdown</strong> - Markdown预览</li>
+                <li><strong>REST Client</strong> - API测试</li>
+            </ul>
+
+            <h3>数据库支持</h3>
+            <ul>
+                <li><strong>Database Navigator</strong> - 数据库管理</li>
+                <li><strong>Mongo Plugin</strong> - MongoDB支持</li>
+            </ul>
+
+            <h2 id="tips">9. 实用技巧</h2>
+
+            <h3>代码模板</h3>
+            <pre><code># 创建文件模板
+Settings → Editor → File and Code Templates
+
+# 常用模板
+if __name__ == '__main__':
+    $END$
+    
+# __init__.py模板
+"""
+$MODULE$
+"""
+
+__author__ = 'Your Name'
+__email__ = 'your@email.com'
+__version__ = '0.1.0'</code></pre>
+
+            <h3>Live Templates</h3>
+            <pre><code># 创建快速代码片段
+Settings → Editor → Live Templates
+
+# 示例：main模板
+Template text:
+if __name__ == '__main__':
+    $END$
+
+# Abbreviation: main
+# Applicable: Python</code></pre>
+
+            <h3>文件书签</h3>
+            <pre><code># 添加书签
+Ctrl + F11
+
+# 查看所有书签
+Shift + F11
+
+# 命名书签
+Ctrl + Shift + F11</code></pre>
+
+            <h3>代码折叠</h3>
+            <pre><code># 折叠/展开
+Ctrl + -/+
+
+# 折叠所有
+Ctrl + Shift + -
+
+# 展开所有
+Ctrl + Shift + +</code></pre>
+
+            <h3>TODO注释</h3>
+            <pre><code># 添加TODO
+# TODO: 修复这个bug
+# FIXME: 需要重构
+# NOTE: 注意这里
+
+# 查看所有TODO
+View → Tool Windows → TODO</code></pre>
+
+            <h3>代码历史</h3>
+            <pre><code># 查看文件修改历史
+右键 → Local History → Show History
+
+# 还原到某个版本
+右键 → Local History → Show History → 选择版本 → Revert</code></pre>
+
+            <h3>终端集成</h3>
+            <pre><code># 打开终端
+View → Tool Windows → Terminal
+或 Alt + F12
+
+# 新建标签
+Ctrl + Shift + T</code></pre>
+
+            <h3>多光标编辑</h3>
+            <pre><code># 添加光标
+Alt + 点击
+
+# 选择下一个相同内容
+Alt + J
+
+# 全选相同内容
+Ctrl + Shift + Alt + J</code></pre>
+
+            <div class="nav-links">
+                <a href="index.html" class="nav-btn">🏠 返回首页</a>
+                <a href="vscode-guide.html" class="nav-btn">📚 VS Code指南</a>
+                <a href="git-tutorial.html" class="nav-btn">📚 Git教程</a>
+                <a href="python-libraries.html" class="nav-btn">📚 Python库</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>📅 最后更新：2026-03-22</p>
+            <p>💪 PyCharm：专业Python开发的首选IDE</p>
+        </footer>
+    </div>
+</body>
+</html>
