@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路 · 第一周</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; line-height: 1.8; color: #333; background: #f5f7fa; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; text-align: center; border-radius: 10px; margin-bottom: 30px; }
+        header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        header p { font-size: 1.2em; opacity: 0.9; }
+        .meta { background: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .meta h2 { color: #667eea; margin-bottom: 15px; font-size: 1.5em; }
+        .meta table { width: 100%; border-collapse: collapse; }
+        .meta table th, .meta table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .meta table th { background: #f8f9fa; color: #667eea; width: 120px; }
+        .content { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2, h3, h4 { color: #333; margin-top: 30px; margin-bottom: 15px; }
+        h1 { font-size: 2em; color: #667eea; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        h2 { font-size: 1.5em; color: #764ba2; border-left: 4px solid #764ba2; padding-left: 15px; }
+        h3 { font-size: 1.2em; color: #555; }
+        p { margin: 15px 0; }
+        a { color: #667eea; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        code { background: #f4f4f4; padding: 2px 8px; border-radius: 4px; font-family: "Consolas", "Monaco", monospace; font-size: 0.9em; color: #e83e8c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; }
+        pre code { background: none; color: #d4d4d4; padding: 0; font-size: 0.95em; }
+        .keyword { color: #569cd6; }
+        .string { color: #ce9178; }
+        .number { color: #b5cea8; }
+        .comment { color: #6a9955; }
+        .function { color: #dcdcaa; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid #ddd; }
+        th { background: #667eea; color: white; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        ul, ol { margin: 15px 0 15px 30px; }
+        li { margin: 8px 0; }
+        blockquote { border-left: 4px solid #667eea; padding: 15px 20px; background: #f8f9fa; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .day-section { background: linear-gradient(to right, #f8f9fa, white); padding: 25px; border-radius: 10px; margin: 30px 0; border: 1px solid #e0e0e0; }
+        .highlight { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #ffc107; }
+        .tip { background: #d4edda; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745; }
+        .warning { background: #f8d7da; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #dc3545; }
+        .nav { display: flex; justify-content: space-between; margin: 30px 0; }
+        .nav a { background: #667eea; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; transition: all 0.3s; }
+        .nav a:hover { background: #764ba2; transform: translateY(-2px); }
+        footer { text-align: center; padding: 30px; color: #666; margin-top: 30px; }
+        .copy-btn { background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; }
+        .copy-btn:hover { background: #764ba2; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Python学习之路</h1>
+            <p>第一周 · 环境搭建与编程入门</p>
+            <p style="font-size: 0.9em; margin-top: 10px;">🚀 从零开始，循序渐进，系统学习Python</p>
+        </header>
+
+        <div class="meta">
+            <h2>📋 学习信息</h2>
+            <table>
+                <tr><th>学习周期</th><td>第 1 周（共 7 天）</td></tr>
+                <tr><th>核心目标</th><td>安装好开发环境，运行第一个程序，掌握变量、print/input、基础数据类型和运算符</td></tr>
+                <tr><th>预计时间</th><td>每天 1.5~2 小时，总计 10~14 小时</td></tr>
+                <tr><th>前置要求</th><td>零基础即可，只要你会用电脑（打字、打开软件）</td></tr>
+            </table>
+        </div>
+
+        <div class="content">
+            <h1>📅 学习大纲</h1>
+            <table>
+                <tr><th>天数</th><th>日期</th><th>主题</th><th>今日目标</th></tr>
+                <tr><td>Day 1</td><td>周一</td><td>认识Python与安装环境</td><td>安装Python和VS Code，跑通第一个程序</td></tr>
+                <tr><td>Day 2</td><td>周二</td><td>第一个程序Hello World</td><td>理解代码结构，学会写注释</td></tr>
+                <tr><td>Day 3</td><td>周三</td><td>变量基础</td><td>掌握变量的创建、使用、命名规范</td></tr>
+                <tr><td>Day 4</td><td>周四</td><td>print输出函数</td><td>熟练使用print输出各种格式</td></tr>
+                <tr><td>Day 5</td><td>周五</td><td>input输入函数</td><td>实现人机交互</td></tr>
+                <tr><td>Day 6</td><td>周六</td><td>数据类型详解</td><td>掌握6种基本数据类型</td></tr>
+                <tr><td>Day 7</td><td>周日</td><td>运算符入门</td><td>学会各种运算，为计算打基础</td></tr>
+            </table>
+
+            <h1>Day 1 · 认识Python与安装环境</h1>
+            
+            <h2>1.1 什么是Python？</h2>
+            <p>在开始安装之前，我们先来认识一下Python。Python是一种<strong>编程语言</strong>。你可以把它理解成一种和电脑对话的工具——你用Python写代码，电脑就能理解你的意图并执行相应操作。</p>
+            
+            <div class="tip">
+                <strong>Python的三大特点：</strong>
+                <ul>
+                    <li><strong>简单易学</strong> - 语法像说话一样自然，入门快，2周就能写小程序</li>
+                    <li><strong>功能强大</strong> - 什么都能做：Web开发、数据分析、AI、自动化...</li>
+                    <li><strong>库超多</strong> - 别人写好的工具可以直接用，不用重复造轮子</li>
+                </ul>
+            </div>
+
+            <h2>1.2 安装Python（Windows系统）</h2>
+            
+            <h3>步骤1：确认你的电脑系统</h3>
+            <ol>
+                <li>按 <code>Win + I</code> 打开设置</li>
+                <li>点击"系统"</li>
+                <li>点击"关于"</li>
+                <li>查看"系统类型"</li>
+            </ol>
+            
+            <div class="highlight">
+                <strong>注意：</strong>
+                <ul>
+                    <li>如果显示"64位操作系统" → 安装64位Python（推荐）</li>
+                    <li>如果显示"32位操作系统" → 安装32位Python</li>
+                </ul>
+            </div>
+
+            <h3>步骤2：下载Python</h3>
+            <p>访问：<a href="https://www.python.org/downloads/" target="_blank">https://www.python.org/downloads/</a></p>
+            <p>点击黄色按钮 <strong>"Download Python 3.12.x"</strong></p>
+
+            <h3>步骤3：安装Python（关键步骤！）</h3>
+            <div class="warning">
+                <strong>⚠️ 这一步非常重要，很多人安装失败就是因为漏掉了勾选！</strong>
+            </div>
+            <ol>
+                <li>双击下载的 <code>.exe</code> 文件</li>
+                <li><strong>一定要勾选</strong> <code>☑ Add Python to PATH</code>（添加到环境变量）</li>
+                <li>点击 <strong>"Install Now"</strong>（立即安装）</li>
+            </ol>
+
+            <h3>步骤4：验证安装成功</h3>
+            <ol>
+                <li>按 <code>Win + R</code>，输入 <code>cmd</code>，回车</li>
+                <li>输入：<code>python --version</code></li>
+                <li>如果显示类似 <code>Python 3.12.3</code>，说明安装成功</li>
+            </ol>
+
+            <h2>1.3 安装VS Code</h2>
+            <p>VS Code是微软开发的<strong>代码编辑器</strong>，是写代码的"笔记本"。</p>
+            <ol>
+                <li>访问：<a href="https://code.visualstudio.com/" target="_blank">https://code.visualstudio.com/</a></li>
+                <li>点击"Download for Windows"</li>
+                <li>安装Python插件：按 <code>Ctrl + Shift + X</code>，搜索"Python"，点击安装</li>
+            </ol>
+
+            <h2>1.4 第一个Hello World</h2>
+            <ol>
+                <li>打开VS Code，按 <code>Ctrl + N</code> 新建文件</li>
+                <li>按 <code>Ctrl + S</code> 保存为 <code>hello.py</code></li>
+                <li>输入代码：</li>
+            </ol>
+            <pre><code><span class="function">print</span>(<span class="string">"Hello World!"</span>)
+<span class="function">print</span>(<span class="string">"你好，世界！"</span>)</code></pre>
+            <ol start="4">
+                <li>按 <code>Ctrl + Alt + N</code> 运行（或右键选择"运行Python文件"）</li>
+            </ol>
+            <div class="tip">🎉 恭喜你！你已经完成了第一个Python程序！</div>
+
+            <h1>Day 2 · 第一个程序Hello World</h1>
+            
+            <h2>2.1 注释详解</h2>
+            <h3>单行注释</h3>
+            <pre><code><span class="comment"># 这是一个注释</span>
+<span class="function">print</span>(<span class="string">"Hello"</span>)  <span class="comment"># 这也是注释</span></code></pre>
+
+            <h3>多行注释</h3>
+            <pre><code><span class="string">"""
+这是多行注释
+可以写很多很多行
+一般在文件开头或函数开头使用
+"""</span></code></pre>
+
+            <h2>2.2 print函数详解</h2>
+            <h3>基本语法</h3>
+            <pre><code><span class="function">print</span>(<span class="string">"要输出的内容"</span>)</code></pre>
+
+            <h3>输出多个内容</h3>
+            <pre><code><span class="function">print</span>(<span class="string">"你好"</span>, <span class="string">"世界"</span>)  <span class="comment"># 输出：你好 世界（逗号分隔）</span></code></pre>
+
+            <h3>sep参数（分隔符）</h3>
+            <pre><code><span class="function">print</span>(<span class="string">"2024"</span>, <span class="string">"01"</span>, <span class="string">"01"</span>, sep=<span class="string">"-"</span>)  <span class="comment"># 输出：2024-01-01</span></code></pre>
+
+            <h3>end参数（结束符）</h3>
+            <pre><code><span class="function">print</span>(<span class="string">"不换行"</span>, end=<span class="string">" "</span>)
+<span class="function">print</span>(<span class="string">"还是同一行"</span>)  <span class="comment"># 输出：不换行 还是同一行</span></code></pre>
+
+            <h2>2.3 转义字符</h2>
+            <table>
+                <tr><th>转义字符</th><th>含义</th><th>示例</th></tr>
+                <tr><td><code>\n</code></td><td>换行</td><td><code>print("第一行\n第二行")</code></td></tr>
+                <tr><td><code>\t</code></td><td>制表符（Tab）</td><td><code>print("A\tB")</code></td></tr>
+                <tr><td><code>\\</code></td><td>反斜杠</td><td><code>print("C:\\Users")</code></td></tr>
+                <tr><td><code>\"</code></td><td>双引号</td><td><code>print("他说\"你好\"")</code></td></tr>
+            </table>
+
+            <h1>Day 3 · 变量基础</h1>
+
+            <h2>3.1 什么是变量？</h2>
+            <p>变量就像一个<strong>带标签的盒子</strong>：</p>
+            <ul>
+                <li><strong>变量名</strong> = 标签（给数据起的名字）</li>
+                <li><strong>变量值</strong> = 盒子里的东西（数据本身）</li>
+            </ul>
+
+            <h2>3.2 创建变量</h2>
+            <pre><code><span class="comment"># 基本语法：变量名 = 值</span>
+name = <span class="string">"张三"</span>    <span class="comment"># 创建变量name，值为"张三"</span>
+age = <span class="number">25</span>         <span class="comment"># 创建变量age，值为25</span>
+height = <span class="number">1.75</span>    <span class="comment"># 创建变量height，值为1.75</span></code></pre>
+
+            <div class="highlight">
+                <strong>注意：</strong>等号 <code>=</code> 的含义是"赋值"，不是"等于"！
+            </div>
+
+            <h2>3.3 变量的命名规则</h2>
+            <table>
+                <tr><th>规则</th><th>正确示例</th><th>错误示例</th></tr>
+                <tr><td>由字母、数字、下划线组成</td><td><code>name</code>, <code>age2</code>, <code>user_name</code></td><td><code>user-name</code>, <code>my age</code></td></tr>
+                <tr><td>不能以数字开头</td><td><code>score1</code></td><td><code>1score</code></td></tr>
+                <tr><td>区分大小写</td><td><code>Name</code> ≠ <code>name</code></td><td>-</td></tr>
+                <tr><td>不能用Python关键字</td><td>-</td><td><code>class</code>, <code>if</code></td></tr>
+            </table>
+
+            <h2>3.4 input函数</h2>
+            <pre><code><span class="comment"># 基本语法</span>
+name = <span class="function">input</span>(<span class="string">"请输入你的名字："</span>)
+<span class="function">print</span>(<span class="string">"你好，"</span> + name)</code></pre>
+
+            <div class="warning">
+                <strong>重要：</strong><code>input()</code> 返回的永远是<strong>字符串类型</strong>！
+            </div>
+
+            <h2>3.5 类型转换</h2>
+            <pre><code><span class="comment"># 转换为整数</span>
+age = <span class="function">int</span>(<span class="function">input</span>(<span class="string">"年龄："</span>))   <span class="comment"># age = 18（整数）</span>
+
+<span class="comment"># 转换为浮点数</span>
+height = <span class="function">float</span>(<span class="function">input</span>(<span class="string">"身高："</span>))  <span class="comment"># height = 1.75</span>
+
+<span class="comment"># 转换为字符串</span>
+num = <span class="function">str</span>(<span class="number">123</span>)                <span class="comment"># num = "123"</span></code></pre>
+
+            <h1>Day 4 · print输出函数</h1>
+
+            <h2>4.1 f-string格式化（重点！）</h2>
+            <p><code>f-string</code> 是Python 3.6引入的格式化方法，语法简洁，功能强大。</p>
+            
+            <pre><code>name = <span class="string">"小明"</span>
+age = <span class="number">18</span>
+
+<span class="comment"># 普通拼接（繁琐）</span>
+<span class="function">print</span>(<span class="string">"我叫"</span> + name + <span class="string">"，今年"</span> + <span class="function">str</span>(age) + <span class="string">"岁"</span>)
+
+<span class="comment"># f-string（推荐！）</span>
+<span class="function">print</span>(<span class="string">f"我叫{name}，今年{age}岁"</span>)</code></pre>
+
+            <h2>4.2 数值格式化</h2>
+            <table>
+                <tr><th>格式</th><th>说明</th><th>示例</th><th>结果</th></tr>
+                <tr><td><code>{value:.2f}</code></td><td>保留2位小数</td><td><code>f"{3.14159:.2f}"</code></td><td>3.14</td></tr>
+                <tr><td><code>{value:,}</code></td><td>千位分隔符</td><td><code>f"{1234567:,}"</code></td><td>1,234,567</td></tr>
+                <tr><td><code>{value:%}</code></td><td>百分比格式</td><td><code>f"{0.856:%}"</code></td><td>85.6%</td></tr>
+            </table>
+
+            <h2>4.3 对齐格式化</h2>
+            <pre><code>name = <span class="string">"小明"</span>
+score = <span class="number">95</span>
+
+<span class="function">print</span>(<span class="string">f"|{name:<10}|"</span>)  <span class="comment"># 左对齐 |小明        |</span>
+<span class="function">print</span>(<span class="string">f"|{name:>10}|"</span>)  <span class="comment"># 右对齐 |        小明|</span>
+<span class="function">print</span>(<span class="string">f"|{name:^10}|"</span>)  <span class="comment"># 居中 |     小明   |</span>
+<span class="function">print</span>(<span class="string">f"{score:05}"</span>)    <span class="comment"># 补零 00095</span></code></pre>
+
+            <h1>Day 5 · input输入函数</h1>
+
+            <h2>5.1 input详解</h2>
+            <pre><code>变量 = <span class="function">input</span>(<span class="string">"提示文字："</span>)</code></pre>
+
+            <h2>5.2 输入验证</h2>
+            <pre><code><span class="keyword">while True</span>:
+    <span class="keyword">try</span>:
+        age = <span class="function">int</span>(<span class="function">input</span>(<span class="string">"年龄："</span>))
+        <span class="keyword">if</span> <span class="number">0</span> < age < <span class="number">150</span>:
+            <span class="keyword">break</span>
+        <span class="keyword">else</span>:
+            <span class="function">print</span>(<span class="string">"年龄必须在1-149之间！"</span>)
+    <span class="keyword">except</span> ValueError:
+        <span class="function">print</span>(<span class="string">"请输入有效数字！"</span>)</code></pre>
+
+            <h1>Day 6 · 数据类型详解</h1>
+
+            <h2>6.1 Python的6种基本数据类型</h2>
+            <table>
+                <tr><th>类型</th><th>名称</th><th>示例</th><th>说明</th></tr>
+                <tr><td><code>int</code></td><td>整数</td><td><code>1</code>, <code>100</code>, <code>-5</code></td><td>整数，无小数</td></tr>
+                <tr><td><code>float</code></td><td>浮点数</td><td><code>3.14</code>, <code>-0.5</code></td><td>带小数</td></tr>
+                <tr><td><code>str</code></td><td>字符串</td><td><code>"Hello"</code></td><td>文本</td></tr>
+                <tr><td><code>bool</code></td><td>布尔值</td><td><code>True</code>, <code>False</code></td><td>真/假</td></tr>
+                <tr><td><code>None</code></td><td>空值</td><td><code>None</code></td><td>空，无值</td></tr>
+            </table>
+
+            <h2>6.2 字符串切片</h2>
+            <pre><code>text = <span class="string">"Hello, World!"</span>
+
+<span class="function">print</span>(text[<span class="number">0</span>:<span class="number">5</span>])     <span class="comment"># Hello</span>
+<span class="function">print</span>(text[<span class="number">7</span>:])      <span class="comment"># World!</span>
+<span class="function">print</span>(text[<span class="number">::2</span>])     <span class="comment"># Hlo ol!（每隔一个取一个）</span>
+<span class="function">print</span>(text[<span class="string">::-1</span>])    <span class="comment"># !dlroW ,olleH（反转）</span></code></pre>
+
+            <h2>6.3 类型检查</h2>
+            <pre><code><span class="function">type</span>(<span class="number">123</span>)        <span class="comment"># &lt;class 'int'&gt;</span>
+<span class="function">type</span>(<span class="string">"hello"</span>)     <span class="comment"># &lt;class 'str'&gt;</span>
+<span class="function">isinstance</span>(<span class="number">123</span>, int)  <span class="comment"># True</span></code></pre>
+
+            <h1>Day 7 · 运算符入门</h1>
+
+            <h2>7.1 算术运算符</h2>
+            <pre><code>a, b = <span class="number">10</span>, <span class="number">3</span>
+
+<span class="function">print</span>(a + b)    <span class="comment"># 13  加法</span>
+<span class="function">print</span>(a - b)    <span class="comment"># 7   减法</span>
+<span class="function">print</span>(a * b)    <span class="comment"># 30  乘法</span>
+<span class="function">print</span>(a / b)    <span class="comment"># 3.33  除法（浮点数）</span>
+<span class="function">print</span>(a // b)   <span class="comment"># 3   整数除法</span>
+<span class="function">print</span>(a % b)    <span class="comment"># 1   取余</span>
+<span class="function">print</span>(a ** b)   <span class="comment"># 1000 幂运算</span></code></pre>
+
+            <h2>7.2 比较运算符</h2>
+            <pre><code><span class="function">print</span>(<span class="number">10</span> == <span class="number">20</span>)   <span class="comment"># False  等于</span>
+<span class="function">print</span>(<span class="number">10</span> != <span class="number">20</span>)   <span class="comment"># True   不等于</span>
+<span class="function">print</span>(<span class="number">10</span> > <span class="number">20</span>)    <span class="comment"># False  大于</span>
+<span class="function">print</span>(<span class="number">10</span> < <span class="number">20</span>)    <span class="comment"># True   小于</span>
+
+<span class="comment"># 链式比较（Python特色）</span>
+x = <span class="number">5</span>
+<span class="function">print</span>(<span class="number">0</span> < x < <span class="number">10</span>)      <span class="comment"># True</span></code></pre>
+
+            <h2>7.3 逻辑运算符</h2>
+            <pre><code><span class="function">print</span>(<span class="keyword">True and False</span>)   <span class="comment"># False  与</span>
+<span class="function">print</span>(<span class="keyword">True or False</span>)    <span class="comment"># True   或</span>
+<span class="function">print</span>(<span class="keyword">not True</span>)          <span class="comment"># False  非</span></code></pre>
+
+            <h2>7.4 运算符优先级</h2>
+            <table>
+                <tr><th>优先级</th><th>运算符</th><th>说明</th></tr>
+                <tr><td>1</td><td><code>()</code></td><td>括号（最高）</td></tr>
+                <tr><td>2</td><td><code>**</code></td><td>幂运算</td></tr>
+                <tr><td>3</td><td><code>*</code>, <code>/</code>, <code>//</code>, <code>%</code></td><td>乘除</td></tr>
+                <tr><td>4</td><td><code>+</code>, <code>-</code></td><td>加减</td></tr>
+                <tr><td>5</td><td><code>></code>, <code><</code>, <code>>=</code>, <code><=</code></td><td>比较</td></tr>
+            </table>
+
+            <h1>📊 第一周知识点总结</h1>
+            
+            <h2>知识点速查表</h2>
+            <table>
+                <tr><th>知识点</th><th>语法/方法</th><th>示例</th></tr>
+                <tr><td>输出</td><td><code>print()</code></td><td><code>print("Hello")</code></td></tr>
+                <tr><td>输入</td><td><code>input()</code></td><td><code>name = input("名字：")</code></td></tr>
+                <tr><td>变量</td><td><code>变量名 = 值</code></td><td><code>name = "张三"</code></td></tr>
+                <tr><td>整数除法</td><td><code>//</code></td><td><code>10 // 3 = 3</code></td></tr>
+                <tr><td>取余</td><td><code>%</code></td><td><code>10 % 3 = 1</code></td></tr>
+                <tr><td>幂运算</td><td><code>**</code></td><td><code>2 ** 10 = 1024</code></td></tr>
+                <tr><td>类型转换</td><td><code>int()</code>, <code>float()</code>, <code>str()</code></td><td><code>int("123")</code></td></tr>
+                <tr><td>字符串切片</td><td><code>s[start:end]</code></td><td><code>"Hello"[1:4] = "ell"</code></td></tr>
+                <tr><td>f-string</td><td><code>f"{变量}"</code></td><td><code>f"年龄：{age}"</code></td></tr>
+                <tr><td>注释</td><td><code>#</code> 或 <code>"""</code></td><td><code># 注释</code></td></tr>
+            </table>
+
+            <h2>常见错误汇总</h2>
+            <table>
+                <tr><th>错误</th><th>原因</th><th>解决方法</th></tr>
+                <tr><td><code>SyntaxError</code></td><td>语法错误</td><td>检查拼写、括号、引号</td></tr>
+                <tr><td><code>NameError</code></td><td>变量未定义</td><td>先定义变量</td></tr>
+                <tr><td><code>TypeError</code></td><td>类型不匹配</td><td>转换类型</td></tr>
+                <tr><td><code>ValueError</code></td><td>值无效</td><td>检查输入内容</td></tr>
+                <tr><td><code>IndentationError</code></td><td>缩进错误</td><td>使用4个空格缩进</td></tr>
+            </table>
+
+            <h1>📝 本周练习题汇总</h1>
+            
+            <h2>基础题（必须完成）</h2>
+            <ol>
+                <li><strong>自我介绍程序</strong>：使用input和print，输出包含姓名、年龄、爱好的自我介绍</li>
+                <li><strong>计算器</strong>：输入两个数，计算加减乘除并输出结果</li>
+                <li><strong>BMI计算器</strong>：输入身高体重，计算BMI并判断体型</li>
+                <li><strong>闰年判断</strong>：输入年份，判断是否为闰年</li>
+            </ol>
+
+            <h2>进阶题（选做）</h2>
+            <ol>
+                <li><strong>成绩等级系统</strong>：输入成绩，输出等级（A/B/C/D/E）</li>
+                <li><strong>进制转换器</strong>：输入十进制数，输出二进制、八进制、十六进制</li>
+                <li><strong>个人所得税计算器</strong>：输入工资，计算应缴税额</li>
+                <li><strong>密码强度检测</strong>：检测密码长度、是否包含数字和字母</li>
+            </ol>
+
+            <h2>挑战题（挑战自己）</h2>
+            <ol>
+                <li><strong>石头剪刀布游戏</strong>：人机对战，判断输赢</li>
+                <li><strong>猜数字游戏</strong>：电脑随机出题，玩家猜测，提示大小</li>
+            </ol>
+
+            <h1>🎯 下周预告</h1>
+            <p>第二周我们将学习：</p>
+            <table>
+                <tr><th>主题</th><th>核心内容</th></tr>
+                <tr><td>条件语句</td><td>if/elif/else，多条件判断</td></tr>
+                <tr><td>循环结构</td><td>for循环，while循环</td></tr>
+                <tr><td>循环控制</td><td>break，continue</td></tr>
+                <tr><td>列表基础</td><td>列表的创建、访问、增删改查</td></tr>
+                <tr><td>列表方法</td><td>append, pop, insert, remove等</td></tr>
+                <tr><td>列表推导式</td><td>简洁创建列表</td></tr>
+            </table>
+
+            <div class="nav">
+                <a href="../index.html">← 返回首页</a>
+                <a href="python-week2.html">第二周笔记 →</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>📅 生成日期：2026-03-22</p>
+            <p>📚 课程：Python学习之路 · 第一周</p>
+            <p>💪 坚持就是胜利！第一周你已经在正确的道路上了！</p>
+        </footer>
+    </div>
+</body>
+</html>
