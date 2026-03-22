@@ -27,15 +27,26 @@
         .card-link { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; transition: transform 0.2s; font-weight: bold; }
         .card-link:hover { transform: scale(1.05); text-decoration: none; color: white; }
         
-        .week-list { margin-top: 15px; }
-        .week-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
-        .week-item:last-child { border-bottom: none; }
-        .week-num { background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; margin-right: 15px; flex-shrink: 0; }
-        .week-text { color: #333; flex: 1; }
-        .week-status { font-size: 0.85em; padding: 3px 12px; border-radius: 20px; }
-        .week-status.done { background: #d4edda; color: #155724; }
-        .week-status.doing { background: #fff3cd; color: #856404; }
-        .week-status.todo { background: #f8f9fa; color: #666; }
+        .tool-list { margin-top: 15px; }
+        .tool-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .tool-item:last-child { border-bottom: none; }
+        .tool-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.3em; margin-right: 15px; flex-shrink: 0; }
+        .tool-icon.vscode { background: linear-gradient(135deg, #007acc, #005fa5); }
+        .tool-icon.pycharm { background: linear-gradient(135deg, #000000, #333333); }
+        .tool-icon.git { background: linear-gradient(135deg, #f05032, #e84d31); }
+        .tool-icon.python { background: linear-gradient(135deg, #3776ab, #ffd43b); }
+        .tool-text { color: #333; flex: 1; }
+        .tool-text span { display: block; font-size: 0.85em; color: #999; }
+        .tool-status { font-size: 0.85em; padding: 3px 12px; border-radius: 20px; }
+        .tool-status.done { background: #d4edda; color: #155724; }
+        
+        .tool-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        .tool-card { display: flex; align-items: center; padding: 15px; border-radius: 12px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; background: #f8f9fa; }
+        .tool-card:hover { transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); text-decoration: none; }
+        .tool-card-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5em; margin-right: 12px; flex-shrink: 0; }
+        .tool-card-info { flex: 1; }
+        .tool-card-title { color: #333; font-weight: bold; font-size: 0.95em; }
+        .tool-card-desc { color: #666; font-size: 0.8em; }
         
         footer { text-align: center; padding: 40px; color: rgba(255,255,255,0.8); font-size: 0.95em; }
         footer a { color: white; text-decoration: none; }
@@ -156,34 +167,35 @@
                 <div class="card-body">
                     <p class="card-desc">实用的技术工具和学习资源分享。包括开发环境配置、高效工具推荐等。</p>
                     
-                    <div class="week-list">
-                        <div class="week-item">
-                            <span class="week-num">1</span>
-                            <span class="week-text">VS Code配置指南</span>
-                            <span class="week-status done">已完成</span>
-                        </div>
-                        <div class="week-item">
-                            <span class="week-num">2</span>
-                            <span class="week-text">Git使用教程</span>
-                            <span class="week-status done">已完成</span>
-                        </div>
-                        <div class="week-item">
-                            <span class="week-num">3</span>
-                            <span class="week-text">Python常用库</span>
-                            <span class="week-status done">已完成</span>
-                        </div>
-                        <div class="week-item">
-                            <span class="week-num">4</span>
-                            <span class="week-text">PyCharm配置指南</span>
-                            <span class="week-status done">已完成</span>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 25px;">
-                        <a href="vscode-guide.html" class="card-link">🛠️ VS Code指南</a>
-                        <a href="git-tutorial.html" class="card-link" style="margin-left:10px;">📚 Git教程</a>
-                        <a href="python-libraries.html" class="card-link" style="margin-left:10px;">📖 Python库</a>
-                        <a href="pycharm-guide.html" class="card-link" style="margin-left:10px;">🐍 PyCharm指南</a>
+                    <div class="tool-cards">
+                        <a href="vscode-guide.html" class="tool-card">
+                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #007acc, #005fa5); color: white;">VS</div>
+                            <div class="tool-card-info">
+                                <div class="tool-card-title">VS Code</div>
+                                <div class="tool-card-desc">代码编辑器配置</div>
+                            </div>
+                        </a>
+                        <a href="pycharm-guide.html" class="tool-card">
+                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #000000, #444444); color: white;">PC</div>
+                            <div class="tool-card-info">
+                                <div class="tool-card-title">PyCharm</div>
+                                <div class="tool-card-desc">Python IDE指南</div>
+                            </div>
+                        </a>
+                        <a href="git-tutorial.html" class="tool-card">
+                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #f05032, #e84d31); color: white;">G</div>
+                            <div class="tool-card-info">
+                                <div class="tool-card-title">Git</div>
+                                <div class="tool-card-desc">版本控制教程</div>
+                            </div>
+                        </a>
+                        <a href="python-libraries.html" class="tool-card">
+                            <div class="tool-card-icon" style="background: linear-gradient(135deg, #3776ab, #ffd43b); color: white;">Py</div>
+                            <div class="tool-card-info">
+                                <div class="tool-card-title">Python库</div>
+                                <div class="tool-card-desc">常用库推荐</div>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
