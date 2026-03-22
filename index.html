@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>周同学的知识分享</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif; line-height: 1.8; color: #333; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+        header { background: white; padding: 50px 40px; text-align: center; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); margin-bottom: 40px; }
+        header h1 { font-size: 3em; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+        header p { font-size: 1.3em; color: #666; }
+        .subtitle { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 8px 25px; border-radius: 50px; margin-top: 20px; font-size: 0.95em; }
+        
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.2); transition: transform 0.3s, box-shadow 0.3s; }
+        .card:hover { transform: translateY(-10px); box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+        .card-header { padding: 30px; text-align: center; }
+        .card-header.python { background: linear-gradient(135deg, #3776ab, #ffd43b); }
+        .card-header.mysql { background: linear-gradient(135deg, #00758f, #f29111); }
+        .card-header.other { background: linear-gradient(135deg, #764ba2, #667eea); }
+        .card-icon { font-size: 4em; margin-bottom: 10px; }
+        .card-title { color: white; font-size: 1.8em; font-weight: bold; }
+        .card-body { padding: 30px; }
+        .card-desc { color: #666; margin-bottom: 20px; }
+        .card-link { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; transition: transform 0.2s; font-weight: bold; }
+        .card-link:hover { transform: scale(1.05); text-decoration: none; color: white; }
+        
+        .week-list { margin-top: 15px; }
+        .week-item { display: flex; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .week-item:last-child { border-bottom: none; }
+        .week-num { background: #667eea; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85em; margin-right: 15px; flex-shrink: 0; }
+        .week-text { color: #333; flex: 1; }
+        .week-status { font-size: 0.85em; padding: 3px 12px; border-radius: 20px; }
+        .week-status.done { background: #d4edda; color: #155724; }
+        .week-status.doing { background: #fff3cd; color: #856404; }
+        .week-status.todo { background: #f8f9fa; color: #666; }
+        
+        footer { text-align: center; padding: 40px; color: rgba(255,255,255,0.8); font-size: 0.95em; }
+        footer a { color: white; text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+        
+        .stats { display: flex; justify-content: center; gap: 40px; margin: 30px 0; }
+        .stat { text-align: center; }
+        .stat-num { font-size: 2.5em; font-weight: bold; color: #667eea; }
+        .stat-label { color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 周同学的知识分享</h1>
+            <p>学习笔记、技术分享、项目记录</p>
+            <span class="subtitle">持续更新中...</span>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-num">7</div>
+                    <div class="stat-label">本周天数</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">1</div>
+                    <div class="stat-label">已发布周数</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-num">48</div>
+                    <div class="stat-label">学习总周数</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="cards">
+            <!-- Python学习之路 -->
+            <div class="card">
+                <div class="card-header python">
+                    <div class="card-icon">🐍</div>
+                    <div class="card-title">Python学习之路</div>
+                </div>
+                <div class="card-body">
+                    <p class="card-desc">从零开始，系统学习Python编程。每周更新学习笔记，循序渐进，掌握Python开发技能。</p>
+                    
+                    <div class="week-list">
+                        <div class="week-item">
+                            <span class="week-num">1</span>
+                            <span class="week-text">环境搭建 & 编程入门</span>
+                            <span class="week-status done">已完成</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">2</span>
+                            <span class="week-text">数据类型 & 流程控制</span>
+                            <span class="week-status doing">进行中</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">3</span>
+                            <span class="week-text">数据容器</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">4</span>
+                            <span class="week-text">函数基础</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">5</span>
+                            <span class="week-text">面向对象</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 25px;">
+                        <a href="python-week1.html" class="card-link">📖 查看第一周笔记</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 原理剖析 -->
+            <div class="card">
+                <div class="card-header other">
+                    <div class="card-icon">🔬</div>
+                    <div class="card-title">原理剖析</div>
+                </div>
+                <div class="card-body">
+                    <p class="card-desc">深入理解技术原理，剖析底层机制。让学习不止于表面，知其然更知其所以然。</p>
+                    
+                    <div class="week-list">
+                        <div class="week-item">
+                            <span class="week-num">1</span>
+                            <span class="week-text">Python解释器原理</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">2</span>
+                            <span class="week-text">内存管理机制</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">3</span>
+                            <span class="week-text">数据类型底层实现</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 25px;">
+                        <a href="#" class="card-link">🔬 敬请期待</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 技术工具 -->
+            <div class="card">
+                <div class="card-header mysql">
+                    <div class="card-icon">🛠️</div>
+                    <div class="card-title">技术工具</div>
+                </div>
+                <div class="card-body">
+                    <p class="card-desc">实用的技术工具和学习资源分享。包括开发环境配置、高效工具推荐等。</p>
+                    
+                    <div class="week-list">
+                        <div class="week-item">
+                            <span class="week-num">1</span>
+                            <span class="week-text">VS Code配置指南</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">2</span>
+                            <span class="week-text">Git使用教程</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                        <div class="week-item">
+                            <span class="week-num">3</span>
+                            <span class="week-text">Python常用库</span>
+                            <span class="week-status todo">待更新</span>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 25px;">
+                        <a href="#" class="card-link">🛠️ 敬请期待</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>📅 最后更新：2026-03-22</p>
+            <p>💪 学习之路，始于足下</p>
+            <p style="margin-top: 15px;">
+                <a href="https://github.com/zhoutongxue89/zsfx" target="_blank">GitHub仓库</a> · 
+                <a href="python-week1.html">Python第一周</a>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
