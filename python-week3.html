@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路 - 第三周：条件判断 if-elif-else</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f7fa; color: #333; line-height: 1.7; }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        .week-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 6px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        header h1 { font-size: 2.2em; margin-bottom: 10px; }
+        header p { font-size: 1.1em; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        
+        .meta-bar {
+            background: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+        }
+        .meta-item { display: flex; align-items: center; gap: 8px; color: #666; font-size: 0.9em; }
+        .meta-item span.icon { font-size: 1.1em; }
+        
+        .container { max-width: 900px; margin: 40px auto; padding: 0 20px; }
+        
+        /* 目录 */
+        .toc {
+            background: white;
+            border-radius: 16px;
+            padding: 25px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+        }
+        .toc h3 { color: #667eea; font-size: 1em; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .toc-list { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; }
+        .toc-list li a {
+            display: inline-block;
+            padding: 6px 16px;
+            background: #f0f2ff;
+            color: #667eea;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.88em;
+            transition: all 0.2s;
+        }
+        .toc-list li a:hover { background: #667eea; color: white; }
+        
+        /* 章节卡片 */
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.06);
+        }
+        .section-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f2ff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .num {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            flex-shrink: 0;
+        }
+        
+        /* 知识点 */
+        h3 { font-size: 1.05em; color: #444; margin: 20px 0 10px; }
+        p { color: #555; margin-bottom: 12px; font-size: 0.95em; }
+        
+        /* 代码块 */
+        .code-block {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            color: #cdd6f4;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 0.9em;
+            line-height: 1.8;
+            white-space: pre;
+        }
+        .code-comment { color: #6c7086; }
+        .code-keyword { color: #cba6f7; }
+        .code-string { color: #a6e3a1; }
+        .code-number { color: #fab387; }
+        .code-output { color: #89dceb; }
+        .code-func { color: #89b4fa; }
+        
+        /* 输出结果 */
+        .output {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 16px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 0.88em;
+            color: #444;
+        }
+        .output-label { font-size: 0.75em; color: #999; margin-bottom: 5px; }
+        
+        /* 提示框 */
+        .tip {
+            border-radius: 12px;
+            padding: 15px 18px;
+            margin: 15px 0;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9em;
+        }
+        .tip-info { background: #e8f4ff; border-left: 4px solid #4a9eff; }
+        .tip-warn { background: #fff8e6; border-left: 4px solid #ffa500; }
+        .tip-success { background: #e8f5e9; border-left: 4px solid #4caf50; }
+        .tip-error { background: #ffeef0; border-left: 4px solid #f44336; }
+        .tip-icon { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+        .tip p { margin: 0; color: #444; }
+        
+        /* 表格 */
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
+        th { background: #667eea; color: white; padding: 10px 14px; text-align: left; }
+        th:first-child { border-radius: 8px 0 0 0; }
+        th:last-child { border-radius: 0 8px 0 0; }
+        td { padding: 10px 14px; border-bottom: 1px solid #f0f0f0; }
+        tr:nth-child(even) td { background: #f8f9ff; }
+        tr:hover td { background: #f0f2ff; }
+        
+        /* 练习题 */
+        .exercise {
+            background: linear-gradient(135deg, #f8f9ff, #f0f2ff);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            border: 1px solid #e0e4ff;
+        }
+        .exercise-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .exercise ol { padding-left: 20px; }
+        .exercise li { color: #555; margin-bottom: 8px; font-size: 0.92em; }
+        
+        /* 对比表 */
+        .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 15px 0; }
+        .compare-box { border-radius: 10px; padding: 15px; }
+        .compare-box.good { background: #e8f5e9; border: 1px solid #a5d6a7; }
+        .compare-box.bad { background: #ffeef0; border: 1px solid #f5c6ca; }
+        .compare-label { font-size: 0.8em; font-weight: bold; margin-bottom: 8px; }
+        .compare-box.good .compare-label { color: #2e7d32; }
+        .compare-box.bad .compare-label { color: #c62828; }
+        
+        /* 流程图（文字版） */
+        .flowchart {
+            background: #fafafa;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            border: 1px solid #eee;
+        }
+        .flow-box {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 0.88em;
+            font-weight: 500;
+            margin: 5px;
+        }
+        .flow-start { background: #667eea; color: white; border-radius: 20px; }
+        .flow-cond { background: #ffa726; color: white; border-radius: 4px; transform: rotate(0); }
+        .flow-action { background: #66bb6a; color: white; }
+        .flow-end { background: #ef5350; color: white; border-radius: 20px; }
+        .flow-arrow { color: #999; font-size: 1.2em; display: block; margin: 3px 0; }
+        
+        /* 知识点卡片列表 */
+        .key-points { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 15px 0; }
+        .key-point {
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 15px;
+            border-left: 3px solid #667eea;
+        }
+        .key-point .kp-title { font-weight: bold; color: #333; font-size: 0.9em; margin-bottom: 5px; }
+        .key-point .kp-desc { color: #666; font-size: 0.82em; }
+        
+        /* 总结 */
+        .summary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+        .summary h3 { font-size: 1.15em; margin-bottom: 15px; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+        .summary-item {
+            background: rgba(255,255,255,0.15);
+            border-radius: 10px;
+            padding: 12px 15px;
+        }
+        .summary-item .s-title { font-size: 0.8em; opacity: 0.8; margin-bottom: 4px; }
+        .summary-item .s-val { font-weight: bold; font-size: 1em; }
+        
+        /* 导航 */
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        .nav-prev { background: #f0f0f0; color: #555; }
+        .nav-prev:hover { background: #e0e0e0; }
+        .nav-home { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .nav-home:hover { opacity: 0.9; box-shadow: 0 4px 15px rgba(102,126,234,0.4); }
+        .nav-next { background: #667eea; color: white; }
+        .nav-next:hover { background: #5a6fd6; }
+        
+        /* 响应式 */
+        @media (max-width: 768px) {
+            header { padding: 35px 15px; }
+            header h1 { font-size: 1.6em; }
+            .meta-bar { gap: 15px; padding: 12px; }
+            .container { padding: 0 15px; margin: 20px auto; }
+            .section { padding: 20px; }
+            .compare { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 480px) {
+            header h1 { font-size: 1.35em; }
+            .section-title { font-size: 1.1em; }
+            .code-block { padding: 14px; }
+            .code-block pre { font-size: 0.8em; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="week-badge">📅 第三周 · 阶段二：Python基础语法</div>
+    <h1>条件判断 if-elif-else</h1>
+    <p>掌握程序的逻辑分支，让代码会"思考"和"决策"</p>
+</header>
+
+<div class="meta-bar">
+    <div class="meta-item"><span class="icon">⏱️</span> 学习时长：5-7小时</div>
+    <div class="meta-item"><span class="icon">🎯</span> 难度：★★☆☆☆</div>
+    <div class="meta-item"><span class="icon">📌</span> 阶段：基础语法</div>
+    <div class="meta-item"><span class="icon">📆</span> 第3周 / 共52周</div>
+</div>
+
+<div class="container">
+
+    <!-- 目录 -->
+    <div class="toc">
+        <h3>📋 本周目录</h3>
+        <ul class="toc-list">
+            <li><a href="#s1">1. 什么是条件判断</a></li>
+            <li><a href="#s2">2. if 语句</a></li>
+            <li><a href="#s3">3. if-else 语句</a></li>
+            <li><a href="#s4">4. if-elif-else 多分支</a></li>
+            <li><a href="#s5">5. 比较运算符</a></li>
+            <li><a href="#s6">6. 逻辑运算符</a></li>
+            <li><a href="#s7">7. 嵌套条件</a></li>
+            <li><a href="#s8">8. 三元表达式</a></li>
+            <li><a href="#s9">9. 实战练习</a></li>
+        </ul>
+    </div>
+
+    <!-- 第1节 -->
+    <div class="section" id="s1">
+        <div class="section-title"><span class="num">1</span>什么是条件判断</div>
+        
+        <p>在现实生活中，我们每天都在做"如果...就..."的决策。程序也需要这种能力——根据不同的条件，执行不同的代码块。这就是<strong>条件判断</strong>。</p>
+        
+        <div class="tip tip-info">
+            <span class="tip-icon">💡</span>
+            <p>条件判断是程序控制流的基础。有了条件判断，程序就从"顺序执行"变成了能"思考"的智能代码。</p>
+        </div>
+        
+        <div class="flowchart">
+            <span class="flow-box flow-start">开始</span>
+            <span class="flow-arrow">↓</span>
+            <span class="flow-box flow-cond">条件是否成立？</span>
+            <br>
+            <span style="color:#4caf50; font-size:0.85em; margin-right:60px;">✅ 是</span>
+            <span style="color:#f44336; font-size:0.85em; margin-left:60px;">❌ 否</span>
+            <br>
+            <span class="flow-box flow-action" style="margin-right:30px;">执行代码块A</span>
+            <span class="flow-box" style="background:#ef5350;color:white; margin-left:30px;">执行代码块B</span>
+            <span class="flow-arrow">↓</span>
+            <span class="flow-box flow-end">继续执行</span>
+        </div>
+        
+        <div class="key-points">
+            <div class="key-point">
+                <div class="kp-title">🔑 布尔值</div>
+                <div class="kp-desc">条件的结果是 True 或 False</div>
+            </div>
+            <div class="key-point">
+                <div class="kp-title">📐 缩进</div>
+                <div class="kp-desc">Python用4个空格缩进区分代码块</div>
+            </div>
+            <div class="key-point">
+                <div class="kp-title">🔗 冒号</div>
+                <div class="kp-desc">if/elif/else 后面必须加冒号 :</div>
+            </div>
+            <div class="key-point">
+                <div class="kp-title">⚡ 短路求值</div>
+                <div class="kp-desc">and/or 有短路特性，提高效率</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第2节 -->
+    <div class="section" id="s2">
+        <div class="section-title"><span class="num">2</span>if 语句</div>
+        
+        <p>最基本的条件语句，当条件为 <code>True</code> 时才执行对应代码块。</p>
+        
+        <h3>基本语法</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 基本语法结构</span>
+<span class="code-keyword">if</span> 条件表达式:
+    代码块  <span class="code-comment"># 注意：必须缩进4个空格！</span></pre>
+        </div>
+        
+        <h3>实际例子</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 例1：判断年龄是否成年</span>
+age = <span class="code-number">18</span>
+
+<span class="code-keyword">if</span> age >= <span class="code-number">18</span>:
+    <span class="code-func">print</span>(<span class="code-string">"你已经成年了！"</span>)
+    <span class="code-func">print</span>(<span class="code-string">"可以去投票了"</span>)
+
+<span class="code-func">print</span>(<span class="code-string">"程序继续执行"</span>)  <span class="code-comment"># 这行不受if影响</span></pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 输出结果：</div>
+            你已经成年了！<br>
+            可以去投票了<br>
+            程序继续执行
+        </div>
+        
+        <div class="code-block">
+            <pre><span class="code-comment"># 例2：检查数字是否为正数</span>
+number = <span class="code-number">-5</span>
+
+<span class="code-keyword">if</span> number > <span class="code-number">0</span>:
+    <span class="code-func">print</span>(<span class="code-string">f"{number} 是正数"</span>)
+
+<span class="code-func">print</span>(<span class="code-string">"检查完毕"</span>)</pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 输出结果（number=-5时）：</div>
+            检查完毕
+        </div>
+        
+        <div class="tip tip-warn">
+            <span class="tip-icon">⚠️</span>
+            <p><strong>注意缩进！</strong> Python用缩进来区分代码块。if下面的代码必须缩进（通常4个空格），否则会报 IndentationError 错误。</p>
+        </div>
+        
+        <div class="compare">
+            <div class="compare-box good">
+                <div class="compare-label">✅ 正确写法</div>
+                <div class="code-block" style="margin:0; padding:10px;">
+                    <pre style="font-size:0.82em;"><span class="code-keyword">if</span> age >= <span class="code-number">18</span>:
+    <span class="code-func">print</span>(<span class="code-string">"成年"</span>)</pre>
+                </div>
+            </div>
+            <div class="compare-box bad">
+                <div class="compare-label">❌ 错误写法（无缩进）</div>
+                <div class="code-block" style="margin:0; padding:10px;">
+                    <pre style="font-size:0.82em;"><span class="code-keyword">if</span> age >= <span class="code-number">18</span>:
+<span class="code-func">print</span>(<span class="code-string">"成年"</span>)  <span class="code-comment"># 报错！</span></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第3节 -->
+    <div class="section" id="s3">
+        <div class="section-title"><span class="num">3</span>if-else 语句</div>
+        
+        <p>当条件成立时执行 if 块，不成立时执行 else 块，二选一。</p>
+        
+        <h3>基本语法</h3>
+        <div class="code-block">
+            <pre><span class="code-keyword">if</span> 条件表达式:
+    条件为 True 时执行
+<span class="code-keyword">else</span>:
+    条件为 False 时执行</pre>
+        </div>
+        
+        <h3>实际例子</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 例1：判断奇偶数</span>
+num = <span class="code-number">7</span>
+
+<span class="code-keyword">if</span> num % <span class="code-number">2</span> == <span class="code-number">0</span>:
+    <span class="code-func">print</span>(<span class="code-string">f"{num} 是偶数"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">f"{num} 是奇数"</span>)</pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 输出结果：</div>
+            7 是奇数
+        </div>
+        
+        <div class="code-block">
+            <pre><span class="code-comment"># 例2：判断分数是否及格</span>
+score = <span class="code-number">85</span>
+
+<span class="code-keyword">if</span> score >= <span class="code-number">60</span>:
+    <span class="code-func">print</span>(<span class="code-string">"及格了！恭喜🎉"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"不及格，继续努力！"</span>)</pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 输出结果：</div>
+            及格了！恭喜🎉
+        </div>
+        
+        <div class="code-block">
+            <pre><span class="code-comment"># 例3：用户登录判断</span>
+correct_password = <span class="code-string">"python123"</span>
+input_password = <span class="code-func">input</span>(<span class="code-string">"请输入密码："</span>)
+
+<span class="code-keyword">if</span> input_password == correct_password:
+    <span class="code-func">print</span>(<span class="code-string">"✅ 登录成功！欢迎回来"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"❌ 密码错误，请重试"</span>)</pre>
+        </div>
+    </div>
+
+    <!-- 第4节 -->
+    <div class="section" id="s4">
+        <div class="section-title"><span class="num">4</span>if-elif-else 多分支</div>
+        
+        <p>当有多个条件分支时，用 <code>elif</code>（else if 的缩写）来处理多种情况。</p>
+        
+        <div class="tip tip-info">
+            <span class="tip-icon">💡</span>
+            <p>elif 可以有任意多个，Python 会从上到下依次检查，找到第一个满足的条件就执行对应代码块，然后跳出整个 if 结构。</p>
+        </div>
+        
+        <h3>基本语法</h3>
+        <div class="code-block">
+            <pre><span class="code-keyword">if</span> 条件1:
+    条件1为 True 时执行
+<span class="code-keyword">elif</span> 条件2:
+    条件2为 True 时执行
+<span class="code-keyword">elif</span> 条件3:
+    条件3为 True 时执行
+<span class="code-keyword">else</span>:
+    以上都不满足时执行</pre>
+        </div>
+        
+        <h3>成绩等级划分</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 经典的成绩分级</span>
+score = <span class="code-func">int</span>(<span class="code-func">input</span>(<span class="code-string">"请输入成绩（0-100）："</span>))
+
+<span class="code-keyword">if</span> score >= <span class="code-number">90</span>:
+    grade = <span class="code-string">"A 优秀 🏆"</span>
+<span class="code-keyword">elif</span> score >= <span class="code-number">80</span>:
+    grade = <span class="code-string">"B 良好 👍"</span>
+<span class="code-keyword">elif</span> score >= <span class="code-number">70</span>:
+    grade = <span class="code-string">"C 中等 📚"</span>
+<span class="code-keyword">elif</span> score >= <span class="code-number">60</span>:
+    grade = <span class="code-string">"D 及格 ✅"</span>
+<span class="code-keyword">else</span>:
+    grade = <span class="code-string">"F 不及格 😢"</span>
+
+<span class="code-func">print</span>(<span class="code-string">f"你的成绩：{score}分，等级：{grade}"</span>)</pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 输入 85 的输出：</div>
+            你的成绩：85分，等级：B 良好 👍
+        </div>
+        
+        <h3>季节判断</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 根据月份判断季节</span>
+month = <span class="code-number">8</span>
+
+<span class="code-keyword">if</span> month <span class="code-keyword">in</span> [<span class="code-number">3</span>, <span class="code-number">4</span>, <span class="code-number">5</span>]:
+    season = <span class="code-string">"春季 🌸"</span>
+<span class="code-keyword">elif</span> month <span class="code-keyword">in</span> [<span class="code-number">6</span>, <span class="code-number">7</span>, <span class="code-number">8</span>]:
+    season = <span class="code-string">"夏季 ☀️"</span>
+<span class="code-keyword">elif</span> month <span class="code-keyword">in</span> [<span class="code-number">9</span>, <span class="code-number">10</span>, <span class="code-number">11</span>]:
+    season = <span class="code-string">"秋季 🍂"</span>
+<span class="code-keyword">else</span>:
+    season = <span class="code-string">"冬季 ❄️"</span>
+
+<span class="code-func">print</span>(<span class="code-string">f"{month}月是{season}"</span>)</pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 输出结果：</div>
+            8月是夏季 ☀️
+        </div>
+    </div>
+
+    <!-- 第5节 -->
+    <div class="section" id="s5">
+        <div class="section-title"><span class="num">5</span>比较运算符</div>
+        
+        <p>比较运算符用于构建条件表达式，结果总是 <code>True</code> 或 <code>False</code>。</p>
+        
+        <table>
+            <tr><th>运算符</th><th>含义</th><th>示例</th><th>结果</th></tr>
+            <tr><td><code>==</code></td><td>等于</td><td><code>5 == 5</code></td><td>True</td></tr>
+            <tr><td><code>!=</code></td><td>不等于</td><td><code>5 != 3</code></td><td>True</td></tr>
+            <tr><td><code>></code></td><td>大于</td><td><code>7 > 5</code></td><td>True</td></tr>
+            <tr><td><code><</code></td><td>小于</td><td><code>3 < 5</code></td><td>True</td></tr>
+            <tr><td><code>>=</code></td><td>大于等于</td><td><code>5 >= 5</code></td><td>True</td></tr>
+            <tr><td><code><=</code></td><td>小于等于</td><td><code>4 <= 5</code></td><td>True</td></tr>
+            <tr><td><code>in</code></td><td>包含于</td><td><code>"a" in "abc"</code></td><td>True</td></tr>
+            <tr><td><code>not in</code></td><td>不包含于</td><td><code>"x" not in "abc"</code></td><td>True</td></tr>
+            <tr><td><code>is</code></td><td>是同一对象</td><td><code>x is None</code></td><td>取决于x</td></tr>
+        </table>
+        
+        <div class="code-block">
+            <pre><span class="code-comment"># 比较运算符示例</span>
+a = <span class="code-number">10</span>
+b = <span class="code-number">20</span>
+name = <span class="code-string">"Python"</span>
+fruits = [<span class="code-string">"苹果"</span>, <span class="code-string">"香蕉"</span>, <span class="code-string">"橙子"</span>]
+
+<span class="code-func">print</span>(a == b)           <span class="code-comment"># False</span>
+<span class="code-func">print</span>(a != b)           <span class="code-comment"># True</span>
+<span class="code-func">print</span>(a < b)            <span class="code-comment"># True</span>
+<span class="code-func">print</span>(<span class="code-string">"P"</span> <span class="code-keyword">in</span> name)     <span class="code-comment"># True</span>
+<span class="code-func">print</span>(<span class="code-string">"苹果"</span> <span class="code-keyword">in</span> fruits)  <span class="code-comment"># True</span>
+<span class="code-func">print</span>(<span class="code-string">"西瓜"</span> <span class="code-keyword">not in</span> fruits) <span class="code-comment"># True</span>
+
+<span class="code-comment"># 链式比较（Python特有）</span>
+age = <span class="code-number">25</span>
+<span class="code-func">print</span>(<span class="code-number">18</span> <= age <= <span class="code-number">60</span>)  <span class="code-comment"># True，Python独特写法！</span></pre>
+        </div>
+        
+        <div class="tip tip-warn">
+            <span class="tip-icon">⚠️</span>
+            <p><strong>==  vs  =</strong>：<code>==</code> 是比较运算符（判断相等），<code>=</code> 是赋值运算符（赋值）。初学者容易混淆！</p>
+        </div>
+    </div>
+
+    <!-- 第6节 -->
+    <div class="section" id="s6">
+        <div class="section-title"><span class="num">6</span>逻辑运算符</div>
+        
+        <p>当需要组合多个条件时，使用逻辑运算符 <code>and</code>、<code>or</code>、<code>not</code>。</p>
+        
+        <table>
+            <tr><th>运算符</th><th>含义</th><th>说明</th><th>示例</th></tr>
+            <tr><td><code>and</code></td><td>且（与）</td><td>两个条件都要为True</td><td><code>a > 0 and b > 0</code></td></tr>
+            <tr><td><code>or</code></td><td>或</td><td>至少一个条件为True</td><td><code>a > 0 or b > 0</code></td></tr>
+            <tr><td><code>not</code></td><td>非（取反）</td><td>对结果取反</td><td><code>not (a > 0)</code></td></tr>
+        </table>
+        
+        <h3>and（且）</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 判断是否满足工作条件（年龄在18-60岁之间）</span>
+age = <span class="code-number">25</span>
+
+<span class="code-keyword">if</span> age >= <span class="code-number">18</span> <span class="code-keyword">and</span> age <= <span class="code-number">60</span>:
+    <span class="code-func">print</span>(<span class="code-string">"符合工作年龄要求"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"不符合工作年龄要求"</span>)
+
+<span class="code-comment"># 更 Python 风的写法（链式比较）</span>
+<span class="code-keyword">if</span> <span class="code-number">18</span> <= age <= <span class="code-number">60</span>:
+    <span class="code-func">print</span>(<span class="code-string">"符合要求（链式比较）"</span>)</pre>
+        </div>
+        
+        <h3>or（或）</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 判断是否是周末</span>
+day = <span class="code-string">"Saturday"</span>
+
+<span class="code-keyword">if</span> day == <span class="code-string">"Saturday"</span> <span class="code-keyword">or</span> day == <span class="code-string">"Sunday"</span>:
+    <span class="code-func">print</span>(<span class="code-string">"今天是周末！放松一下🎉"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"工作日，加油！"</span>)
+
+<span class="code-comment"># 更简洁的写法</span>
+<span class="code-keyword">if</span> day <span class="code-keyword">in</span> [<span class="code-string">"Saturday"</span>, <span class="code-string">"Sunday"</span>]:
+    <span class="code-func">print</span>(<span class="code-string">"今天是周末！"</span>)</pre>
+        </div>
+        
+        <h3>not（非）</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 判断列表是否为空</span>
+items = []
+
+<span class="code-keyword">if not</span> items:
+    <span class="code-func">print</span>(<span class="code-string">"购物车是空的！"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">f"购物车有 {<span class="code-func">len</span>(items)} 件商品"</span>)
+
+<span class="code-comment"># not 取反示例</span>
+is_raining = <span class="code-keyword">False</span>
+<span class="code-keyword">if not</span> is_raining:
+    <span class="code-func">print</span>(<span class="code-string">"不下雨，可以出门！"</span>)</pre>
+        </div>
+        
+        <div class="tip tip-success">
+            <span class="tip-icon">✅</span>
+            <p><strong>短路求值：</strong> <code>and</code> 如果第一个条件为False，就不检查第二个；<code>or</code> 如果第一个条件为True，就不检查第二个。这样可以避免错误。</p>
+        </div>
+        
+        <div class="code-block">
+            <pre><span class="code-comment"># 短路求值保护 - 避免除以零错误</span>
+divisor = <span class="code-number">0</span>
+value = <span class="code-number">10</span>
+
+<span class="code-comment"># 如果 divisor == 0，第二个条件不会执行，安全！</span>
+<span class="code-keyword">if</span> divisor != <span class="code-number">0</span> <span class="code-keyword">and</span> value / divisor > <span class="code-number">5</span>:
+    <span class="code-func">print</span>(<span class="code-string">"结果大于5"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"除数不能为零"</span>)</pre>
+        </div>
+    </div>
+
+    <!-- 第7节 -->
+    <div class="section" id="s7">
+        <div class="section-title"><span class="num">7</span>嵌套条件</div>
+        
+        <p>if 语句可以嵌套在另一个 if 语句内部，用于处理更复杂的逻辑。</p>
+        
+        <div class="tip tip-warn">
+            <span class="tip-icon">⚠️</span>
+            <p>嵌套不宜过深（一般不超过3层），太多嵌套会让代码难以阅读。如果嵌套过深，考虑用 <code>and</code> 合并条件或者拆分成函数。</p>
+        </div>
+        
+        <div class="code-block">
+            <pre><span class="code-comment"># 例：购票资格判断</span>
+age = <span class="code-number">25</span>
+has_ticket = <span class="code-keyword">True</span>
+is_vip = <span class="code-keyword">False</span>
+
+<span class="code-keyword">if</span> age >= <span class="code-number">18</span>:
+    <span class="code-func">print</span>(<span class="code-string">"年龄符合要求"</span>)
+    <span class="code-keyword">if</span> has_ticket:
+        <span class="code-func">print</span>(<span class="code-string">"有票，可以进场"</span>)
+        <span class="code-keyword">if</span> is_vip:
+            <span class="code-func">print</span>(<span class="code-string">"VIP通道 →"</span>)
+        <span class="code-keyword">else</span>:
+            <span class="code-func">print</span>(<span class="code-string">"普通通道 →"</span>)
+    <span class="code-keyword">else</span>:
+        <span class="code-func">print</span>(<span class="code-string">"没有票，无法进场"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"年龄不符合，未成年人谢绝入场"</span>)</pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 输出结果：</div>
+            年龄符合要求<br>
+            有票，可以进场<br>
+            普通通道 →
+        </div>
+        
+        <div class="compare">
+            <div class="compare-box bad">
+                <div class="compare-label">❌ 避免过深嵌套</div>
+                <div class="code-block" style="margin:0; padding:10px;">
+                    <pre style="font-size:0.8em;"><span class="code-keyword">if</span> a:
+    <span class="code-keyword">if</span> b:
+        <span class="code-keyword">if</span> c:
+            <span class="code-keyword">if</span> d:
+                <span class="code-func">print</span>(<span class="code-string">"太深了"</span>)</pre>
+                </div>
+            </div>
+            <div class="compare-box good">
+                <div class="compare-label">✅ 用 and 合并条件</div>
+                <div class="code-block" style="margin:0; padding:10px;">
+                    <pre style="font-size:0.8em;"><span class="code-keyword">if</span> a <span class="code-keyword">and</span> b <span class="code-keyword">and</span> c <span class="code-keyword">and</span> d:
+    <span class="code-func">print</span>(<span class="code-string">"更清晰！"</span>)</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第8节 -->
+    <div class="section" id="s8">
+        <div class="section-title"><span class="num">8</span>三元表达式（条件表达式）</div>
+        
+        <p>Python 提供了简洁的一行写法，适合简单的二选一情况。</p>
+        
+        <h3>语法格式</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 普通写法（if-else）</span>
+<span class="code-keyword">if</span> 条件:
+    结果 = 值A
+<span class="code-keyword">else</span>:
+    结果 = 值B
+
+<span class="code-comment"># 三元表达式（一行搞定）</span>
+结果 = 值A <span class="code-keyword">if</span> 条件 <span class="code-keyword">else</span> 值B</pre>
+        </div>
+        
+        <h3>实际示例</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 例1：判断奇偶</span>
+num = <span class="code-number">7</span>
+result = <span class="code-string">"偶数"</span> <span class="code-keyword">if</span> num % <span class="code-number">2</span> == <span class="code-number">0</span> <span class="code-keyword">else</span> <span class="code-string">"奇数"</span>
+<span class="code-func">print</span>(result)  <span class="code-comment"># 奇数</span>
+
+<span class="code-comment"># 例2：取两个数中的最大值</span>
+a, b = <span class="code-number">10</span>, <span class="code-number">20</span>
+max_val = a <span class="code-keyword">if</span> a > b <span class="code-keyword">else</span> b
+<span class="code-func">print</span>(<span class="code-string">f"最大值是：{max_val}"</span>)  <span class="code-comment"># 最大值是：20</span>
+
+<span class="code-comment"># 例3：显示状态</span>
+is_online = <span class="code-keyword">True</span>
+status = <span class="code-string">"在线 🟢"</span> <span class="code-keyword">if</span> is_online <span class="code-keyword">else</span> <span class="code-string">"离线 🔴"</span>
+<span class="code-func">print</span>(<span class="code-string">f"用户状态：{status}"</span>)  <span class="code-comment"># 用户状态：在线 🟢</span>
+
+<span class="code-comment"># 例4：带f-string的三元</span>
+score = <span class="code-number">75</span>
+<span class="code-func">print</span>(<span class="code-string">f"成绩{score}分，{'及格' if score >= 60 else '不及格'}"</span>)</pre>
+        </div>
+        
+        <div class="tip tip-info">
+            <span class="tip-icon">💡</span>
+            <p>三元表达式适合简单的判断，复杂逻辑还是用多行 if-else 更清晰。不要为了"酷"而牺牲可读性。</p>
+        </div>
+    </div>
+
+    <!-- 第9节：实战练习 -->
+    <div class="section" id="s9">
+        <div class="section-title"><span class="num">9</span>实战练习</div>
+        
+        <div class="exercise">
+            <div class="exercise-title">🎯 练习题（从易到难）</div>
+            <ol>
+                <li><strong>【基础】</strong> 输入一个整数，判断是正数、负数还是零</li>
+                <li><strong>【基础】</strong> 输入年份，判断是否为闰年（能被4整除且不被100整除，或能被400整除）</li>
+                <li><strong>【中级】</strong> 制作一个简单的计算器：输入两个数和运算符（+、-、*、/），输出结果</li>
+                <li><strong>【中级】</strong> BMI计算器：输入身高（米）和体重（千克），计算BMI并给出健康建议</li>
+                <li><strong>【挑战】</strong> 猜数字游戏：设定一个1-100的数字，用户输入猜测，提示"猜大了"、"猜小了"或"恭喜猜对！"</li>
+            </ol>
+        </div>
+        
+        <h3>练习1：正负零判断</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 练习1：判断正负零</span>
+num = <span class="code-func">int</span>(<span class="code-func">input</span>(<span class="code-string">"请输入一个整数："</span>))
+
+<span class="code-keyword">if</span> num > <span class="code-number">0</span>:
+    <span class="code-func">print</span>(<span class="code-string">f"{num} 是正数 ➕"</span>)
+<span class="code-keyword">elif</span> num < <span class="code-number">0</span>:
+    <span class="code-func">print</span>(<span class="code-string">f"{num} 是负数 ➖"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"这是零 ⭕"</span>)</pre>
+        </div>
+        
+        <h3>练习2：闰年判断</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 练习2：闰年判断</span>
+year = <span class="code-func">int</span>(<span class="code-func">input</span>(<span class="code-string">"请输入年份："</span>))
+
+<span class="code-comment"># 闰年条件：(能被4整除 且 不能被100整除) 或 能被400整除</span>
+<span class="code-keyword">if</span> (year % <span class="code-number">4</span> == <span class="code-number">0</span> <span class="code-keyword">and</span> year % <span class="code-number">100</span> != <span class="code-number">0</span>) <span class="code-keyword">or</span> (year % <span class="code-number">400</span> == <span class="code-number">0</span>):
+    <span class="code-func">print</span>(<span class="code-string">f"{year}年是闰年 🌙"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">f"{year}年是平年 📅"</span>)</pre>
+        </div>
+        
+        <h3>练习3：BMI计算器</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 练习3：BMI健康计算器</span>
+height = <span class="code-func">float</span>(<span class="code-func">input</span>(<span class="code-string">"请输入身高（米）："</span>))
+weight = <span class="code-func">float</span>(<span class="code-func">input</span>(<span class="code-string">"请输入体重（公斤）："</span>))
+
+bmi = weight / (height ** <span class="code-number">2</span>)
+<span class="code-func">print</span>(<span class="code-string">f"\n您的BMI指数：{bmi:.2f}"</span>)
+
+<span class="code-keyword">if</span> bmi < <span class="code-number">18.5</span>:
+    <span class="code-func">print</span>(<span class="code-string">"体重过轻 😟 建议适当增加营养"</span>)
+<span class="code-keyword">elif</span> bmi < <span class="code-number">24</span>:
+    <span class="code-func">print</span>(<span class="code-string">"体重正常 😊 继续保持健康生活方式"</span>)
+<span class="code-keyword">elif</span> bmi < <span class="code-number">28</span>:
+    <span class="code-func">print</span>(<span class="code-string">"体重偏重 😐 建议适当运动"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"肥胖 😟 建议咨询医生，调整饮食运动"</span>)</pre>
+        </div>
+        <div class="output">
+            <div class="output-label">▶ 示例输出（身高1.75m，体重70kg）：</div>
+            您的BMI指数：22.86<br>
+            体重正常 😊 继续保持健康生活方式
+        </div>
+        
+        <h3>综合挑战：猜数字游戏</h3>
+        <div class="code-block">
+            <pre><span class="code-comment"># 挑战：猜数字游戏</span>
+secret = <span class="code-number">42</span>  <span class="code-comment"># 假设答案是42</span>
+
+guess = <span class="code-func">int</span>(<span class="code-func">input</span>(<span class="code-string">"猜猜我想的数字（1-100）："</span>))
+
+<span class="code-keyword">if</span> guess < secret:
+    <span class="code-func">print</span>(<span class="code-string">"猜小了 📉，再往大猜！"</span>)
+<span class="code-keyword">elif</span> guess > secret:
+    <span class="code-func">print</span>(<span class="code-string">"猜大了 📈，再往小猜！"</span>)
+<span class="code-keyword">else</span>:
+    <span class="code-func">print</span>(<span class="code-string">"🎉 恭喜你猜对了！答案就是42！"</span>)</pre>
+        </div>
+    </div>
+    
+    <!-- 本周总结 -->
+    <div class="summary">
+        <h3>📝 本周知识总结</h3>
+        <div class="summary-grid">
+            <div class="summary-item">
+                <div class="s-title">核心语句</div>
+                <div class="s-val">if / elif / else</div>
+            </div>
+            <div class="summary-item">
+                <div class="s-title">比较运算符</div>
+                <div class="s-val">== != > < >= <=</div>
+            </div>
+            <div class="summary-item">
+                <div class="s-title">逻辑运算符</div>
+                <div class="s-val">and / or / not</div>
+            </div>
+            <div class="summary-item">
+                <div class="s-title">特殊语法</div>
+                <div class="s-val">三元表达式</div>
+            </div>
+            <div class="summary-item">
+                <div class="s-title">重点注意</div>
+                <div class="s-val">缩进 + 冒号</div>
+            </div>
+            <div class="summary-item">
+                <div class="s-title">下周预习</div>
+                <div class="s-val">循环 for &amp; while</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导航 -->
+    <div class="nav-bar">
+        <a href="python-week2.html" class="nav-btn nav-prev">← 第二周：变量与数据类型</a>
+        <a href="index.html" class="nav-btn nav-home">🏠 返回首页</a>
+        <a href="python-week4.html" class="nav-btn nav-next">第四周：循环结构 →</a>
+    </div>
+    
+</div>
+
+</body>
+</html>
