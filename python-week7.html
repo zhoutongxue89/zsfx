@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路 - 第七周：函数基础</title>
+<style>
+  :root {
+    --primary: #0984e3;
+    --secondary: #74b9ff;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --danger: #e17055;
+    --dark: #2d3436;
+    --code-bg: #1e1e2e;
+    --card-shadow: 0 4px 20px rgba(9,132,227,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'PingFang SC','Microsoft YaHei',sans-serif; background: #f0f6ff; color: var(--dark); line-height: 1.8; }
+  .hero {
+    background: linear-gradient(135deg, #0984e3 0%, #6c5ce7 50%, #00cec9 100%);
+    color: white; padding: 60px 20px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%); animation: pulse 4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  .hero .badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 4px 16px; font-size: 13px; margin-bottom: 16px; }
+  .hero h1 { font-size: 2.6em; font-weight: 800; margin-bottom: 12px; }
+  .hero p { font-size: 1.1em; opacity: 0.9; max-width: 600px; margin: 0 auto 24px; }
+  .hero-meta { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+  .hero-meta span { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 6px 16px; font-size: 14px; }
+  .toc { background: white; border-radius: 16px; padding: 24px; margin: 24px auto; max-width: 900px; box-shadow: var(--card-shadow); }
+  .toc h3 { color: var(--primary); margin-bottom: 16px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .toc-item { background: #f0f6ff; border-left: 3px solid var(--primary); border-radius: 8px; padding: 10px 14px; font-size: 14px; text-decoration: none; color: var(--dark); display: block; transition: all 0.2s; }
+  .toc-item:hover { background: var(--primary); color: white; transform: translateX(4px); }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+  .section { background: white; border-radius: 20px; padding: 36px; margin-bottom: 28px; box-shadow: var(--card-shadow); }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #f0f0f0; }
+  .section-num { background: var(--primary); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+  .section h2 { font-size: 1.5em; }
+  h3 { color: var(--primary); margin: 24px 0 12px; font-size: 1.15em; }
+  h4 { color: #555; margin: 18px 0 8px; }
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; }
+  pre { background: var(--code-bg); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; }
+  pre code { color: #cdd6f4; font-family: 'Fira Code','Consolas',monospace; font-size: 14px; line-height: 1.7; }
+  .kw { color: #cba6f7; } .fn { color: #89b4fa; } .st { color: #a6e3a1; } .cm { color: #6c7086; font-style: italic; }
+  .nm { color: #fab387; } .op { color: #89dceb; } .nb { color: #f38ba8; }
+  .tip { background: #e8f5e9; border-left: 4px solid var(--success); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .warn { background: #fff8e1; border-left: 4px solid var(--warning); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .info { background: #e8f0ff; border-left: 4px solid var(--primary); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .danger-box { background: #fdecea; border-left: 4px solid var(--danger); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 10px; overflow: hidden; }
+  th { background: var(--primary); color: white; padding: 12px 16px; text-align: left; font-size: 14px; }
+  td { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 16px 0; }
+  .card { background: #f0f6ff; border-radius: 14px; padding: 20px; border: 1px solid #c8dcff; }
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card h4 { color: var(--primary); margin: 0 0 8px; }
+  .card p { font-size: 14px; color: #555; margin: 0; }
+  code { background: #e8f0ff; color: #0056b3; border-radius: 4px; padding: 2px 6px; font-family: 'Fira Code','Consolas',monospace; font-size: 0.9em; }
+  .tag { display: inline-block; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-blue { background: #dbeafe; color: #1d4ed8; }
+  .tag-yellow { background: #fef9c3; color: #854d0e; }
+  .practice { background: linear-gradient(135deg, #e8f0ff, #f0f8ff); border-radius: 16px; padding: 24px; margin: 20px 0; border: 2px solid var(--primary); }
+  .practice h4 { color: var(--primary); margin-bottom: 14px; }
+  .breadcrumb { background: white; border-radius: 12px; padding: 12px 20px; margin: 20px auto; max-width: 900px; font-size: 14px; color: #666; box-shadow: var(--card-shadow); }
+  .breadcrumb a { color: var(--primary); text-decoration: none; }
+  .footer { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
+  .footer a { color: var(--primary); text-decoration: none; }
+  .nav-btns { display: flex; gap: 16px; justify-content: center; margin-top: 40px; }
+  .nav-btn { background: var(--primary); color: white; border-radius: 12px; padding: 12px 28px; text-decoration: none; font-weight: 600; transition: transform 0.2s; }
+  .nav-btn:hover { transform: translateY(-2px); }
+  .nav-btn.outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+  .param-types { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .param-box { border-radius: 12px; padding: 18px; }
+  .p-pos { background: #e8f5e9; border: 2px solid #00b894; }
+  .p-def { background: #e8f0ff; border: 2px solid #0984e3; }
+  .p-args { background: #fff8e1; border: 2px solid #fdcb6e; }
+  .p-kwargs { background: #f3e5f5; border: 2px solid #9c27b0; }
+  .param-box h4 { margin: 0 0 10px; font-size: 15px; }
+  .p-pos h4 { color: #00856f; }
+  .p-def h4 { color: #0056b3; }
+  .p-args h4 { color: #b07d00; }
+  .p-kwargs h4 { color: #6a1b9a; }
+  @media (max-width: 600px) { .hero h1 { font-size: 1.8em; } .section { padding: 20px; } .param-types { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">🐍 Python 学习之路 · 第7周</div>
+  <h1>函数基础</h1>
+  <p>把代码打包成可复用的工具！函数让你的代码更整洁、更高效、更专业。</p>
+  <div class="hero-meta">
+    <span>📅 第7周 / 共52周</span>
+    <span>⏱️ 建议学习 8-10 小时</span>
+    <span>🎯 难度 ★★★★☆</span>
+    <span>📌 阶段：基础语法</span>
+  </div>
+</div>
+
+<div class="breadcrumb container">
+  <a href="index.html">🏠 首页</a> &gt; <a href="index.html">Python学习之路</a> &gt; 第7周：函数基础
+</div>
+
+<div class="toc container">
+  <h3>📋 本周学习目录</h3>
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item">1. 为什么要用函数</a>
+    <a href="#s2" class="toc-item">2. 定义与调用</a>
+    <a href="#s3" class="toc-item">3. 参数详解（4种）</a>
+    <a href="#s4" class="toc-item">4. 返回值</a>
+    <a href="#s5" class="toc-item">5. 变量作用域</a>
+    <a href="#s6" class="toc-item">6. 文档字符串</a>
+    <a href="#s7" class="toc-item">7. 默认参数陷阱</a>
+    <a href="#s8" class="toc-item">8. 匿名函数lambda</a>
+    <a href="#s9" class="toc-item">9. 内置函数精选</a>
+    <a href="#s10" class="toc-item">10. 综合实战</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>为什么要用函数？</h2>
+  </div>
+  <p>想象你要计算三个圆的面积，如果不用函数：</p>
+  <pre><code><span class="cm"># ❌ 没有函数（重复代码！）</span>
+<span class="kw">import</span> math
+area1 <span class="op">=</span> math.pi <span class="op">*</span> <span class="nm">3</span> <span class="op">**</span> <span class="nm">2</span>
+area2 <span class="op">=</span> math.pi <span class="op">*</span> <span class="nm">5</span> <span class="op">**</span> <span class="nm">2</span>
+area3 <span class="op">=</span> math.pi <span class="op">*</span> <span class="nm">7</span> <span class="op">**</span> <span class="nm">2</span>
+
+<span class="cm"># ✅ 有了函数（一次定义，多次使用）</span>
+<span class="kw">def</span> <span class="fn">circle_area</span>(radius):
+    <span class="kw">return</span> math.pi <span class="op">*</span> radius <span class="op">**</span> <span class="nm">2</span>
+
+area1 <span class="op">=</span> <span class="fn">circle_area</span>(<span class="nm">3</span>)
+area2 <span class="op">=</span> <span class="fn">circle_area</span>(<span class="nm">5</span>)
+area3 <span class="op">=</span> <span class="fn">circle_area</span>(<span class="nm">7</span>)
+</code></pre>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">♻️</div>
+      <h4>代码复用</h4>
+      <p>一次定义，多次调用，杜绝复制粘贴</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🧩</div>
+      <h4>模块化</h4>
+      <p>把大问题拆成小块，每个函数只做一件事</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🐞</div>
+      <h4>易于调试</h4>
+      <p>出了bug只需要修改函数内部，一处修改全部生效</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📖</div>
+      <h4>可读性强</h4>
+      <p>好的函数名让代码读起来像英语句子</p>
+    </div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>函数的定义与调用</h2>
+  </div>
+  <div class="info">
+    <strong>语法：</strong><br>
+    <code>def 函数名(参数1, 参数2, ...):</code><br>
+    <code>&nbsp;&nbsp;&nbsp;&nbsp;"""文档字符串（可选）"""</code><br>
+    <code>&nbsp;&nbsp;&nbsp;&nbsp;函数体</code><br>
+    <code>&nbsp;&nbsp;&nbsp;&nbsp;return 返回值（可选）</code>
+  </div>
+  <pre><code><span class="cm"># 最简单的函数</span>
+<span class="kw">def</span> <span class="fn">say_hello</span>():
+    <span class="fn">print</span>(<span class="st">"Hello, World!"</span>)
+
+<span class="fn">say_hello</span>()  <span class="cm"># 调用：Hello, World!</span>
+
+<span class="cm"># 带参数的函数</span>
+<span class="kw">def</span> <span class="fn">greet</span>(name):
+    <span class="fn">print</span>(<span class="st">f"你好，{name}！"</span>)
+
+<span class="fn">greet</span>(<span class="st">"周同学"</span>)   <span class="cm"># 你好，周同学！</span>
+<span class="fn">greet</span>(<span class="st">"Python"</span>)  <span class="cm"># 你好，Python！</span>
+
+<span class="cm"># 带返回值的函数</span>
+<span class="kw">def</span> <span class="fn">add</span>(a, b):
+    result <span class="op">=</span> a <span class="op">+</span> b
+    <span class="kw">return</span> result
+
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="nm">3</span>, <span class="nm">4</span>))   <span class="cm"># 7</span>
+total <span class="op">=</span> <span class="fn">add</span>(<span class="nm">10</span>, <span class="nm">20</span>)
+<span class="fn">print</span>(total)      <span class="cm"># 30</span>
+
+<span class="cm"># 函数是对象，可以赋值给变量</span>
+my_add <span class="op">=</span> add
+<span class="fn">print</span>(<span class="fn">my_add</span>(<span class="nm">5</span>, <span class="nm">5</span>))  <span class="cm"># 10</span>
+</code></pre>
+  <div class="tip">
+    💡 <strong>命名规范：</strong>函数名用小写字母+下划线（snake_case），动词开头，如 <code>get_name()</code>、<code>calculate_tax()</code>、<code>is_valid()</code>
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>参数详解（4种类型）</h2>
+  </div>
+
+  <div class="param-types">
+    <div class="param-box p-pos">
+      <h4>① 位置参数</h4>
+      <p>按顺序传递，最基础的形式</p>
+    </div>
+    <div class="param-box p-def">
+      <h4>② 默认参数</h4>
+      <p>有默认值，不传则用默认</p>
+    </div>
+    <div class="param-box p-args">
+      <h4>③ *args 可变位置</h4>
+      <p>接收任意数量的位置参数</p>
+    </div>
+    <div class="param-box p-kwargs">
+      <h4>④ **kwargs 可变关键字</h4>
+      <p>接收任意数量的关键字参数</p>
+    </div>
+  </div>
+
+  <h3>① 位置参数 & 关键字传参</h3>
+  <pre><code><span class="kw">def</span> <span class="fn">describe_person</span>(name, age, city):
+    <span class="fn">print</span>(<span class="st">f"{name}，{age}岁，来自{city}"</span>)
+
+<span class="cm"># 位置传参（顺序必须对应）</span>
+<span class="fn">describe_person</span>(<span class="st">"小明"</span>, <span class="nm">18</span>, <span class="st">"北京"</span>)
+
+<span class="cm"># 关键字传参（顺序可以不对应）</span>
+<span class="fn">describe_person</span>(age<span class="op">=</span><span class="nm">18</span>, city<span class="op">=</span><span class="st">"北京"</span>, name<span class="op">=</span><span class="st">"小明"</span>)
+
+<span class="cm"># 混合使用（位置参数必须在关键字参数前面）</span>
+<span class="fn">describe_person</span>(<span class="st">"小明"</span>, city<span class="op">=</span><span class="st">"北京"</span>, age<span class="op">=</span><span class="nm">18</span>)
+</code></pre>
+
+  <h3>② 默认参数</h3>
+  <pre><code><span class="kw">def</span> <span class="fn">greet</span>(name, greeting<span class="op">=</span><span class="st">"你好"</span>, punctuation<span class="op">=</span><span class="st">"！"</span>):
+    <span class="fn">print</span>(<span class="st">f"{greeting}，{name}{punctuation}"</span>)
+
+<span class="fn">greet</span>(<span class="st">"小明"</span>)                           <span class="cm"># 你好，小明！</span>
+<span class="fn">greet</span>(<span class="st">"小红"</span>, <span class="st">"早上好"</span>)                  <span class="cm"># 早上好，小红！</span>
+<span class="fn">greet</span>(<span class="st">"小李"</span>, <span class="st">"晚上好"</span>, <span class="st">"~"</span>)            <span class="cm"># 晚上好，小李~</span>
+<span class="fn">greet</span>(<span class="st">"小张"</span>, punctuation<span class="op">=</span><span class="st">"^^"</span>)        <span class="cm"># 你好，小张^^</span>
+
+<span class="cm"># 实用例子：打印分隔线</span>
+<span class="kw">def</span> <span class="fn">print_line</span>(char<span class="op">=</span><span class="st">"─"</span>, length<span class="op">=</span><span class="nm">40</span>):
+    <span class="fn">print</span>(char <span class="op">*</span> length)
+
+<span class="fn">print_line</span>()             <span class="cm"># ────────────────────</span>
+<span class="fn">print_line</span>(<span class="st">"═"</span>, <span class="nm">20</span>)     <span class="cm"># ════════════════════</span>
+<span class="fn">print_line</span>(<span class="st">"*"</span>)          <span class="cm"># ****...（40个*）</span>
+</code></pre>
+
+  <h3>③ *args —— 可变位置参数</h3>
+  <pre><code><span class="kw">def</span> <span class="fn">my_sum</span>(*args):
+    <span class="fn">print</span>(<span class="st">f"接收到 {len(args)} 个参数：{args}"</span>)
+    <span class="kw">return</span> <span class="fn">sum</span>(args)
+
+<span class="fn">print</span>(<span class="fn">my_sum</span>(<span class="nm">1</span>, <span class="nm">2</span>))          <span class="cm"># 3</span>
+<span class="fn">print</span>(<span class="fn">my_sum</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>))    <span class="cm"># 10</span>
+<span class="fn">print</span>(<span class="fn">my_sum</span>(<span class="nm">10</span>))            <span class="cm"># 10</span>
+
+<span class="cm"># 混合位置参数和*args</span>
+<span class="kw">def</span> <span class="fn">print_all</span>(title, *items):
+    <span class="fn">print</span>(<span class="st">f"=== {title} ==="</span>)
+    <span class="kw">for</span> item <span class="kw">in</span> items:
+        <span class="fn">print</span>(<span class="st">f"  • {item}"</span>)
+
+<span class="fn">print_all</span>(<span class="st">"购物清单"</span>, <span class="st">"苹果"</span>, <span class="st">"牛奶"</span>, <span class="st">"面包"</span>, <span class="st">"鸡蛋"</span>)
+</code></pre>
+
+  <h3>④ **kwargs —— 可变关键字参数</h3>
+  <pre><code><span class="kw">def</span> <span class="fn">create_profile</span>(**kwargs):
+    <span class="fn">print</span>(<span class="st">"用户资料："</span>)
+    <span class="kw">for</span> key, value <span class="kw">in</span> kwargs.items():
+        <span class="fn">print</span>(<span class="st">f"  {key}: {value}"</span>)
+
+<span class="fn">create_profile</span>(name<span class="op">=</span><span class="st">"周同学"</span>, age<span class="op">=</span><span class="nm">28</span>, city<span class="op">=</span><span class="st">"北京"</span>, hobby<span class="op">=</span><span class="st">"Python"</span>)
+
+<span class="cm"># 完整参数顺序：位置 → 默认 → *args → **kwargs</span>
+<span class="kw">def</span> <span class="fn">full_example</span>(a, b, c<span class="op">=</span><span class="nm">10</span>, *args, **kwargs):
+    <span class="fn">print</span>(<span class="st">f"a={a}, b={b}, c={c}"</span>)
+    <span class="fn">print</span>(<span class="st">f"args={args}, kwargs={kwargs}"</span>)
+
+<span class="fn">full_example</span>(<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>, x<span class="op">=</span><span class="st">"hello"</span>, y<span class="op">=</span><span class="st">"world"</span>)
+</code></pre>
+</div>
+
+<!-- S4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>返回值详解</h2>
+  </div>
+  <pre><code><span class="cm"># 返回单个值</span>
+<span class="kw">def</span> <span class="fn">square</span>(n):
+    <span class="kw">return</span> n <span class="op">**</span> <span class="nm">2</span>
+
+<span class="cm"># 返回多个值（实际上是元组）</span>
+<span class="kw">def</span> <span class="fn">min_max_avg</span>(numbers):
+    <span class="kw">return</span> <span class="fn">min</span>(numbers), <span class="fn">max</span>(numbers), <span class="fn">sum</span>(numbers)<span class="op">/</span><span class="fn">len</span>(numbers)
+
+low, high, avg <span class="op">=</span> <span class="fn">min_max_avg</span>([<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">1</span>, <span class="nm">5</span>, <span class="nm">9</span>])
+<span class="fn">print</span>(<span class="st">f"最小={low}, 最大={high}, 平均={avg:.2f}"</span>)
+
+<span class="cm"># 无 return → 返回 None</span>
+<span class="kw">def</span> <span class="fn">just_print</span>(msg):
+    <span class="fn">print</span>(msg)
+    <span class="cm"># 没有return</span>
+
+result <span class="op">=</span> <span class="fn">just_print</span>(<span class="st">"hello"</span>)
+<span class="fn">print</span>(result)  <span class="cm"># None</span>
+
+<span class="cm"># 提前 return（条件不满足时）</span>
+<span class="kw">def</span> <span class="fn">divide</span>(a, b):
+    <span class="kw">if</span> b <span class="op">==</span> <span class="nm">0</span>:
+        <span class="fn">print</span>(<span class="st">"错误：除数不能为0！"</span>)
+        <span class="kw">return</span> <span class="nb">None</span>   <span class="cm"># 提前退出</span>
+    <span class="kw">return</span> a <span class="op">/</span> b
+
+<span class="fn">print</span>(<span class="fn">divide</span>(<span class="nm">10</span>, <span class="nm">2</span>))  <span class="cm"># 5.0</span>
+<span class="fn">print</span>(<span class="fn">divide</span>(<span class="nm">10</span>, <span class="nm">0</span>))  <span class="cm"># 错误提示 + None</span>
+</code></pre>
+</div>
+
+<!-- S5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>变量作用域（Scope）</h2>
+  </div>
+  <div class="info">
+    <strong>LEGB 规则：</strong>Python 按 Local → Enclosed → Global → Built-in 顺序查找变量
+  </div>
+  <pre><code><span class="cm"># 局部变量 vs 全局变量</span>
+x <span class="op">=</span> <span class="st">"全局变量"</span>
+
+<span class="kw">def</span> <span class="fn">test_scope</span>():
+    x <span class="op">=</span> <span class="st">"局部变量"</span>  <span class="cm"># 这是新的局部变量，不影响全局 x</span>
+    <span class="fn">print</span>(x)       <span class="cm"># 局部变量</span>
+
+<span class="fn">test_scope</span>()
+<span class="fn">print</span>(x)  <span class="cm"># 全局变量（未被修改）</span>
+
+<span class="cm"># global 关键字：在函数内修改全局变量</span>
+count <span class="op">=</span> <span class="nm">0</span>
+
+<span class="kw">def</span> <span class="fn">increment</span>():
+    <span class="kw">global</span> count
+    count <span class="op">+=</span> <span class="nm">1</span>
+
+<span class="fn">increment</span>()
+<span class="fn">increment</span>()
+<span class="fn">print</span>(count)  <span class="cm"># 2</span>
+</code></pre>
+  <div class="warn">
+    ⚠️ <strong>最佳实践：</strong>尽量避免使用 global，通过参数和返回值传递数据更安全！
+  </div>
+  <pre><code><span class="cm"># ❌ 不推荐：用global修改变量</span>
+total <span class="op">=</span> <span class="nm">0</span>
+<span class="kw">def</span> <span class="fn">bad_add</span>(n):
+    <span class="kw">global</span> total
+    total <span class="op">+=</span> n
+
+<span class="cm"># ✅ 推荐：通过参数和返回值</span>
+<span class="kw">def</span> <span class="fn">good_add</span>(total, n):
+    <span class="kw">return</span> total <span class="op">+</span> n
+
+total <span class="op">=</span> <span class="nm">0</span>
+total <span class="op">=</span> <span class="fn">good_add</span>(total, <span class="nm">5</span>)
+total <span class="op">=</span> <span class="fn">good_add</span>(total, <span class="nm">3</span>)
+<span class="fn">print</span>(total)  <span class="cm"># 8</span>
+</code></pre>
+</div>
+
+<!-- S6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>文档字符串（Docstring）</h2>
+  </div>
+  <p>好的函数应该有清晰的文档！文档字符串是写给其他开发者（和未来的自己）看的。</p>
+  <pre><code><span class="kw">def</span> <span class="fn">calculate_bmi</span>(weight, height):
+    <span class="st">"""
+    计算BMI（体质指数）
+    
+    BMI = 体重(kg) / 身高(m)²
+    
+    参数：
+        weight (float): 体重，单位千克（kg）
+        height (float): 身高，单位米（m）
+    
+    返回：
+        float: BMI 值，保留两位小数
+    
+    示例：
+        >>> calculate_bmi(70, 1.75)
+        22.86
+        >>> calculate_bmi(50, 1.60)
+        19.53
+    """</span>
+    <span class="kw">if</span> height <span class="op">&lt;=</span> <span class="nm">0</span> <span class="kw">or</span> weight <span class="op">&lt;=</span> <span class="nm">0</span>:
+        <span class="kw">raise</span> <span class="fn">ValueError</span>(<span class="st">"体重和身高必须为正数"</span>)
+    bmi <span class="op">=</span> weight <span class="op">/</span> (height <span class="op">**</span> <span class="nm">2</span>)
+    <span class="kw">return</span> <span class="fn">round</span>(bmi, <span class="nm">2</span>)
+
+<span class="cm"># 查看文档</span>
+<span class="fn">help</span>(calculate_bmi)
+<span class="fn">print</span>(calculate_bmi.__doc__)  <span class="cm"># 也可以直接访问</span>
+
+<span class="fn">print</span>(<span class="fn">calculate_bmi</span>(<span class="nm">70</span>, <span class="nm">1.75</span>))  <span class="cm"># 22.86</span>
+</code></pre>
+</div>
+
+<!-- S7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>默认参数陷阱</h2>
+  </div>
+  <div class="danger-box">
+    🚨 <strong>经典陷阱：默认参数使用可变对象（如list）</strong>
+  </div>
+  <pre><code><span class="cm"># ❌ 危险！默认参数是共享的</span>
+<span class="kw">def</span> <span class="fn">add_to_list</span>(item, lst<span class="op">=</span>[]):  <span class="cm"># 这个[]只创建一次！</span>
+    lst.append(item)
+    <span class="kw">return</span> lst
+
+<span class="fn">print</span>(<span class="fn">add_to_list</span>(<span class="st">"苹果"</span>))  <span class="cm"># ['苹果']</span>
+<span class="fn">print</span>(<span class="fn">add_to_list</span>(<span class="st">"香蕉"</span>))  <span class="cm"># ['苹果', '香蕉'] ← 意外！</span>
+<span class="fn">print</span>(<span class="fn">add_to_list</span>(<span class="st">"橙子"</span>))  <span class="cm"># ['苹果', '香蕉', '橙子'] ← 更意外！</span>
+
+<span class="cm"># ✅ 正确写法：使用 None 作默认值</span>
+<span class="kw">def</span> <span class="fn">add_to_list_safe</span>(item, lst<span class="op">=</span><span class="nb">None</span>):
+    <span class="kw">if</span> lst <span class="kw">is</span> <span class="nb">None</span>:
+        lst <span class="op">=</span> []    <span class="cm"># 每次调用时创建新列表</span>
+    lst.append(item)
+    <span class="kw">return</span> lst
+
+<span class="fn">print</span>(<span class="fn">add_to_list_safe</span>(<span class="st">"苹果"</span>))  <span class="cm"># ['苹果']</span>
+<span class="fn">print</span>(<span class="fn">add_to_list_safe</span>(<span class="st">"香蕉"</span>))  <span class="cm"># ['香蕉'] ← 正确！</span>
+</code></pre>
+</div>
+
+<!-- S8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>匿名函数 lambda</h2>
+  </div>
+  <p>lambda 是一种简洁的匿名函数，适合简单的单行操作。</p>
+  <div class="info">
+    <strong>语法：</strong><code>lambda 参数: 表达式</code>
+  </div>
+  <pre><code><span class="cm"># 普通函数</span>
+<span class="kw">def</span> <span class="fn">double</span>(x):
+    <span class="kw">return</span> x <span class="op">*</span> <span class="nm">2</span>
+
+<span class="cm"># 等价的 lambda</span>
+double_lambda <span class="op">=</span> <span class="kw">lambda</span> x: x <span class="op">*</span> <span class="nm">2</span>
+
+<span class="fn">print</span>(<span class="fn">double</span>(<span class="nm">5</span>))         <span class="cm"># 10</span>
+<span class="fn">print</span>(<span class="fn">double_lambda</span>(<span class="nm">5</span>))  <span class="cm"># 10</span>
+
+<span class="cm"># 多参数 lambda</span>
+add <span class="op">=</span> <span class="kw">lambda</span> x, y: x <span class="op">+</span> y
+<span class="fn">print</span>(<span class="fn">add</span>(<span class="nm">3</span>, <span class="nm">4</span>))  <span class="cm"># 7</span>
+
+<span class="cm"># lambda 的真正用武之地：排序的 key</span>
+students <span class="op">=</span> [
+    {<span class="st">"name"</span>: <span class="st">"小明"</span>, <span class="st">"score"</span>: <span class="nm">85</span>},
+    {<span class="st">"name"</span>: <span class="st">"小红"</span>, <span class="st">"score"</span>: <span class="nm">92</span>},
+    {<span class="st">"name"</span>: <span class="st">"小李"</span>, <span class="st">"score"</span>: <span class="nm">78</span>},
+]
+students.sort(key<span class="op">=</span><span class="kw">lambda</span> s: s[<span class="st">"score"</span>], reverse<span class="op">=</span><span class="nb">True</span>)
+<span class="fn">print</span>(students[<span class="nm">0</span>])  <span class="cm"># 小红 92分</span>
+
+<span class="cm"># 配合 map() 和 filter()</span>
+nums <span class="op">=</span> [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>]
+doubled <span class="op">=</span> <span class="fn">list</span>(<span class="fn">map</span>(<span class="kw">lambda</span> x: x <span class="op">*</span> <span class="nm">2</span>, nums))
+<span class="fn">print</span>(doubled)   <span class="cm"># [2, 4, 6, 8, 10]</span>
+
+evens <span class="op">=</span> <span class="fn">list</span>(<span class="fn">filter</span>(<span class="kw">lambda</span> x: x <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>, nums))
+<span class="fn">print</span>(evens)     <span class="cm"># [2, 4]</span>
+</code></pre>
+</div>
+
+<!-- S9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>常用内置函数精选</h2>
+  </div>
+  <table>
+    <tr><th>函数</th><th>说明</th><th>示例</th></tr>
+    <tr><td><code>len(x)</code></td><td>返回长度</td><td><code>len([1,2,3]) → 3</code></td></tr>
+    <tr><td><code>range()</code></td><td>生成数字序列</td><td><code>range(1, 10, 2)</code></td></tr>
+    <tr><td><code>print()</code></td><td>输出</td><td><code>print(1, 2, sep=",")</code></td></tr>
+    <tr><td><code>input()</code></td><td>获取用户输入</td><td><code>x = input("请输入：")</code></td></tr>
+    <tr><td><code>type(x)</code></td><td>获取类型</td><td><code>type(3.14) → float</code></td></tr>
+    <tr><td><code>int/float/str/bool()</code></td><td>类型转换</td><td><code>int("42") → 42</code></td></tr>
+    <tr><td><code>abs(x)</code></td><td>绝对值</td><td><code>abs(-5) → 5</code></td></tr>
+    <tr><td><code>round(x, n)</code></td><td>四舍五入</td><td><code>round(3.14159, 2) → 3.14</code></td></tr>
+    <tr><td><code>max/min()</code></td><td>最大/最小值</td><td><code>max([1,5,3]) → 5</code></td></tr>
+    <tr><td><code>sum()</code></td><td>求和</td><td><code>sum([1,2,3]) → 6</code></td></tr>
+    <tr><td><code>sorted()</code></td><td>排序返回新列表</td><td><code>sorted([3,1,2])</code></td></tr>
+    <tr><td><code>enumerate()</code></td><td>枚举（索引+值）</td><td><code>for i,v in enumerate(lst)</code></td></tr>
+    <tr><td><code>zip()</code></td><td>并行遍历多个序列</td><td><code>zip([1,2], ['a','b'])</code></td></tr>
+    <tr><td><code>map(func, iter)</code></td><td>对每个元素应用函数</td><td><code>map(str, [1,2,3])</code></td></tr>
+    <tr><td><code>filter(func, iter)</code></td><td>过滤元素</td><td><code>filter(None, [0,1,2])</code></td></tr>
+    <tr><td><code>any(iter)</code></td><td>任一为真则真</td><td><code>any([0, 0, 1]) → True</code></td></tr>
+    <tr><td><code>all(iter)</code></td><td>全部为真才真</td><td><code>all([1, 1, 0]) → False</code></td></tr>
+  </table>
+</div>
+
+<!-- S10 -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2>综合实战</h2>
+  </div>
+
+  <div class="practice">
+    <h4>🎯 实战：函数式计算器</h4>
+  </div>
+  <pre><code><span class="kw">def</span> <span class="fn">add</span>(a, b): <span class="kw">return</span> a <span class="op">+</span> b
+<span class="kw">def</span> <span class="fn">subtract</span>(a, b): <span class="kw">return</span> a <span class="op">-</span> b
+<span class="kw">def</span> <span class="fn">multiply</span>(a, b): <span class="kw">return</span> a <span class="op">*</span> b
+<span class="kw">def</span> <span class="fn">divide</span>(a, b):
+    <span class="kw">if</span> b <span class="op">==</span> <span class="nm">0</span>: <span class="kw">return</span> <span class="st">"除数不能为0"</span>
+    <span class="kw">return</span> a <span class="op">/</span> b
+
+operations <span class="op">=</span> {
+    <span class="st">"+"</span>: add,
+    <span class="st">"-"</span>: subtract,
+    <span class="st">"*"</span>: multiply,
+    <span class="st">"/"</span>: divide,
+}
+
+<span class="kw">def</span> <span class="fn">calculator</span>(expression):
+    <span class="st">"""
+    计算简单的四则运算表达式
+    示例：calculator("10 + 5") → 15
+    """</span>
+    parts <span class="op">=</span> expression.split()
+    <span class="kw">if</span> <span class="fn">len</span>(parts) <span class="op">!=</span> <span class="nm">3</span>:
+        <span class="kw">return</span> <span class="st">"格式错误，请用'数字 运算符 数字'格式"</span>
+    a, op, b <span class="op">=</span> parts
+    <span class="kw">if</span> op <span class="kw">not in</span> operations:
+        <span class="kw">return</span> <span class="st">f"不支持的运算符：{op}"</span>
+    <span class="kw">try</span>:
+        <span class="kw">return</span> operations[op](<span class="fn">float</span>(a), <span class="fn">float</span>(b))
+    <span class="kw">except</span> ValueError:
+        <span class="kw">return</span> <span class="st">"请输入有效的数字"</span>
+
+<span class="cm"># 测试</span>
+<span class="kw">for</span> expr <span class="kw">in</span> [<span class="st">"10 + 5"</span>, <span class="st">"20 - 8"</span>, <span class="st">"6 * 7"</span>, <span class="st">"15 / 4"</span>, <span class="st">"9 / 0"</span>]:
+    <span class="fn">print</span>(<span class="st">f"{expr} = {calculator(expr)}"</span>)
+</code></pre>
+
+  <table>
+    <tr><th>知识点</th><th>核心要点</th><th>掌握度</th></tr>
+    <tr><td>函数定义</td><td>def 函数名(参数): + return</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>位置参数</td><td>按顺序传递</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>默认参数</td><td>有默认值，可以不传</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>*args</td><td>接收任意数量位置参数</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>**kwargs</td><td>接收任意数量关键字参数</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>返回值</td><td>return，可多值，None表示无返回</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>作用域</td><td>函数内局部变量不影响外部</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>lambda</td><td>简短匿名函数</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>文档字符串</td><td>三引号写在函数第一行</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+  </table>
+
+  <div class="tip">
+    🚀 <strong>第八周预告：</strong>字符串进阶与文件操作 —— 字符串方法大全 + 读写文件！这是编程中最常见的操作之一。
+  </div>
+
+  <div class="nav-btns">
+    <a href="python-week6.html" class="nav-btn outline">← 第六周</a>
+    <a href="index.html" class="nav-btn outline">🏠 首页</a>
+    <a href="python-week8.html" class="nav-btn">第八周 →</a>
+  </div>
+</div>
+</div>
+
+<div class="footer">
+  <p>🐍 Python 学习之路 · 第7周 · 函数基础</p>
+  <p style="margin-top:8px"><a href="index.html">返回首页</a> · 持续学习，每天进步一点点！</p>
+</div>
+</body>
+</html>
