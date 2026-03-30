@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路 - 第八周：字符串进阶与文件操作</title>
+<style>
+  :root {
+    --primary: #6c5ce7;
+    --secondary: #a29bfe;
+    --accent: #fd79a8;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --danger: #e17055;
+    --dark: #2d3436;
+    --code-bg: #1e1e2e;
+    --card-shadow: 0 4px 20px rgba(108,92,231,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'PingFang SC','Microsoft YaHei',sans-serif; background: #f3f0ff; color: var(--dark); line-height: 1.8; }
+  .hero {
+    background: linear-gradient(135deg, #6c5ce7 0%, #e17055 50%, #fdcb6e 100%);
+    color: white; padding: 60px 20px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%); animation: pulse 4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  .hero .badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 4px 16px; font-size: 13px; margin-bottom: 16px; }
+  .hero h1 { font-size: 2.6em; font-weight: 800; margin-bottom: 12px; }
+  .hero p { font-size: 1.1em; opacity: 0.9; max-width: 600px; margin: 0 auto 24px; }
+  .hero-meta { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+  .hero-meta span { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 6px 16px; font-size: 14px; }
+  .toc { background: white; border-radius: 16px; padding: 24px; margin: 24px auto; max-width: 900px; box-shadow: var(--card-shadow); }
+  .toc h3 { color: var(--primary); margin-bottom: 16px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .toc-item { background: #f3f0ff; border-left: 3px solid var(--primary); border-radius: 8px; padding: 10px 14px; font-size: 14px; text-decoration: none; color: var(--dark); display: block; transition: all 0.2s; }
+  .toc-item:hover { background: var(--primary); color: white; transform: translateX(4px); }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+  .section { background: white; border-radius: 20px; padding: 36px; margin-bottom: 28px; box-shadow: var(--card-shadow); }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #f0f0f0; }
+  .section-num { background: var(--primary); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+  .section h2 { font-size: 1.5em; }
+  h3 { color: var(--primary); margin: 24px 0 12px; font-size: 1.15em; }
+  h4 { color: #555; margin: 18px 0 8px; }
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; }
+  pre { background: var(--code-bg); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; }
+  pre code { color: #cdd6f4; font-family: 'Fira Code','Consolas',monospace; font-size: 14px; line-height: 1.7; }
+  .kw { color: #cba6f7; } .fn { color: #89b4fa; } .st { color: #a6e3a1; } .cm { color: #6c7086; font-style: italic; }
+  .nm { color: #fab387; } .op { color: #89dceb; } .nb { color: #f38ba8; }
+  .tip { background: #e8f5e9; border-left: 4px solid var(--success); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .warn { background: #fff8e1; border-left: 4px solid var(--warning); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .info { background: #f3f0ff; border-left: 4px solid var(--primary); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .danger-box { background: #fdecea; border-left: 4px solid var(--danger); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 10px; overflow: hidden; }
+  th { background: var(--primary); color: white; padding: 12px 16px; text-align: left; font-size: 14px; }
+  td { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 16px 0; }
+  .card { background: #f3f0ff; border-radius: 14px; padding: 20px; border: 1px solid #d8d1ff; }
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card h4 { color: var(--primary); margin: 0 0 8px; }
+  .card p { font-size: 14px; color: #555; margin: 0; }
+  code { background: #f3f0ff; color: #5b21b6; border-radius: 4px; padding: 2px 6px; font-family: 'Fira Code','Consolas',monospace; font-size: 0.9em; }
+  .tag { display: inline-block; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-blue { background: #dbeafe; color: #1d4ed8; }
+  .tag-yellow { background: #fef9c3; color: #854d0e; }
+  .practice { background: linear-gradient(135deg, #f3f0ff, #fff0f8); border-radius: 16px; padding: 24px; margin: 20px 0; border: 2px solid var(--primary); }
+  .practice h4 { color: var(--primary); margin-bottom: 14px; }
+  .breadcrumb { background: white; border-radius: 12px; padding: 12px 20px; margin: 20px auto; max-width: 900px; font-size: 14px; color: #666; box-shadow: var(--card-shadow); }
+  .breadcrumb a { color: var(--primary); text-decoration: none; }
+  .footer { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
+  .footer a { color: var(--primary); text-decoration: none; }
+  .nav-btns { display: flex; gap: 16px; justify-content: center; margin-top: 40px; }
+  .nav-btn { background: var(--primary); color: white; border-radius: 12px; padding: 12px 28px; text-decoration: none; font-weight: 600; transition: transform 0.2s; }
+  .nav-btn:hover { transform: translateY(-2px); }
+  .nav-btn.outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+  .method-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  .method-card { background: #f8f6ff; border: 1px solid #d8d1ff; border-radius: 12px; padding: 16px; }
+  .method-card .method-name { background: var(--primary); color: white; border-radius: 6px; padding: 3px 10px; font-size: 13px; font-family: monospace; display: inline-block; margin-bottom: 8px; }
+  .method-card p { font-size: 13px; color: #555; margin: 4px 0 0; }
+  .method-card .example { font-size: 12px; color: #888; font-family: monospace; background: #f0f0f0; border-radius: 4px; padding: 3px 8px; margin-top: 6px; display: block; }
+  .file-mode { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 16px 0; }
+  .mode-card { border-radius: 10px; padding: 14px; text-align: center; }
+  .mode-r { background: #e8f5e9; border: 2px solid #00b894; }
+  .mode-w { background: #fff8e1; border: 2px solid #fdcb6e; }
+  .mode-a { background: #e8f0ff; border: 2px solid #0984e3; }
+  .mode-rb { background: #fce4ec; border: 2px solid #e91e63; }
+  .mode-card .mode-key { font-size: 24px; font-weight: 800; margin-bottom: 6px; }
+  .mode-r .mode-key { color: #00856f; }
+  .mode-w .mode-key { color: #b07d00; }
+  .mode-a .mode-key { color: #0056b3; }
+  .mode-rb .mode-key { color: #c2185b; }
+  .mode-card p { font-size: 13px; margin: 0; }
+  @media (max-width: 600px) { .hero h1 { font-size: 1.8em; } .section { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">🐍 Python 学习之路 · 第8周</div>
+  <h1>字符串进阶与文件操作</h1>
+  <p>掌握字符串的全部技巧，学会读写文件 —— 让程序与真实世界交互！</p>
+  <div class="hero-meta">
+    <span>📅 第8周 / 共52周</span>
+    <span>⏱️ 建议学习 8-10 小时</span>
+    <span>🎯 难度 ★★★★☆</span>
+    <span>📌 阶段：基础语法（收尾）</span>
+  </div>
+</div>
+
+<div class="breadcrumb container">
+  <a href="index.html">🏠 首页</a> &gt; <a href="index.html">Python学习之路</a> &gt; 第8周：字符串进阶与文件操作
+</div>
+
+<div class="toc container">
+  <h3>📋 本周学习目录</h3>
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item">1. 字符串基础回顾</a>
+    <a href="#s2" class="toc-item">2. 字符串方法大全</a>
+    <a href="#s3" class="toc-item">3. 格式化输出</a>
+    <a href="#s4" class="toc-item">4. 字符串切片与操作</a>
+    <a href="#s5" class="toc-item">5. 正则表达式入门</a>
+    <a href="#s6" class="toc-item">6. 文件读写基础</a>
+    <a href="#s7" class="toc-item">7. with语句</a>
+    <a href="#s8" class="toc-item">8. 文件路径处理</a>
+    <a href="#s9" class="toc-item">9. CSV文件处理</a>
+    <a href="#s10" class="toc-item">10. 综合实战</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>字符串基础回顾</h2>
+  </div>
+  <p>字符串（str）是 Python 中最常用的数据类型，存储文本数据。字符串是<strong>不可变的有序序列</strong>。</p>
+  <pre><code><span class="cm"># 创建字符串的各种方式</span>
+s1 <span class="op">=</span> <span class="st">'单引号'</span>
+s2 <span class="op">=</span> <span class="st">"双引号"</span>
+s3 <span class="op">=</span> <span class="st">"""三引号
+可以换行"""</span>
+s4 <span class="op">=</span> <span class="st">r"C:\Users\test"</span>   <span class="cm"># 原始字符串，\不转义</span>
+s5 <span class="op">=</span> <span class="st">f"2+2={2+2}"</span>         <span class="cm"># f-string（Python 3.6+）</span>
+s6 <span class="op">=</span> <span class="st">b"bytes string"</span>       <span class="cm"># 字节字符串</span>
+
+<span class="cm"># 字符串拼接</span>
+first <span class="op">=</span> <span class="st">"Hello"</span>
+last <span class="op">=</span> <span class="st">"World"</span>
+full <span class="op">=</span> first <span class="op">+</span> <span class="st">", "</span> <span class="op">+</span> last <span class="op">+</span> <span class="st">"!"</span>  <span class="cm"># Hello, World!</span>
+
+<span class="cm"># 字符串重复</span>
+<span class="fn">print</span>(<span class="st">"Ha"</span> <span class="op">*</span> <span class="nm">3</span>)   <span class="cm"># HaHaHa</span>
+<span class="fn">print</span>(<span class="st">"="</span> <span class="op">*</span> <span class="nm">40</span>)  <span class="cm"># 40个等号</span>
+
+<span class="cm"># 索引和切片（和列表完全一样）</span>
+text <span class="op">=</span> <span class="st">"Python"</span>
+<span class="fn">print</span>(text[<span class="nm">0</span>])     <span class="cm"># P</span>
+<span class="fn">print</span>(text[-<span class="nm">1</span>])    <span class="cm"># n</span>
+<span class="fn">print</span>(text[:<span class="nm">3</span>])    <span class="cm"># Pyt</span>
+<span class="fn">print</span>(text[::-<span class="nm">1</span>])  <span class="cm"># nohtyP（反转）</span>
+
+<span class="cm"># 字符串是不可变的！</span>
+<span class="cm"># text[0] = "J"  # 报错！TypeError</span>
+</code></pre>
+</div>
+
+<!-- S2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>字符串方法大全（25+个）</h2>
+  </div>
+
+  <h3>大小写转换</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">upper()</span>
+      <p>全部大写</p>
+      <span class="example">"hello".upper() → "HELLO"</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">lower()</span>
+      <p>全部小写</p>
+      <span class="example">"HELLO".lower() → "hello"</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">title()</span>
+      <p>每个单词首字母大写</p>
+      <span class="example">"hello world".title() → "Hello World"</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">capitalize()</span>
+      <p>首字母大写</p>
+      <span class="example">"hello world".capitalize() → "Hello world"</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">swapcase()</span>
+      <p>大小写互换</p>
+      <span class="example">"Hello".swapcase() → "hELLO"</span>
+    </div>
+  </div>
+
+  <h3>查找与替换</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">find(sub)</span>
+      <p>找子串，返回索引，不存在返回-1</p>
+      <span class="example">"hello".find("ll") → 2</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">index(sub)</span>
+      <p>找子串，不存在抛出ValueError</p>
+      <span class="example">"hello".index("e") → 1</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">count(sub)</span>
+      <p>统计子串出现次数</p>
+      <span class="example">"banana".count("a") → 3</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">replace(old, new)</span>
+      <p>替换子串</p>
+      <span class="example">"a-b-c".replace("-", "/") → "a/b/c"</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">startswith(prefix)</span>
+      <p>是否以prefix开头</p>
+      <span class="example">"Python".startswith("Py") → True</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">endswith(suffix)</span>
+      <p>是否以suffix结尾</p>
+      <span class="example">"test.py".endswith(".py") → True</span>
+    </div>
+  </div>
+
+  <h3>空白处理</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">strip()</span>
+      <p>去除两端空白字符</p>
+      <span class="example">"  hello  ".strip() → "hello"</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">lstrip()</span>
+      <p>去除左端空白</p>
+      <span class="example">"  hello  ".lstrip() → "hello  "</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">rstrip()</span>
+      <p>去除右端空白</p>
+      <span class="example">"  hello  ".rstrip() → "  hello"</span>
+    </div>
+  </div>
+
+  <h3>分割与合并</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">split(sep)</span>
+      <p>分割字符串为列表</p>
+      <span class="example">"a,b,c".split(",") → ["a","b","c"]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">splitlines()</span>
+      <p>按换行符分割</p>
+      <span class="example">"a\nb\nc".splitlines() → ["a","b","c"]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">join(iterable)</span>
+      <p>用字符串连接序列</p>
+      <span class="example">",".join(["a","b","c"]) → "a,b,c"</span>
+    </div>
+  </div>
+
+  <h3>判断类方法</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">isdigit()</span>
+      <p>是否全为数字</p>
+      <span class="example">"123".isdigit() → True</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">isalpha()</span>
+      <p>是否全为字母</p>
+      <span class="example">"abc".isalpha() → True</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">isalnum()</span>
+      <p>是否全为字母或数字</p>
+      <span class="example">"abc123".isalnum() → True</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">isspace()</span>
+      <p>是否全为空白字符</p>
+      <span class="example">"   ".isspace() → True</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">isupper()/islower()</span>
+      <p>是否全大写/小写</p>
+      <span class="example">"ABC".isupper() → True</span>
+    </div>
+  </div>
+
+  <h3>填充与对齐</h3>
+  <pre><code><span class="cm"># 填充与对齐</span>
+<span class="fn">print</span>(<span class="st">"hello"</span>.ljust(<span class="nm">10</span>, <span class="st">"-"</span>))   <span class="cm"># hello-----（左对齐）</span>
+<span class="fn">print</span>(<span class="st">"hello"</span>.rjust(<span class="nm">10</span>, <span class="st">"-"</span>))   <span class="cm"># -----hello（右对齐）</span>
+<span class="fn">print</span>(<span class="st">"hello"</span>.center(<span class="nm">11</span>, <span class="st">"-"</span>))  <span class="cm"># ---hello---（居中）</span>
+<span class="fn">print</span>(<span class="st">"42"</span>.zfill(<span class="nm">6</span>))             <span class="cm"># 000042（补零）</span>
+
+<span class="cm"># 实用：制作表格</span>
+data <span class="op">=</span> [(<span class="st">"小明"</span>, <span class="nm">85</span>, <span class="st">"优"</span>), (<span class="st">"小红"</span>, <span class="nm">92</span>, <span class="st">"优"</span>), (<span class="st">"小李"</span>, <span class="nm">78</span>, <span class="st">"良"</span>)]
+<span class="fn">print</span>(<span class="st">f"{'姓名':^6} {'成绩':^6} {'等级':^6}"</span>)
+<span class="fn">print</span>(<span class="st">"─"</span> <span class="op">*</span> <span class="nm">24</span>)
+<span class="kw">for</span> name, score, grade <span class="kw">in</span> data:
+    <span class="fn">print</span>(<span class="st">f"{name:^6} {score:^6} {grade:^6}"</span>)
+</code></pre>
+</div>
+
+<!-- S3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>格式化输出（3种方式）</h2>
+  </div>
+  <pre><code>name <span class="op">=</span> <span class="st">"周同学"</span>
+score <span class="op">=</span> <span class="nm">98.5</span>
+rank <span class="op">=</span> <span class="nm">1</span>
+
+<span class="cm"># 方式1：% 格式化（老写法，了解即可）</span>
+<span class="fn">print</span>(<span class="st">"姓名：%s，成绩：%.1f，排名：%d"</span> <span class="op">%</span> (name, score, rank))
+
+<span class="cm"># 方式2：str.format()（Python 2.7+）</span>
+<span class="fn">print</span>(<span class="st">"姓名：{}，成绩：{:.1f}，排名：{}"</span>.<span class="fn">format</span>(name, score, rank))
+<span class="fn">print</span>(<span class="st">"姓名：{name}，成绩：{score:.2f}"</span>.<span class="fn">format</span>(name<span class="op">=</span>name, score<span class="op">=</span>score))
+
+<span class="cm"># 方式3：f-string（Python 3.6+，推荐！）</span>
+<span class="fn">print</span>(<span class="st">f"姓名：{name}，成绩：{score:.1f}，排名：{rank}"</span>)
+<span class="fn">print</span>(<span class="st">f"成绩是否优秀：{score >= 90}"</span>)  <span class="cm"># 可以放表达式</span>
+<span class="fn">print</span>(<span class="st">f"{name!r}"</span>)                    <span class="cm"># 带引号的repr</span>
+
+<span class="cm"># f-string 格式说明符</span>
+pi <span class="op">=</span> <span class="nm">3.14159265</span>
+<span class="fn">print</span>(<span class="st">f"{pi:.2f}"</span>)      <span class="cm"># 3.14（两位小数）</span>
+<span class="fn">print</span>(<span class="st">f"{pi:.4f}"</span>)      <span class="cm"># 3.1416（四位小数）</span>
+<span class="fn">print</span>(<span class="st">f"{pi:10.2f}"</span>)    <span class="cm"># '      3.14'（宽度10，右对齐）</span>
+<span class="fn">print</span>(<span class="st">f"{pi:<10.2f}"</span>)   <span class="cm"># '3.14      '（左对齐）</span>
+
+num <span class="op">=</span> <span class="nm">1234567</span>
+<span class="fn">print</span>(<span class="st">f"{num:,}"</span>)        <span class="cm"># 1,234,567（千位分隔符）</span>
+<span class="fn">print</span>(<span class="st">f"{0.85:.1%}"</span>)     <span class="cm"># 85.0%（百分比）</span>
+<span class="fn">print</span>(<span class="st">f"{255:08b}"</span>)      <span class="cm"># 11111111（二进制，8位补零）</span>
+<span class="fn">print</span>(<span class="st">f"{255:02x}"</span>)      <span class="cm"># ff（十六进制）</span>
+</code></pre>
+</div>
+
+<!-- S4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>字符串切片与高级操作</h2>
+  </div>
+  <pre><code><span class="cm"># 常用字符串处理技巧</span>
+
+<span class="cm"># 1. 分割和重新组合</span>
+csv_line <span class="op">=</span> <span class="st">"小明,85,北京,2024"</span>
+parts <span class="op">=</span> csv_line.split(<span class="st">","</span>)
+name, score, city, year <span class="op">=</span> parts
+<span class="fn">print</span>(<span class="st">f"{name} 来自{city}，成绩{score}"</span>)
+
+<span class="cm"># 2. 清理用户输入</span>
+user_input <span class="op">=</span> <span class="st">"  Hello World!  "</span>
+clean <span class="op">=</span> user_input.strip().lower().replace(<span class="st">"!"</span>, <span class="st">""</span>)
+<span class="fn">print</span>(clean)  <span class="cm"># "hello world"</span>
+
+<span class="cm"># 3. 检查邮箱格式（简单版）</span>
+<span class="kw">def</span> <span class="fn">is_valid_email</span>(email):
+    email <span class="op">=</span> email.strip()
+    <span class="kw">return</span> <span class="st">"@"</span> <span class="kw">in</span> email <span class="kw">and</span> <span class="st">"."</span> <span class="kw">in</span> email.split(<span class="st">"@"</span>)[<span class="nm">1</span>]
+
+<span class="fn">print</span>(<span class="fn">is_valid_email</span>(<span class="st">"user@example.com"</span>))   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">is_valid_email</span>(<span class="st">"invalid-email"</span>))         <span class="cm"># False</span>
+
+<span class="cm"># 4. 多行字符串处理</span>
+poem <span class="op">=</span> <span class="st">"""
+春眠不觉晓，
+处处闻啼鸟。
+夜来风雨声，
+花落知多少。
+"""</span>
+lines <span class="op">=</span> [line.strip() <span class="kw">for</span> line <span class="kw">in</span> poem.strip().splitlines()]
+<span class="fn">print</span>(<span class="st">"\n"</span>.join(lines))
+
+<span class="cm"># 5. 字符串与列表互转</span>
+sentence <span class="op">=</span> <span class="st">"the quick brown fox"</span>
+words <span class="op">=</span> sentence.split()             <span class="cm"># 字符串→列表</span>
+reversed_sentence <span class="op">=</span> <span class="st">" "</span>.join(reversed(words))  <span class="cm"># 单词倒序</span>
+<span class="fn">print</span>(reversed_sentence)  <span class="cm"># fox brown quick the</span>
+</code></pre>
+</div>
+
+<!-- S5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>正则表达式入门</h2>
+  </div>
+  <p>正则表达式是处理文本的超级工具，用特殊语法匹配字符串模式。</p>
+  <pre><code><span class="kw">import</span> re
+
+text <span class="op">=</span> <span class="st">"我的电话是 138-1234-5678，邮箱是 test@example.com"</span>
+
+<span class="cm"># re.search()：搜索第一个匹配</span>
+phone_pattern <span class="op">=</span> <span class="st">r"\d{3}-\d{4}-\d{4}"</span>
+match <span class="op">=</span> re.search(phone_pattern, text)
+<span class="kw">if</span> match:
+    <span class="fn">print</span>(<span class="st">f"电话号码：{match.group()}"</span>)  <span class="cm"># 138-1234-5678</span>
+
+<span class="cm"># re.findall()：找所有匹配</span>
+numbers <span class="op">=</span> re.findall(<span class="st">r"\d+"</span>, text)
+<span class="fn">print</span>(<span class="st">f"所有数字：{numbers}"</span>)  <span class="cm"># ['138', '1234', '5678']</span>
+
+<span class="cm"># re.sub()：替换</span>
+censored <span class="op">=</span> re.sub(<span class="st">r"\d{3}-\d{4}-\d{4}"</span>, <span class="st">"***-****-****"</span>, text)
+<span class="fn">print</span>(censored)
+
+<span class="cm"># 常用正则语法</span>
+<span class="cm"># \d  → 数字 [0-9]</span>
+<span class="cm"># \w  → 单词字符 [a-zA-Z0-9_]</span>
+<span class="cm"># \s  → 空白字符</span>
+<span class="cm"># .   → 任意字符（除换行）</span>
+<span class="cm"># +   → 1个或多个</span>
+<span class="cm"># *   → 0个或多个</span>
+<span class="cm"># ?   → 0个或1个</span>
+<span class="cm"># {n} → 恰好n个</span>
+<span class="cm"># ^   → 开头</span>
+<span class="cm"># $   → 结尾</span>
+
+<span class="cm"># 验证手机号</span>
+<span class="kw">def</span> <span class="fn">is_valid_phone</span>(phone):
+    pattern <span class="op">=</span> <span class="st">r"^1[3-9]\d{9}$"</span>
+    <span class="kw">return</span> <span class="nb">bool</span>(re.match(pattern, phone))
+
+<span class="fn">print</span>(<span class="fn">is_valid_phone</span>(<span class="st">"13812345678"</span>))  <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">is_valid_phone</span>(<span class="st">"12345"</span>))         <span class="cm"># False</span>
+</code></pre>
+</div>
+
+<!-- S6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>文件读写基础</h2>
+  </div>
+  <h3>文件打开模式</h3>
+  <div class="file-mode">
+    <div class="mode-card mode-r">
+      <div class="mode-key">"r"</div>
+      <p><strong>只读</strong><br>文件必须存在</p>
+    </div>
+    <div class="mode-card mode-w">
+      <div class="mode-key">"w"</div>
+      <p><strong>只写</strong><br>覆盖（创建新文件）</p>
+    </div>
+    <div class="mode-card mode-a">
+      <div class="mode-key">"a"</div>
+      <p><strong>追加</strong><br>在末尾添加</p>
+    </div>
+    <div class="mode-card mode-rb">
+      <div class="mode-key">"r+"</div>
+      <p><strong>读写</strong><br>文件必须存在</p>
+    </div>
+  </div>
+
+  <pre><code><span class="cm"># 写入文件</span>
+file <span class="op">=</span> <span class="fn">open</span>(<span class="st">"test.txt"</span>, <span class="st">"w"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>)
+file.write(<span class="st">"第一行内容\n"</span>)
+file.write(<span class="st">"第二行内容\n"</span>)
+file.close()  <span class="cm"># 必须关闭！</span>
+
+<span class="cm"># 读取整个文件</span>
+file <span class="op">=</span> <span class="fn">open</span>(<span class="st">"test.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>)
+content <span class="op">=</span> file.read()
+file.close()
+<span class="fn">print</span>(content)
+
+<span class="cm"># 逐行读取</span>
+file <span class="op">=</span> <span class="fn">open</span>(<span class="st">"test.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>)
+<span class="kw">for</span> line <span class="kw">in</span> file:
+    <span class="fn">print</span>(line.rstrip())  <span class="cm"># rstrip去掉行尾换行符</span>
+file.close()
+
+<span class="cm"># 读取所有行为列表</span>
+file <span class="op">=</span> <span class="fn">open</span>(<span class="st">"test.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>)
+lines <span class="op">=</span> file.readlines()
+file.close()
+<span class="fn">print</span>(lines)  <span class="cm"># ['第一行内容\n', '第二行内容\n']</span>
+</code></pre>
+  <div class="warn">
+    ⚠️ 手动 open 必须手动 close！否则文件句柄泄漏。推荐用 with 语句（下节）。
+  </div>
+</div>
+
+<!-- S7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>with 语句（推荐写法）</h2>
+  </div>
+  <p>with 语句会自动关闭文件，即使发生异常也不会忘记关闭！</p>
+  <pre><code><span class="cm"># 写文件</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"notes.txt"</span>, <span class="st">"w"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+    f.write(<span class="st">"Python 学习笔记\n"</span>)
+    f.write(<span class="st">"第八周：文件操作\n"</span>)
+    f.writelines([<span class="st">"字符串处理\n"</span>, <span class="st">"正则表达式\n"</span>])
+<span class="cm"># 出了 with 块，文件自动关闭</span>
+
+<span class="cm"># 读文件</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"notes.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+    content <span class="op">=</span> f.read()
+    <span class="fn">print</span>(content)
+
+<span class="cm"># 追加写入</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"notes.txt"</span>, <span class="st">"a"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+    f.write(<span class="st">"文件操作完成！\n"</span>)
+
+<span class="cm"># 同时打开多个文件（Python 3.1+）</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"input.txt"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> fin, \
+     <span class="fn">open</span>(<span class="st">"output.txt"</span>, <span class="st">"w"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> fout:
+    <span class="kw">for</span> line <span class="kw">in</span> fin:
+        fout.write(line.upper())  <span class="cm"># 全部转大写写入output</span>
+</code></pre>
+  <div class="tip">
+    💡 <strong>encoding 参数：</strong>Windows 默认编码是 GBK，如果文件包含中文，<strong>必须指定</strong> encoding="utf-8"，否则会乱码！
+  </div>
+</div>
+
+<!-- S8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>文件路径处理（pathlib）</h2>
+  </div>
+  <pre><code><span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">import</span> os
+
+<span class="cm"># 推荐：使用 pathlib（Python 3.4+）</span>
+p <span class="op">=</span> Path(<span class="st">"my_folder/data.txt"</span>)
+
+<span class="cm"># 路径信息</span>
+<span class="fn">print</span>(p.name)        <span class="cm"># data.txt（文件名）</span>
+<span class="fn">print</span>(p.stem)        <span class="cm"># data（不含扩展名）</span>
+<span class="fn">print</span>(p.suffix)      <span class="cm"># .txt（扩展名）</span>
+<span class="fn">print</span>(p.parent)      <span class="cm"># my_folder（父目录）</span>
+<span class="fn">print</span>(p.is_file())   <span class="cm"># 是否是文件</span>
+<span class="fn">print</span>(p.is_dir())    <span class="cm"># 是否是目录</span>
+<span class="fn">print</span>(p.exists())    <span class="cm"># 是否存在</span>
+
+<span class="cm"># 路径拼接（用 / 运算符！跨平台安全）</span>
+base <span class="op">=</span> Path(<span class="st">"C:/Users/zhou"</span>)
+file_path <span class="op">=</span> base <span class="op">/</span> <span class="st">"documents"</span> <span class="op">/</span> <span class="st">"notes.txt"</span>
+<span class="fn">print</span>(file_path)  <span class="cm"># C:\Users\zhou\documents\notes.txt</span>
+
+<span class="cm"># 创建目录</span>
+Path(<span class="st">"new_folder"</span>).mkdir(exist_ok<span class="op">=</span><span class="nb">True</span>)
+
+<span class="cm"># 遍历目录下的所有 .txt 文件</span>
+<span class="kw">for</span> txt_file <span class="kw">in</span> Path(<span class="st">"."</span>).glob(<span class="st">"*.txt"</span>):
+    <span class="fn">print</span>(txt_file)
+
+<span class="cm"># 读写文件（pathlib 自带）</span>
+p <span class="op">=</span> Path(<span class="st">"test.txt"</span>)
+p.write_text(<span class="st">"hello world"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>)
+content <span class="op">=</span> p.read_text(encoding<span class="op">=</span><span class="st">"utf-8"</span>)
+<span class="fn">print</span>(content)
+</code></pre>
+</div>
+
+<!-- S9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>CSV 文件处理</h2>
+  </div>
+  <p>CSV（逗号分隔值）是最常见的数据文件格式，Excel 可以直接打开。</p>
+  <pre><code><span class="kw">import</span> csv
+
+<span class="cm"># 写入 CSV</span>
+students <span class="op">=</span> [
+    [<span class="st">"姓名"</span>, <span class="st">"成绩"</span>, <span class="st">"城市"</span>],
+    [<span class="st">"小明"</span>, <span class="nm">85</span>, <span class="st">"北京"</span>],
+    [<span class="st">"小红"</span>, <span class="nm">92</span>, <span class="st">"上海"</span>],
+    [<span class="st">"小李"</span>, <span class="nm">78</span>, <span class="st">"广州"</span>],
+]
+
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"students.csv"</span>, <span class="st">"w"</span>, newline<span class="op">=</span><span class="st">""</span>, encoding<span class="op">=</span><span class="st">"utf-8-sig"</span>) <span class="kw">as</span> f:
+    writer <span class="op">=</span> csv.writer(f)
+    writer.writerows(students)
+
+<span class="cm"># 读取 CSV</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"students.csv"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8-sig"</span>) <span class="kw">as</span> f:
+    reader <span class="op">=</span> csv.reader(f)
+    header <span class="op">=</span> <span class="fn">next</span>(reader)  <span class="cm"># 读取标题行</span>
+    <span class="fn">print</span>(<span class="st">f"列名：{header}"</span>)
+    <span class="kw">for</span> row <span class="kw">in</span> reader:
+        <span class="fn">print</span>(row)
+
+<span class="cm"># 使用 DictReader（更方便）</span>
+<span class="kw">with</span> <span class="fn">open</span>(<span class="st">"students.csv"</span>, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8-sig"</span>) <span class="kw">as</span> f:
+    reader <span class="op">=</span> csv.DictReader(f)
+    <span class="kw">for</span> row <span class="kw">in</span> reader:
+        <span class="fn">print</span>(<span class="st">f"{row['姓名']}的成绩：{row['成绩']}"</span>)
+</code></pre>
+  <div class="tip">
+    💡 <strong>Excel中文：</strong>用 <code>encoding="utf-8-sig"</code> 可以避免 Excel 打开 CSV 时中文乱码！
+  </div>
+</div>
+
+<!-- S10 -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2>综合实战</h2>
+  </div>
+
+  <div class="practice">
+    <h4>🎯 实战1：日记本程序</h4>
+  </div>
+  <pre><code><span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+
+DIARY_FILE <span class="op">=</span> Path(<span class="st">"my_diary.txt"</span>)
+
+<span class="kw">def</span> <span class="fn">write_diary</span>(content):
+    <span class="st">"""写入一篇日记（追加模式）"""</span>
+    timestamp <span class="op">=</span> datetime.now().strftime(<span class="st">"%Y-%m-%d %H:%M:%S"</span>)
+    entry <span class="op">=</span> <span class="st">f"\n{'='*50}\n📅 {timestamp}\n{'='*50}\n{content}\n"</span>
+    <span class="kw">with</span> <span class="fn">open</span>(DIARY_FILE, <span class="st">"a"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+        f.write(entry)
+    <span class="fn">print</span>(<span class="st">"✅ 日记已保存！"</span>)
+
+<span class="kw">def</span> <span class="fn">read_diary</span>():
+    <span class="st">"""读取所有日记"""</span>
+    <span class="kw">if</span> <span class="op">not</span> DIARY_FILE.exists():
+        <span class="fn">print</span>(<span class="st">"📭 还没有写过日记哦！"</span>)
+        <span class="kw">return</span>
+    <span class="kw">with</span> <span class="fn">open</span>(DIARY_FILE, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+        <span class="fn">print</span>(f.read())
+
+<span class="kw">def</span> <span class="fn">search_diary</span>(keyword):
+    <span class="st">"""搜索包含关键词的日记"""</span>
+    <span class="kw">if</span> <span class="op">not</span> DIARY_FILE.exists():
+        <span class="fn">print</span>(<span class="st">"没有日记文件"</span>)
+        <span class="kw">return</span>
+    <span class="kw">with</span> <span class="fn">open</span>(DIARY_FILE, <span class="st">"r"</span>, encoding<span class="op">=</span><span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+        content <span class="op">=</span> f.read()
+    count <span class="op">=</span> content.count(keyword)
+    <span class="fn">print</span>(<span class="st">f"🔍 找到 '{keyword}' 共 {count} 次"</span>)
+
+<span class="cm"># 测试</span>
+<span class="fn">write_diary</span>(<span class="st">"今天学了Python文件操作，感觉很厉害！明天继续！"</span>)
+<span class="fn">write_diary</span>(<span class="st">"完成了第八周的学习，Python基础语法全部搞定啦！"</span>)
+<span class="fn">read_diary</span>()
+<span class="fn">search_diary</span>(<span class="st">"Python"</span>)
+</code></pre>
+
+  <div class="practice">
+    <h4>🎯 实战2：单词频率分析器</h4>
+  </div>
+  <pre><code><span class="kw">import</span> re
+<span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+<span class="kw">def</span> <span class="fn">analyze_text</span>(text_or_file):
+    <span class="st">"""分析文本词频，支持字符串或文件路径"""</span>
+    <span class="kw">from</span> pathlib <span class="kw">import</span> Path
+    p <span class="op">=</span> Path(text_or_file)
+    <span class="kw">if</span> p.exists():
+        text <span class="op">=</span> p.read_text(encoding<span class="op">=</span><span class="st">"utf-8"</span>)
+    <span class="kw">else</span>:
+        text <span class="op">=</span> text_or_file
+    
+    <span class="cm"># 提取英文单词</span>
+    words <span class="op">=</span> re.findall(<span class="st">r"[a-zA-Z]+"</span>, text.lower())
+    
+    <span class="cm"># 停用词（不统计）</span>
+    stopwords <span class="op">=</span> {<span class="st">"the"</span>, <span class="st">"a"</span>, <span class="st">"an"</span>, <span class="st">"is"</span>, <span class="st">"are"</span>, <span class="st">"was"</span>, <span class="st">"in"</span>, <span class="st">"to"</span>, <span class="st">"of"</span>, <span class="st">"and"</span>}
+    words <span class="op">=</span> [w <span class="kw">for</span> w <span class="kw">in</span> words <span class="kw">if</span> w <span class="kw">not in</span> stopwords <span class="kw">and</span> <span class="fn">len</span>(w) <span class="op">&gt;</span> <span class="nm">2</span>]
+    
+    counter <span class="op">=</span> Counter(words)
+    total <span class="op">=</span> <span class="fn">len</span>(words)
+    
+    <span class="fn">print</span>(<span class="st">f"\n📊 词频分析报告"</span>)
+    <span class="fn">print</span>(<span class="st">f"总单词数：{total}，独特词数：{len(counter)}"</span>)
+    <span class="fn">print</span>(<span class="st">f"\n🏆 TOP 10 高频词："</span>)
+    <span class="kw">for</span> word, count <span class="kw">in</span> counter.most_common(<span class="nm">10</span>):
+        bar <span class="op">=</span> <span class="st">"▓"</span> <span class="op">*</span> (count <span class="op">*</span> <span class="nm">20</span> <span class="op">//</span> counter.most_common(<span class="nm">1</span>)[<span class="nm">0</span>][<span class="nm">1</span>])
+        <span class="fn">print</span>(<span class="st">f"  {word:15s} {count:4d}次 {bar}"</span>)
+
+sample <span class="op">=</span> <span class="st">"""Python is great for data science and machine learning.
+Python makes programming fun and productive.
+With Python you can build anything you can imagine."""</span>
+<span class="fn">analyze_text</span>(sample)
+</code></pre>
+
+  <table>
+    <tr><th>知识点</th><th>核心要点</th><th>掌握度</th></tr>
+    <tr><td>字符串方法</td><td>strip/split/replace/join等25+个方法</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>f-string</td><td>f"值是{变量:.2f}"</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>文件读写</td><td>with open() as f</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>encoding参数</td><td>中文必须指定utf-8</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>pathlib</td><td>Path对象处理路径</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>CSV读写</td><td>import csv</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>正则表达式</td><td>re.search/findall/sub</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+  </table>
+
+  <div class="tip">
+    🎉 <strong>恭喜！基础阶段全部完成！</strong>你已经掌握了 Python 基础语法的全部核心知识（第1-8周）。接下来第9-14周进入面向对象编程 &amp; 模块化阶段，代码组织能力将大幅提升！
+  </div>
+
+  <div class="nav-btns">
+    <a href="python-week7.html" class="nav-btn outline">← 第七周</a>
+    <a href="index.html" class="nav-btn outline">🏠 首页</a>
+    <a href="index.html" class="nav-btn">返回首页</a>
+  </div>
+</div>
+</div>
+
+<div class="footer">
+  <p>🐍 Python 学习之路 · 第8周 · 字符串进阶与文件操作</p>
+  <p style="margin-top:8px"><a href="index.html">返回首页</a> · 坚持就是胜利！基础阶段圆满完成！ 🎉</p>
+</div>
+</body>
+</html>
