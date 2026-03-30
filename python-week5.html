@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路 - 第五周：列表list与元组tuple</title>
+<style>
+  :root {
+    --primary: #00b894;
+    --secondary: #55efc4;
+    --accent: #fd79a8;
+    --success: #00cec9;
+    --warning: #fdcb6e;
+    --danger: #e17055;
+    --dark: #2d3436;
+    --code-bg: #1e1e2e;
+    --card-shadow: 0 4px 20px rgba(0,184,148,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'PingFang SC','Microsoft YaHei',sans-serif; background: #f0f8f5; color: var(--dark); line-height: 1.8; }
+
+  .hero {
+    background: linear-gradient(135deg, #00b894 0%, #00cec9 50%, #74b9ff 100%);
+    color: white; padding: 60px 20px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  .hero .badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 4px 16px; font-size: 13px; margin-bottom: 16px; }
+  .hero h1 { font-size: 2.6em; font-weight: 800; margin-bottom: 12px; }
+  .hero p { font-size: 1.1em; opacity: 0.9; max-width: 600px; margin: 0 auto 24px; }
+  .hero-meta { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+  .hero-meta span { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 6px 16px; font-size: 14px; }
+
+  .toc { background: white; border-radius: 16px; padding: 24px; margin: 24px auto; max-width: 900px; box-shadow: var(--card-shadow); }
+  .toc h3 { color: var(--primary); margin-bottom: 16px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .toc-item { background: #f0fdf8; border-left: 3px solid var(--primary); border-radius: 8px; padding: 10px 14px; font-size: 14px; cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--dark); display: block; }
+  .toc-item:hover { background: var(--primary); color: white; transform: translateX(4px); }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+  .section { background: white; border-radius: 20px; padding: 36px; margin-bottom: 28px; box-shadow: var(--card-shadow); }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #f0f0f0; }
+  .section-num { background: var(--primary); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+  .section h2 { font-size: 1.5em; color: var(--dark); }
+  h3 { color: var(--primary); margin: 24px 0 12px; font-size: 1.15em; }
+  h4 { color: #555; margin: 18px 0 8px; }
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; }
+
+  pre { background: var(--code-bg); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; position: relative; }
+  pre code { color: #cdd6f4; font-family: 'Fira Code','Consolas',monospace; font-size: 14px; line-height: 1.7; }
+  .kw { color: #cba6f7; } .fn { color: #89b4fa; } .st { color: #a6e3a1; } .cm { color: #6c7086; font-style: italic; }
+  .nm { color: #fab387; } .op { color: #89dceb; } .nb { color: #f38ba8; }
+
+  .tip { background: #e8f5e9; border-left: 4px solid var(--success); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .warn { background: #fff8e1; border-left: 4px solid var(--warning); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .info { background: #e0f7f7; border-left: 4px solid var(--primary); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .danger-box { background: #fdecea; border-left: 4px solid var(--danger); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 10px; overflow: hidden; }
+  th { background: var(--primary); color: white; padding: 12px 16px; text-align: left; font-size: 14px; }
+  td { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin: 16px 0; }
+  .card { background: #f0fdf8; border-radius: 14px; padding: 20px; border: 1px solid #c8f5e8; }
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card h4 { color: var(--primary); margin: 0 0 8px; }
+  .card p { font-size: 14px; color: #555; margin: 0; }
+
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .compare-list { background: #e8f5e9; border: 2px solid #00b894; border-radius: 12px; padding: 20px; }
+  .compare-tuple { background: #fff3e0; border: 2px solid #fdcb6e; border-radius: 12px; padding: 20px; }
+  .compare-list h4 { color: #00b894; margin: 0 0 12px; }
+  .compare-tuple h4 { color: #e67e22; margin: 0 0 12px; }
+
+  code { background: #e8f8f3; color: #00856f; border-radius: 4px; padding: 2px 6px; font-family: 'Fira Code','Consolas',monospace; font-size: 0.9em; }
+  .tag { display: inline-block; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-blue { background: #dbeafe; color: #1d4ed8; }
+  .tag-yellow { background: #fef9c3; color: #854d0e; }
+
+  .practice { background: linear-gradient(135deg, #e8f5e9, #f1f8e9); border-radius: 16px; padding: 24px; margin: 20px 0; border: 2px solid var(--primary); }
+  .practice h4 { color: var(--primary); margin-bottom: 14px; }
+
+  .breadcrumb { background: white; border-radius: 12px; padding: 12px 20px; margin: 20px auto; max-width: 900px; font-size: 14px; color: #666; box-shadow: var(--card-shadow); }
+  .breadcrumb a { color: var(--primary); text-decoration: none; }
+
+  .footer { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
+  .footer a { color: var(--primary); text-decoration: none; }
+  .nav-btns { display: flex; gap: 16px; justify-content: center; margin-top: 40px; }
+  .nav-btn { background: var(--primary); color: white; border-radius: 12px; padding: 12px 28px; text-decoration: none; font-weight: 600; transition: transform 0.2s; }
+  .nav-btn:hover { transform: translateY(-2px); }
+  .nav-btn.outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+
+  .method-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; margin: 16px 0; }
+  .method-card { background: #f8fffe; border: 1px solid #c8f5e8; border-radius: 12px; padding: 16px; }
+  .method-card .method-name { background: var(--primary); color: white; border-radius: 6px; padding: 3px 10px; font-size: 13px; font-family: monospace; display: inline-block; margin-bottom: 8px; }
+  .method-card p { font-size: 13px; color: #555; margin: 4px 0 0; }
+  .method-card .example { font-size: 12px; color: #888; font-family: monospace; background: #f0f0f0; border-radius: 4px; padding: 3px 8px; margin-top: 6px; display: block; }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.8em; }
+    .compare { grid-template-columns: 1fr; }
+    .section { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">🐍 Python 学习之路 · 第5周</div>
+  <h1>列表 list 与元组 tuple</h1>
+  <p>Python 最常用的数据结构！用来存储一组数据，是写程序的基石。</p>
+  <div class="hero-meta">
+    <span>📅 第5周 / 共52周</span>
+    <span>⏱️ 建议学习 7-9 小时</span>
+    <span>🎯 难度 ★★★☆☆</span>
+    <span>📌 阶段：基础语法</span>
+  </div>
+</div>
+
+<div class="breadcrumb container">
+  <a href="index.html">🏠 首页</a> &gt; <a href="index.html">Python学习之路</a> &gt; 第5周：列表 list 与元组 tuple
+</div>
+
+<div class="toc container">
+  <h3>📋 本周学习目录</h3>
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item">1. 什么是列表？</a>
+    <a href="#s2" class="toc-item">2. 创建与访问</a>
+    <a href="#s3" class="toc-item">3. 列表切片</a>
+    <a href="#s4" class="toc-item">4. 常用方法（15个）</a>
+    <a href="#s5" class="toc-item">5. 列表与循环</a>
+    <a href="#s6" class="toc-item">6. 列表推导式</a>
+    <a href="#s7" class="toc-item">7. 元组详解</a>
+    <a href="#s8" class="toc-item">8. list vs tuple</a>
+    <a href="#s9" class="toc-item">9. 排序与搜索</a>
+    <a href="#s10" class="toc-item">10. 综合实战</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>什么是列表？</h2>
+  </div>
+  <p>列表是一个<strong>有序、可变、可重复</strong>的数据集合，用方括号 <code>[]</code> 表示。可以把它想象成一个购物袋，可以放各种东西，可以添加、删除、修改。</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">📦</div>
+      <h4>有序</h4>
+      <p>每个元素都有固定的位置（索引），从0开始计数</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">✏️</div>
+      <h4>可变</h4>
+      <p>可以随意增加、删除、修改元素</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔁</div>
+      <h4>可重复</h4>
+      <p>同一个值可以出现多次，完全允许</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎲</div>
+      <h4>混合类型</h4>
+      <p>可以放整数、字符串、列表等任意类型</p>
+    </div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>创建列表与访问元素</h2>
+  </div>
+  <h3>2.1 创建列表</h3>
+  <pre><code><span class="cm"># 直接创建</span>
+fruits <span class="op">=</span> [<span class="st">"苹果"</span>, <span class="st">"香蕉"</span>, <span class="st">"橙子"</span>]
+numbers <span class="op">=</span> [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>]
+mixed <span class="op">=</span> [<span class="nm">1</span>, <span class="st">"hello"</span>, <span class="nb">True</span>, <span class="nm">3.14</span>]  <span class="cm"># 混合类型</span>
+empty <span class="op">=</span> []                          <span class="cm"># 空列表</span>
+nested <span class="op">=</span> [[<span class="nm">1</span>, <span class="nm">2</span>], [<span class="nm">3</span>, <span class="nm">4</span>], [<span class="nm">5</span>, <span class="nm">6</span>]] <span class="cm"># 嵌套列表</span>
+
+<span class="cm"># 用 list() 创建</span>
+chars <span class="op">=</span> <span class="fn">list</span>(<span class="st">"Python"</span>)  <span class="cm"># ['P', 'y', 't', 'h', 'o', 'n']</span>
+nums <span class="op">=</span> <span class="fn">list</span>(<span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">6</span>))  <span class="cm"># [1, 2, 3, 4, 5]</span>
+</code></pre>
+
+  <h3>2.2 访问元素（索引）</h3>
+  <div class="info">
+    📌 <strong>索引规则：</strong>正向从0开始（0,1,2...），反向从-1开始（-1,-2,-3...）
+  </div>
+  <pre><code>fruits <span class="op">=</span> [<span class="st">"苹果"</span>, <span class="st">"香蕉"</span>, <span class="st">"橙子"</span>, <span class="st">"葡萄"</span>, <span class="st">"西瓜"</span>]
+<span class="cm">#          0      1      2      3      4   ← 正向索引</span>
+<span class="cm">#         -5     -4     -3     -2     -1   ← 反向索引</span>
+
+<span class="fn">print</span>(fruits[<span class="nm">0</span>])   <span class="cm"># 苹果（第一个）</span>
+<span class="fn">print</span>(fruits[<span class="nm">2</span>])   <span class="cm"># 橙子（第三个）</span>
+<span class="fn">print</span>(fruits[-<span class="nm">1</span>])  <span class="cm"># 西瓜（最后一个）</span>
+<span class="fn">print</span>(fruits[-<span class="nm">2</span>])  <span class="cm"># 葡萄（倒数第二个）</span>
+
+<span class="cm"># 修改元素</span>
+fruits[<span class="nm">1</span>] <span class="op">=</span> <span class="st">"蓝莓"</span>
+<span class="fn">print</span>(fruits)  <span class="cm"># ['苹果', '蓝莓', '橙子', '葡萄', '西瓜']</span>
+</code></pre>
+</div>
+
+<!-- S3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>列表切片（Slicing）</h2>
+  </div>
+  <div class="info">
+    <strong>切片语法：</strong><code>列表[start:stop:step]</code><br>
+    获取从 start 到 stop（不含）的子列表，step 是步长（默认1）
+  </div>
+  <pre><code>nums <span class="op">=</span> [<span class="nm">0</span>, <span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>, <span class="nm">9</span>]
+
+<span class="fn">print</span>(nums[<span class="nm">2</span>:<span class="nm">6</span>])    <span class="cm"># [2, 3, 4, 5]  索引2到5</span>
+<span class="fn">print</span>(nums[:<span class="nm">4</span>])     <span class="cm"># [0, 1, 2, 3]  前4个</span>
+<span class="fn">print</span>(nums[<span class="nm">6</span>:])     <span class="cm"># [6, 7, 8, 9]  从索引6到最后</span>
+<span class="fn">print</span>(nums[:])      <span class="cm"># 全部（相当于复制）</span>
+<span class="fn">print</span>(nums[::-<span class="nm">1</span>])   <span class="cm"># [9,8,7,6,5,4,3,2,1,0]  反转！</span>
+<span class="fn">print</span>(nums[::2])    <span class="cm"># [0, 2, 4, 6, 8]  每隔一个取一个（偶数索引）</span>
+<span class="fn">print</span>(nums[<span class="nm">1</span>::<span class="nm">2</span>])   <span class="cm"># [1, 3, 5, 7, 9]  奇数索引</span>
+<span class="fn">print</span>(nums[-<span class="nm">3</span>:])    <span class="cm"># [7, 8, 9]  最后3个</span>
+<span class="fn">print</span>(nums[:-<span class="nm">3</span>])    <span class="cm"># [0,1,2,3,4,5,6]  除最后3个</span>
+
+<span class="cm"># 切片赋值（可以修改多个元素）</span>
+nums[<span class="nm">2</span>:<span class="nm">5</span>] <span class="op">=</span> [<span class="nm">20</span>, <span class="nm">30</span>, <span class="nm">40</span>]
+<span class="fn">print</span>(nums)  <span class="cm"># [0, 1, 20, 30, 40, 5, 6, 7, 8, 9]</span>
+</code></pre>
+  <div class="tip">
+    💡 <strong>切片返回新列表，不修改原列表。</strong><code>nums[:]</code> 是最简洁的复制方法！
+  </div>
+</div>
+
+<!-- S4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>列表常用方法（15个）</h2>
+  </div>
+
+  <h3>增加元素</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">append(item)</span>
+      <p>在末尾添加一个元素</p>
+      <span class="example">[1,2].append(3) → [1,2,3]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">insert(i, item)</span>
+      <p>在指定位置插入元素</p>
+      <span class="example">[1,3].insert(1,2) → [1,2,3]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">extend(iterable)</span>
+      <p>将另一个序列的所有元素追加到末尾</p>
+      <span class="example">[1,2].extend([3,4]) → [1,2,3,4]</span>
+    </div>
+  </div>
+
+  <h3>删除元素</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">remove(item)</span>
+      <p>删除第一个等于item的元素</p>
+      <span class="example">[1,2,2,3].remove(2) → [1,2,3]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">pop(index=-1)</span>
+      <p>删除并返回指定位置的元素（默认最后）</p>
+      <span class="example">[1,2,3].pop() → 返回3，列表变[1,2]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">clear()</span>
+      <p>清空列表所有元素</p>
+      <span class="example">[1,2,3].clear() → []</span>
+    </div>
+  </div>
+
+  <h3>查找与统计</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">index(item)</span>
+      <p>返回第一个等于item的索引</p>
+      <span class="example">['a','b','c'].index('b') → 1</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">count(item)</span>
+      <p>统计item出现的次数</p>
+      <span class="example">[1,2,2,3].count(2) → 2</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">in 运算符</span>
+      <p>判断元素是否存在（推荐）</p>
+      <span class="example">2 in [1,2,3] → True</span>
+    </div>
+  </div>
+
+  <h3>排序与变换</h3>
+  <div class="method-grid">
+    <div class="method-card">
+      <span class="method-name">sort()</span>
+      <p>原地排序（修改原列表）</p>
+      <span class="example">[3,1,2].sort() → [1,2,3]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">sorted(list)</span>
+      <p>返回新的有序列表（不修改原列表）</p>
+      <span class="example">sorted([3,1,2]) → [1,2,3]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">reverse()</span>
+      <p>原地反转列表</p>
+      <span class="example">[1,2,3].reverse() → [3,2,1]</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">copy()</span>
+      <p>浅复制列表</p>
+      <span class="example">b = a.copy()（修改b不影响a）</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">len(list)</span>
+      <p>返回列表长度（内置函数）</p>
+      <span class="example">len([1,2,3]) → 3</span>
+    </div>
+    <div class="method-card">
+      <span class="method-name">join (str)</span>
+      <p>将字符串列表合并为字符串</p>
+      <span class="example">",".join(["a","b"]) → "a,b"</span>
+    </div>
+  </div>
+
+  <pre><code><span class="cm"># 综合使用示例</span>
+students <span class="op">=</span> [<span class="st">"小明"</span>, <span class="st">"小红"</span>, <span class="st">"小李"</span>]
+
+students.append(<span class="st">"小张"</span>)          <span class="cm"># 添加</span>
+students.insert(<span class="nm">1</span>, <span class="st">"小王"</span>)       <span class="cm"># 插入位置1</span>
+students.remove(<span class="st">"小李"</span>)          <span class="cm"># 删除小李</span>
+last <span class="op">=</span> students.pop()             <span class="cm"># 弹出最后一个</span>
+<span class="fn">print</span>(<span class="st">f"弹出：{last}"</span>)
+<span class="fn">print</span>(<span class="st">f"还剩：{students}"</span>)
+<span class="fn">print</span>(<span class="st">f"人数：{len(students)}"</span>)
+<span class="fn">print</span>(<span class="st">f"小王在第几位：{students.index('小王')}"</span>)
+
+<span class="cm"># 排序</span>
+nums <span class="op">=</span> [<span class="nm">5</span>, <span class="nm">2</span>, <span class="nm">8</span>, <span class="nm">1</span>, <span class="nm">9</span>, <span class="nm">3</span>]
+nums.sort()
+<span class="fn">print</span>(nums)                 <span class="cm"># [1, 2, 3, 5, 8, 9]</span>
+nums.sort(reverse<span class="op">=</span><span class="nb">True</span>)
+<span class="fn">print</span>(nums)                 <span class="cm"># [9, 8, 5, 3, 2, 1]</span>
+
+<span class="cm"># sorted 不修改原列表</span>
+original <span class="op">=</span> [<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">1</span>, <span class="nm">5</span>]
+new_list <span class="op">=</span> <span class="fn">sorted</span>(original)
+<span class="fn">print</span>(original)  <span class="cm"># [3, 1, 4, 1, 5] 没变</span>
+<span class="fn">print</span>(new_list)  <span class="cm"># [1, 1, 3, 4, 5] 排好的新列表</span>
+</code></pre>
+</div>
+
+<!-- S5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>列表与循环（完美搭配）</h2>
+  </div>
+  <pre><code>scores <span class="op">=</span> [<span class="nm">85</span>, <span class="nm">92</span>, <span class="nm">78</span>, <span class="nm">95</span>, <span class="nm">88</span>]
+
+<span class="cm"># 遍历值</span>
+<span class="kw">for</span> score <span class="kw">in</span> scores:
+    <span class="fn">print</span>(score)
+
+<span class="cm"># 遍历索引和值</span>
+<span class="kw">for</span> i, score <span class="kw">in</span> <span class="fn">enumerate</span>(scores):
+    grade <span class="op">=</span> <span class="st">"优"</span> <span class="kw">if</span> score <span class="op">&gt;=</span> <span class="nm">90</span> <span class="kw">else</span> <span class="st">"良"</span> <span class="kw">if</span> score <span class="op">&gt;=</span> <span class="nm">80</span> <span class="kw">else</span> <span class="st">"及格"</span>
+    <span class="fn">print</span>(<span class="st">f"第{i+1}名：{score}分（{grade}）"</span>)
+
+<span class="cm"># 过滤（找出所有优秀成绩）</span>
+excellent <span class="op">=</span> []
+<span class="kw">for</span> s <span class="kw">in</span> scores:
+    <span class="kw">if</span> s <span class="op">&gt;=</span> <span class="nm">90</span>:
+        excellent.append(s)
+<span class="fn">print</span>(<span class="st">f"优秀成绩：{excellent}"</span>)
+
+<span class="cm"># 累计求和</span>
+total <span class="op">=</span> <span class="fn">sum</span>(scores)  <span class="cm"># 内置函数 sum()</span>
+avg <span class="op">=</span> total <span class="op">/</span> <span class="fn">len</span>(scores)
+<span class="fn">print</span>(<span class="st">f"总分：{total}，平均分：{avg:.1f}"</span>)
+<span class="fn">print</span>(<span class="st">f"最高：{max(scores)}，最低：{min(scores)}"</span>)
+</code></pre>
+</div>
+
+<!-- S6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>列表推导式（List Comprehension）</h2>
+  </div>
+  <p>Python 最优雅的语法之一，用一行代码创建列表！</p>
+  <div class="info">
+    <strong>语法：</strong><code>[表达式 for 变量 in 序列 if 条件]</code>
+  </div>
+  <pre><code><span class="cm"># 基础：1到10的平方</span>
+squares <span class="op">=</span> [x<span class="op">**</span><span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">11</span>)]
+<span class="fn">print</span>(squares)  <span class="cm"># [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]</span>
+
+<span class="cm"># 带条件：1到20中的偶数</span>
+evens <span class="op">=</span> [x <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">21</span>) <span class="kw">if</span> x <span class="op">%</span> <span class="nm">2</span> <span class="op">==</span> <span class="nm">0</span>]
+<span class="fn">print</span>(evens)  <span class="cm"># [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]</span>
+
+<span class="cm"># 字符串处理</span>
+words <span class="op">=</span> [<span class="st">"hello"</span>, <span class="st">"world"</span>, <span class="st">"python"</span>]
+upper <span class="op">=</span> [w.upper() <span class="kw">for</span> w <span class="kw">in</span> words]
+<span class="fn">print</span>(upper)  <span class="cm"># ['HELLO', 'WORLD', 'PYTHON']</span>
+
+<span class="cm"># 过滤列表</span>
+scores <span class="op">=</span> [<span class="nm">45</span>, <span class="nm">78</span>, <span class="nm">92</span>, <span class="nm">33</span>, <span class="nm">88</span>, <span class="nm">65</span>]
+passed <span class="op">=</span> [s <span class="kw">for</span> s <span class="kw">in</span> scores <span class="kw">if</span> s <span class="op">&gt;=</span> <span class="nm">60</span>]
+<span class="fn">print</span>(passed)  <span class="cm"># [78, 92, 88, 65]</span>
+
+<span class="cm"># 嵌套推导式（二维列表展平）</span>
+matrix <span class="op">=</span> [[<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>], [<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>], [<span class="nm">7</span>, <span class="nm">8</span>, <span class="nm">9</span>]]
+flat <span class="op">=</span> [num <span class="kw">for</span> row <span class="kw">in</span> matrix <span class="kw">for</span> num <span class="kw">in</span> row]
+<span class="fn">print</span>(flat)  <span class="cm"># [1, 2, 3, 4, 5, 6, 7, 8, 9]</span>
+
+<span class="cm"># 条件表达式（三元）</span>
+grades <span class="op">=</span> [<span class="st">"及格"</span> <span class="kw">if</span> s <span class="op">&gt;=</span> <span class="nm">60</span> <span class="kw">else</span> <span class="st">"不及格"</span> <span class="kw">for</span> s <span class="kw">in</span> scores]
+<span class="fn">print</span>(grades)
+</code></pre>
+</div>
+
+<!-- S7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>元组（Tuple）详解</h2>
+  </div>
+  <p>元组是一个<strong>有序、不可变、可重复</strong>的数据集合，用圆括号 <code>()</code> 表示。</p>
+  <pre><code><span class="cm"># 创建元组</span>
+point <span class="op">=</span> (<span class="nm">3</span>, <span class="nm">4</span>)              <span class="cm"># 坐标</span>
+rgb <span class="op">=</span> (<span class="nm">255</span>, <span class="nm">128</span>, <span class="nm">0</span>)        <span class="cm"># RGB颜色</span>
+single <span class="op">=</span> (<span class="nm">42</span>,)              <span class="cm"># 单元素元组（注意有逗号！）</span>
+empty <span class="op">=</span> ()                  <span class="cm"># 空元组</span>
+
+<span class="cm"># 不加括号也是元组（靠逗号）</span>
+a, b, c <span class="op">=</span> <span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>
+<span class="fn">print</span>(<span class="fn">type</span>((<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>)))   <span class="cm"># tuple</span>
+
+<span class="cm"># 访问元素（和列表一样）</span>
+<span class="fn">print</span>(point[<span class="nm">0</span>])   <span class="cm"># 3</span>
+<span class="fn">print</span>(rgb[-<span class="nm">1</span>])    <span class="cm"># 0（蓝色）</span>
+<span class="fn">print</span>(point[:<span class="nm">2</span>])  <span class="cm"># 切片也支持</span>
+
+<span class="cm"># 不能修改（会报错！）</span>
+<span class="cm"># point[0] = 5  # TypeError: 'tuple' object does not support item assignment</span>
+
+<span class="cm"># 元组拆包（非常常用！）</span>
+x, y <span class="op">=</span> point
+<span class="fn">print</span>(<span class="st">f"x={x}, y={y}"</span>)  <span class="cm"># x=3, y=4</span>
+
+<span class="cm"># 交换两个变量（Python特有技巧）</span>
+a, b <span class="op">=</span> <span class="nm">10</span>, <span class="nm">20</span>
+a, b <span class="op">=</span> b, a  <span class="cm"># 利用元组拆包交换</span>
+<span class="fn">print</span>(<span class="st">f"a={a}, b={b}"</span>)  <span class="cm"># a=20, b=10</span>
+
+<span class="cm"># 函数返回多个值（本质是元组）</span>
+<span class="kw">def</span> <span class="fn">min_max</span>(lst):
+    <span class="kw">return</span> <span class="fn">min</span>(lst), <span class="fn">max</span>(lst)
+
+low, high <span class="op">=</span> <span class="fn">min_max</span>([<span class="nm">3</span>, <span class="nm">1</span>, <span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">9</span>])
+<span class="fn">print</span>(<span class="st">f"最小={low}, 最大={high}"</span>)
+</code></pre>
+</div>
+
+<!-- S8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>list vs tuple：如何选择？</h2>
+  </div>
+  <div class="compare">
+    <div class="compare-list">
+      <h4>📝 列表 list []</h4>
+      <ul>
+        <li>可以增删改</li>
+        <li>适合存储一组会变化的数据</li>
+        <li>购物车、学生名单、待办事项</li>
+        <li>占用内存略多</li>
+        <li>运行速度略慢</li>
+      </ul>
+    </div>
+    <div class="compare-tuple">
+      <h4>🔒 元组 tuple ()</h4>
+      <ul>
+        <li>不可修改（安全）</li>
+        <li>适合存储固定数据</li>
+        <li>坐标、颜色、配置常量</li>
+        <li>占用内存更少</li>
+        <li>运行速度更快</li>
+      </ul>
+    </div>
+  </div>
+  <table>
+    <tr><th>操作</th><th>list</th><th>tuple</th></tr>
+    <tr><td>访问元素 [i]</td><td>✅</td><td>✅</td></tr>
+    <tr><td>切片 [:]</td><td>✅</td><td>✅</td></tr>
+    <tr><td>修改元素</td><td>✅</td><td>❌</td></tr>
+    <tr><td>添加/删除元素</td><td>✅</td><td>❌</td></tr>
+    <tr><td>排序 sort()</td><td>✅</td><td>❌（需转list）</td></tr>
+    <tr><td>作为字典的键</td><td>❌</td><td>✅（因为不可变）</td></tr>
+    <tr><td>len()</td><td>✅</td><td>✅</td></tr>
+    <tr><td>in 运算符</td><td>✅</td><td>✅</td></tr>
+  </table>
+  <div class="tip">
+    💡 <strong>经验法则：</strong>数据会改变用list，数据固定不变用tuple。如果不确定，用list。
+  </div>
+</div>
+
+<!-- S9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>排序进阶与搜索</h2>
+  </div>
+  <pre><code><span class="cm"># 按自定义规则排序</span>
+students <span class="op">=</span> [
+    {<span class="st">"name"</span>: <span class="st">"小明"</span>, <span class="st">"score"</span>: <span class="nm">85</span>},
+    {<span class="st">"name"</span>: <span class="st">"小红"</span>, <span class="st">"score"</span>: <span class="nm">92</span>},
+    {<span class="st">"name"</span>: <span class="st">"小李"</span>, <span class="st">"score"</span>: <span class="nm">78</span>},
+]
+
+<span class="cm"># 按成绩从高到低排序</span>
+students.sort(key<span class="op">=</span><span class="kw">lambda</span> s: s[<span class="st">"score"</span>], reverse<span class="op">=</span><span class="nb">True</span>)
+<span class="kw">for</span> i, s <span class="kw">in</span> <span class="fn">enumerate</span>(students, <span class="nm">1</span>):
+    <span class="fn">print</span>(<span class="st">f"第{i}名：{s['name']} {s['score']}分"</span>)
+
+<span class="cm"># 按字符串长度排序</span>
+words <span class="op">=</span> [<span class="st">"banana"</span>, <span class="st">"apple"</span>, <span class="st">"cherry"</span>, <span class="st">"fig"</span>]
+words.sort(key<span class="op">=</span><span class="fn">len</span>)
+<span class="fn">print</span>(words)  <span class="cm"># ['fig', 'apple', 'banana', 'cherry']</span>
+
+<span class="cm"># 搜索（二分查找前提：已排序）</span>
+import bisect
+nums <span class="op">=</span> [<span class="nm">1</span>, <span class="nm">3</span>, <span class="nm">5</span>, <span class="nm">7</span>, <span class="nm">9</span>]
+pos <span class="op">=</span> bisect.bisect_left(nums, <span class="nm">5</span>)
+<span class="fn">print</span>(<span class="st">f"5 在索引 {pos} 处"</span>)  <span class="cm"># 5 在索引 2 处</span>
+</code></pre>
+</div>
+
+<!-- S10 -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2>综合实战练习</h2>
+  </div>
+
+  <div class="practice">
+    <h4>🎯 实战：学生成绩管理系统</h4>
+  </div>
+  <pre><code><span class="cm"># 学生成绩管理系统</span>
+students <span class="op">=</span> []
+
+<span class="kw">def</span> <span class="fn">add_student</span>(name, score):
+    students.append({<span class="st">"name"</span>: name, <span class="st">"score"</span>: score})
+
+<span class="kw">def</span> <span class="fn">show_all</span>():
+    <span class="kw">if</span> <span class="op">not</span> students:
+        <span class="fn">print</span>(<span class="st">"暂无学生记录"</span>)
+        <span class="kw">return</span>
+    ranked <span class="op">=</span> <span class="fn">sorted</span>(students, key<span class="op">=</span><span class="kw">lambda</span> s: s[<span class="st">"score"</span>], reverse<span class="op">=</span><span class="nb">True</span>)
+    <span class="fn">print</span>(<span class="st">"\n=== 成绩排名 ==="</span>)
+    <span class="kw">for</span> i, s <span class="kw">in</span> <span class="fn">enumerate</span>(ranked, <span class="nm">1</span>):
+        bar <span class="op">=</span> <span class="st">"█"</span> <span class="op">*</span> (s[<span class="st">"score"</span>] <span class="op">//</span> <span class="nm">10</span>)
+        <span class="fn">print</span>(<span class="st">f"第{i}名 {s['name']:4s} {s['score']:3d}分 {bar}"</span>)
+
+<span class="kw">def</span> <span class="fn">show_stats</span>():
+    <span class="kw">if</span> <span class="op">not</span> students:
+        <span class="kw">return</span>
+    scores <span class="op">=</span> [s[<span class="st">"score"</span>] <span class="kw">for</span> s <span class="kw">in</span> students]
+    <span class="fn">print</span>(<span class="st">f"\n📊 统计：平均{sum(scores)/len(scores):.1f} 最高{max(scores)} 最低{min(scores)}"</span>)
+    <span class="fn">print</span>(<span class="st">f"优秀(≥90)：{sum(1 for s in scores if s >= 90)}人"</span>)
+    <span class="fn">print</span>(<span class="st">f"良好(80-89)：{sum(1 for s in scores if 80 <= s < 90)}人"</span>)
+
+<span class="cm"># 测试</span>
+<span class="fn">add_student</span>(<span class="st">"小明"</span>, <span class="nm">85</span>)
+<span class="fn">add_student</span>(<span class="st">"小红"</span>, <span class="nm">92</span>)
+<span class="fn">add_student</span>(<span class="st">"小李"</span>, <span class="nm">78</span>)
+<span class="fn">add_student</span>(<span class="st">"小张"</span>, <span class="nm">95</span>)
+<span class="fn">show_all</span>()
+<span class="fn">show_stats</span>()
+</code></pre>
+
+  <table>
+    <tr><th>知识点</th><th>核心要点</th><th>掌握度</th></tr>
+    <tr><td>列表创建</td><td>[] 或 list()</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>索引访问</td><td>正向0开始，负向-1开始</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>切片</td><td>[start:stop:step]</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>append/insert/remove/pop</td><td>增删改元素</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>sort/sorted</td><td>sort改原列表，sorted返回新列表</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>列表推导式</td><td>[x for x in ... if ...]</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>元组不可变</td><td>用()创建，不能修改</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>元组拆包</td><td>a, b = (1, 2)</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+  </table>
+
+  <div class="tip">
+    🚀 <strong>第六周预告：</strong>字典（dict）与集合（set）—— Python 最强大的数据结构！字典是 Python 编程的核心，很多高级用法都要用到它。
+  </div>
+
+  <div class="nav-btns">
+    <a href="python-week4.html" class="nav-btn outline">← 第四周</a>
+    <a href="index.html" class="nav-btn outline">🏠 首页</a>
+    <a href="python-week6.html" class="nav-btn">第六周 →</a>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">
+  <p>🐍 Python 学习之路 · 第5周 · 列表 list 与元组 tuple</p>
+  <p style="margin-top:8px"><a href="index.html">返回首页</a> · 持续学习，每天进步一点点！</p>
+</div>
+</body>
+</html>
