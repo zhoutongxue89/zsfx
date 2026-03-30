@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路 - 第六周：字典dict与集合set</title>
+<style>
+  :root {
+    --primary: #e17055;
+    --secondary: #fab1a0;
+    --success: #00b894;
+    --warning: #fdcb6e;
+    --dark: #2d3436;
+    --code-bg: #1e1e2e;
+    --card-shadow: 0 4px 20px rgba(225,112,85,0.12);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'PingFang SC','Microsoft YaHei',sans-serif; background: #fdf5f3; color: var(--dark); line-height: 1.8; }
+  .hero {
+    background: linear-gradient(135deg, #e17055 0%, #fd79a8 50%, #fdcb6e 100%);
+    color: white; padding: 60px 20px; text-align: center; position: relative; overflow: hidden;
+  }
+  .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%); animation: pulse 4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+  .hero .badge { display: inline-block; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 20px; padding: 4px 16px; font-size: 13px; margin-bottom: 16px; }
+  .hero h1 { font-size: 2.6em; font-weight: 800; margin-bottom: 12px; }
+  .hero p { font-size: 1.1em; opacity: 0.9; max-width: 600px; margin: 0 auto 24px; }
+  .hero-meta { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+  .hero-meta span { background: rgba(255,255,255,0.2); border-radius: 12px; padding: 6px 16px; font-size: 14px; }
+  .toc { background: white; border-radius: 16px; padding: 24px; margin: 24px auto; max-width: 900px; box-shadow: var(--card-shadow); }
+  .toc h3 { color: var(--primary); margin-bottom: 16px; }
+  .toc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+  .toc-item { background: #fff5f3; border-left: 3px solid var(--primary); border-radius: 8px; padding: 10px 14px; font-size: 14px; text-decoration: none; color: var(--dark); display: block; transition: all 0.2s; }
+  .toc-item:hover { background: var(--primary); color: white; transform: translateX(4px); }
+  .container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+  .section { background: white; border-radius: 20px; padding: 36px; margin-bottom: 28px; box-shadow: var(--card-shadow); }
+  .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 2px solid #f0f0f0; }
+  .section-num { background: var(--primary); color: white; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; flex-shrink: 0; }
+  .section h2 { font-size: 1.5em; }
+  h3 { color: var(--primary); margin: 24px 0 12px; font-size: 1.15em; }
+  h4 { color: #555; margin: 18px 0 8px; }
+  p { margin-bottom: 12px; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; }
+  pre { background: var(--code-bg); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; }
+  pre code { color: #cdd6f4; font-family: 'Fira Code','Consolas',monospace; font-size: 14px; line-height: 1.7; }
+  .kw { color: #cba6f7; } .fn { color: #89b4fa; } .st { color: #a6e3a1; } .cm { color: #6c7086; font-style: italic; }
+  .nm { color: #fab387; } .op { color: #89dceb; } .nb { color: #f38ba8; }
+  .tip { background: #e8f5e9; border-left: 4px solid var(--success); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .warn { background: #fff8e1; border-left: 4px solid var(--warning); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .info { background: #fff0ec; border-left: 4px solid var(--primary); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; border-radius: 10px; overflow: hidden; }
+  th { background: var(--primary); color: white; padding: 12px 16px; text-align: left; font-size: 14px; }
+  td { padding: 10px 16px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 16px 0; }
+  .card { background: #fff5f3; border-radius: 14px; padding: 20px; border: 1px solid #fce3de; }
+  .card-icon { font-size: 28px; margin-bottom: 10px; }
+  .card h4 { color: var(--primary); margin: 0 0 8px; }
+  .card p { font-size: 14px; color: #555; margin: 0; }
+  code { background: #fff0ec; color: #c0392b; border-radius: 4px; padding: 2px 6px; font-family: 'Fira Code','Consolas',monospace; font-size: 0.9em; }
+  .tag { display: inline-block; border-radius: 20px; padding: 3px 12px; font-size: 12px; font-weight: 600; margin: 2px; }
+  .tag-green { background: #dcfce7; color: #166534; }
+  .tag-blue { background: #dbeafe; color: #1d4ed8; }
+  .tag-yellow { background: #fef9c3; color: #854d0e; }
+  .practice { background: linear-gradient(135deg, #fff5f3, #fff8f0); border-radius: 16px; padding: 24px; margin: 20px 0; border: 2px solid var(--primary); }
+  .practice h4 { color: var(--primary); margin-bottom: 14px; }
+  .breadcrumb { background: white; border-radius: 12px; padding: 12px 20px; margin: 20px auto; max-width: 900px; font-size: 14px; color: #666; box-shadow: var(--card-shadow); }
+  .breadcrumb a { color: var(--primary); text-decoration: none; }
+  .footer { text-align: center; padding: 40px 20px; color: #999; font-size: 14px; }
+  .footer a { color: var(--primary); text-decoration: none; }
+  .nav-btns { display: flex; gap: 16px; justify-content: center; margin-top: 40px; }
+  .nav-btn { background: var(--primary); color: white; border-radius: 12px; padding: 12px 28px; text-decoration: none; font-weight: 600; transition: transform 0.2s; }
+  .nav-btn:hover { transform: translateY(-2px); }
+  .nav-btn.outline { background: white; color: var(--primary); border: 2px solid var(--primary); }
+  .set-demo { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; margin: 20px 0; }
+  .set-circle { border-radius: 50%; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; font-size: 13px; text-align: center; font-weight: 600; }
+  @media (max-width: 600px) { .hero h1 { font-size: 1.8em; } .section { padding: 20px; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">🐍 Python 学习之路 · 第6周</div>
+  <h1>字典 dict 与集合 set</h1>
+  <p>字典是 Python 编程的核心武器！用来存储键值对数据，几乎无处不在。</p>
+  <div class="hero-meta">
+    <span>📅 第6周 / 共52周</span>
+    <span>⏱️ 建议学习 7-9 小时</span>
+    <span>🎯 难度 ★★★★☆</span>
+    <span>📌 阶段：基础语法</span>
+  </div>
+</div>
+
+<div class="breadcrumb container">
+  <a href="index.html">🏠 首页</a> &gt; <a href="index.html">Python学习之路</a> &gt; 第6周：字典 dict 与集合 set
+</div>
+
+<div class="toc container">
+  <h3>📋 本周学习目录</h3>
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item">1. 字典是什么？</a>
+    <a href="#s2" class="toc-item">2. 创建与访问</a>
+    <a href="#s3" class="toc-item">3. 增删改查</a>
+    <a href="#s4" class="toc-item">4. 常用方法（12个）</a>
+    <a href="#s5" class="toc-item">5. 字典遍历</a>
+    <a href="#s6" class="toc-item">6. 字典推导式</a>
+    <a href="#s7" class="toc-item">7. 嵌套字典</a>
+    <a href="#s8" class="toc-item">8. 集合详解</a>
+    <a href="#s9" class="toc-item">9. 集合运算</a>
+    <a href="#s10" class="toc-item">10. 综合实战</a>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- S1 -->
+<div class="section" id="s1">
+  <div class="section-header">
+    <div class="section-num">1</div>
+    <h2>字典是什么？</h2>
+  </div>
+  <p>字典是一个<strong>键值对（key-value）</strong>的集合，用花括号 <code>{}</code> 表示。就像真实的字典：用单词（键）查含义（值）。</p>
+  <div class="info">
+    <strong>类比：</strong>字典就像手机通讯录 —— 用名字（键）找到电话号码（值），查找速度极快！
+  </div>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h4>极速查找</h4>
+      <p>无论数据多大，查找时间几乎不变（哈希表）</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔑</div>
+      <h4>键值对</h4>
+      <p>每个数据都是 key: value 的形式</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">📋</div>
+      <h4>有序（3.7+）</h4>
+      <p>Python 3.7起，字典保持插入顺序</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔒</div>
+      <h4>键唯一</h4>
+      <p>键不能重复，值可以重复</p>
+    </div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div class="section" id="s2">
+  <div class="section-header">
+    <div class="section-num">2</div>
+    <h2>创建字典与访问</h2>
+  </div>
+  <pre><code><span class="cm"># 直接创建</span>
+person <span class="op">=</span> {
+    <span class="st">"name"</span>: <span class="st">"周同学"</span>,
+    <span class="st">"age"</span>: <span class="nm">28</span>,
+    <span class="st">"city"</span>: <span class="st">"北京"</span>,
+    <span class="st">"hobbies"</span>: [<span class="st">"Python"</span>, <span class="st">"摄影"</span>, <span class="st">"旅行"</span>]
+}
+
+<span class="cm"># 用 dict() 创建</span>
+config <span class="op">=</span> <span class="fn">dict</span>(host<span class="op">=</span><span class="st">"localhost"</span>, port<span class="op">=</span><span class="nm">3306</span>, db<span class="op">=</span><span class="st">"mydb"</span>)
+
+<span class="cm"># 用键访问值</span>
+<span class="fn">print</span>(person[<span class="st">"name"</span>])    <span class="cm"># 周同学</span>
+<span class="fn">print</span>(person[<span class="st">"age"</span>])     <span class="cm"># 28</span>
+<span class="fn">print</span>(person[<span class="st">"hobbies"</span>]) <span class="cm"># ['Python', '摄影', '旅行']</span>
+
+<span class="cm"># 用 get() 安全访问（键不存在不报错）</span>
+<span class="fn">print</span>(person.get(<span class="st">"email"</span>))              <span class="cm"># None</span>
+<span class="fn">print</span>(person.get(<span class="st">"email"</span>, <span class="st">"未填写"</span>))   <span class="cm"># 未填写（默认值）</span>
+<span class="fn">print</span>(person.get(<span class="st">"name"</span>, <span class="st">"未知"</span>))     <span class="cm"># 周同学</span>
+</code></pre>
+  <div class="warn">
+    ⚠️ <strong>注意：</strong>用 <code>dict[key]</code> 访问不存在的键会报 KeyError，建议用 <code>dict.get(key)</code> 更安全！
+  </div>
+</div>
+
+<!-- S3 -->
+<div class="section" id="s3">
+  <div class="section-header">
+    <div class="section-num">3</div>
+    <h2>增删改查操作</h2>
+  </div>
+  <pre><code>person <span class="op">=</span> {<span class="st">"name"</span>: <span class="st">"周同学"</span>, <span class="st">"age"</span>: <span class="nm">28</span>}
+
+<span class="cm"># 增：直接赋值（键不存在则新增）</span>
+person[<span class="st">"city"</span>] <span class="op">=</span> <span class="st">"北京"</span>
+person[<span class="st">"email"</span>] <span class="op">=</span> <span class="st">"zhou@example.com"</span>
+<span class="fn">print</span>(person)
+
+<span class="cm"># 改：直接赋值（键存在则修改）</span>
+person[<span class="st">"age"</span>] <span class="op">=</span> <span class="nm">29</span>
+<span class="fn">print</span>(person[<span class="st">"age"</span>])  <span class="cm"># 29</span>
+
+<span class="cm"># 删：del 关键字</span>
+<span class="kw">del</span> person[<span class="st">"email"</span>]
+
+<span class="cm"># 删：pop() 方法（返回被删除的值）</span>
+age <span class="op">=</span> person.pop(<span class="st">"age"</span>)
+<span class="fn">print</span>(<span class="st">f"删除的age值：{age}"</span>)
+
+<span class="cm"># 查：in 判断键是否存在</span>
+<span class="fn">print</span>(<span class="st">"name"</span> <span class="kw">in</span> person)   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="st">"age"</span> <span class="kw">in</span> person)    <span class="cm"># False（已被删除）</span>
+
+<span class="cm"># 批量更新</span>
+person.update({<span class="st">"age"</span>: <span class="nm">29</span>, <span class="st">"phone"</span>: <span class="st">"138xxxx"</span>})
+<span class="fn">print</span>(person)
+</code></pre>
+</div>
+
+<!-- S4 -->
+<div class="section" id="s4">
+  <div class="section-header">
+    <div class="section-num">4</div>
+    <h2>字典常用方法（12个）</h2>
+  </div>
+  <table>
+    <tr><th>方法</th><th>说明</th><th>示例</th></tr>
+    <tr><td><code>d.get(key, default)</code></td><td>安全获取值，键不存在返回默认值</td><td><code>d.get("age", 0)</code></td></tr>
+    <tr><td><code>d.keys()</code></td><td>返回所有键的视图</td><td><code>list(d.keys())</code></td></tr>
+    <tr><td><code>d.values()</code></td><td>返回所有值的视图</td><td><code>list(d.values())</code></td></tr>
+    <tr><td><code>d.items()</code></td><td>返回所有键值对的视图</td><td><code>list(d.items())</code></td></tr>
+    <tr><td><code>d.update(other)</code></td><td>用other字典更新d（批量添加/修改）</td><td><code>d.update({"a":1})</code></td></tr>
+    <tr><td><code>d.pop(key)</code></td><td>删除键并返回值</td><td><code>val = d.pop("x")</code></td></tr>
+    <tr><td><code>d.popitem()</code></td><td>删除并返回最后插入的键值对</td><td><code>k,v = d.popitem()</code></td></tr>
+    <tr><td><code>d.setdefault(k, v)</code></td><td>键不存在时设置默认值</td><td><code>d.setdefault("count", 0)</code></td></tr>
+    <tr><td><code>d.clear()</code></td><td>清空字典</td><td><code>d.clear()</code></td></tr>
+    <tr><td><code>d.copy()</code></td><td>浅复制</td><td><code>d2 = d.copy()</code></td></tr>
+    <tr><td><code>len(d)</code></td><td>键值对数量</td><td><code>len(d)</code></td></tr>
+    <tr><td><code>key in d</code></td><td>判断键是否存在</td><td><code>"name" in d</code></td></tr>
+  </table>
+  <pre><code><span class="cm"># setdefault 非常有用：统计词频</span>
+text <span class="op">=</span> <span class="st">"apple banana apple cherry banana apple"</span>
+word_count <span class="op">=</span> {}
+<span class="kw">for</span> word <span class="kw">in</span> text.split():
+    word_count.setdefault(word, <span class="nm">0</span>)  <span class="cm"># 不存在时初始化为0</span>
+    word_count[word] <span class="op">+=</span> <span class="nm">1</span>
+<span class="fn">print</span>(word_count)
+<span class="cm"># {'apple': 3, 'banana': 2, 'cherry': 1}</span>
+
+<span class="cm"># 更简洁：用 get</span>
+word_count2 <span class="op">=</span> {}
+<span class="kw">for</span> word <span class="kw">in</span> text.split():
+    word_count2[word] <span class="op">=</span> word_count2.get(word, <span class="nm">0</span>) <span class="op">+</span> <span class="nm">1</span>
+<span class="fn">print</span>(word_count2)
+</code></pre>
+</div>
+
+<!-- S5 -->
+<div class="section" id="s5">
+  <div class="section-header">
+    <div class="section-num">5</div>
+    <h2>字典遍历</h2>
+  </div>
+  <pre><code>scores <span class="op">=</span> {<span class="st">"小明"</span>: <span class="nm">85</span>, <span class="st">"小红"</span>: <span class="nm">92</span>, <span class="st">"小李"</span>: <span class="nm">78</span>}
+
+<span class="cm"># 遍历键（默认）</span>
+<span class="kw">for</span> name <span class="kw">in</span> scores:
+    <span class="fn">print</span>(name)  <span class="cm"># 小明、小红、小李</span>
+
+<span class="cm"># 遍历值</span>
+<span class="kw">for</span> score <span class="kw">in</span> scores.values():
+    <span class="fn">print</span>(score)  <span class="cm"># 85、92、78</span>
+
+<span class="cm"># 遍历键值对（最常用！）</span>
+<span class="kw">for</span> name, score <span class="kw">in</span> scores.items():
+    grade <span class="op">=</span> <span class="st">"优"</span> <span class="kw">if</span> score <span class="op">&gt;=</span> <span class="nm">90</span> <span class="kw">else</span> <span class="st">"良"</span>
+    <span class="fn">print</span>(<span class="st">f"{name}：{score}分（{grade}）"</span>)
+
+<span class="cm"># 按值排序遍历</span>
+<span class="kw">for</span> name, score <span class="kw">in</span> <span class="fn">sorted</span>(scores.items(), key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="nm">1</span>], reverse<span class="op">=</span><span class="nb">True</span>):
+    <span class="fn">print</span>(<span class="st">f"{name}：{score}"</span>)
+<span class="cm"># 小红92、小明85、小李78</span>
+</code></pre>
+</div>
+
+<!-- S6 -->
+<div class="section" id="s6">
+  <div class="section-header">
+    <div class="section-num">6</div>
+    <h2>字典推导式</h2>
+  </div>
+  <pre><code><span class="cm"># 基础：创建平方字典</span>
+squares <span class="op">=</span> {x: x<span class="op">**</span><span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1</span>, <span class="nm">6</span>)}
+<span class="fn">print</span>(squares)  <span class="cm"># {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}</span>
+
+<span class="cm"># 反转字典（键值互换）</span>
+original <span class="op">=</span> {<span class="st">"a"</span>: <span class="nm">1</span>, <span class="st">"b"</span>: <span class="nm">2</span>, <span class="st">"c"</span>: <span class="nm">3</span>}
+reversed_dict <span class="op">=</span> {v: k <span class="kw">for</span> k, v <span class="kw">in</span> original.items()}
+<span class="fn">print</span>(reversed_dict)  <span class="cm"># {1: 'a', 2: 'b', 3: 'c'}</span>
+
+<span class="cm"># 带条件过滤（只保留分数≥80的）</span>
+scores <span class="op">=</span> {<span class="st">"小明"</span>: <span class="nm">85</span>, <span class="st">"小红"</span>: <span class="nm">92</span>, <span class="st">"小李"</span>: <span class="nm">55</span>, <span class="st">"小张"</span>: <span class="nm">78</span>}
+passed <span class="op">=</span> {name: score <span class="kw">for</span> name, score <span class="kw">in</span> scores.items() <span class="kw">if</span> score <span class="op">&gt;=</span> <span class="nm">80</span>}
+<span class="fn">print</span>(passed)  <span class="cm"># {'小明': 85, '小红': 92}</span>
+
+<span class="cm"># 从两个列表创建字典</span>
+keys <span class="op">=</span> [<span class="st">"name"</span>, <span class="st">"age"</span>, <span class="st">"city"</span>]
+values <span class="op">=</span> [<span class="st">"周同学"</span>, <span class="nm">28</span>, <span class="st">"北京"</span>]
+person <span class="op">=</span> <span class="fn">dict</span>(<span class="fn">zip</span>(keys, values))
+<span class="fn">print</span>(person)
+</code></pre>
+</div>
+
+<!-- S7 -->
+<div class="section" id="s7">
+  <div class="section-header">
+    <div class="section-num">7</div>
+    <h2>嵌套字典</h2>
+  </div>
+  <p>字典的值可以是另一个字典，形成树形结构。</p>
+  <pre><code><span class="cm"># 学生信息数据库</span>
+database <span class="op">=</span> {
+    <span class="st">"S001"</span>: {
+        <span class="st">"name"</span>: <span class="st">"小明"</span>,
+        <span class="st">"scores"</span>: {<span class="st">"语文"</span>: <span class="nm">85</span>, <span class="st">"数学"</span>: <span class="nm">92</span>, <span class="st">"英语"</span>: <span class="nm">88</span>},
+        <span class="st">"grade"</span>: <span class="st">"三年级"</span>
+    },
+    <span class="st">"S002"</span>: {
+        <span class="st">"name"</span>: <span class="st">"小红"</span>,
+        <span class="st">"scores"</span>: {<span class="st">"语文"</span>: <span class="nm">95</span>, <span class="st">"数学"</span>: <span class="nm">78</span>, <span class="st">"英语"</span>: <span class="nm">96</span>},
+        <span class="st">"grade"</span>: <span class="st">"三年级"</span>
+    }
+}
+
+<span class="cm"># 访问嵌套数据</span>
+<span class="fn">print</span>(database[<span class="st">"S001"</span>][<span class="st">"name"</span>])              <span class="cm"># 小明</span>
+<span class="fn">print</span>(database[<span class="st">"S001"</span>][<span class="st">"scores"</span>][<span class="st">"数学"</span>])  <span class="cm"># 92</span>
+
+<span class="cm"># 遍历嵌套字典</span>
+<span class="kw">for</span> sid, info <span class="kw">in</span> database.items():
+    avg <span class="op">=</span> <span class="fn">sum</span>(info[<span class="st">"scores"</span>].values()) <span class="op">/</span> <span class="fn">len</span>(info[<span class="st">"scores"</span>])
+    <span class="fn">print</span>(<span class="st">f"{sid} {info['name']}：平均分 {avg:.1f}"</span>)
+
+<span class="cm"># 修改嵌套数据</span>
+database[<span class="st">"S001"</span>][<span class="st">"scores"</span>][<span class="st">"语文"</span>] <span class="op">=</span> <span class="nm">90</span>
+database[<span class="st">"S001"</span>][<span class="st">"contact"</span>] <span class="op">=</span> {<span class="st">"phone"</span>: <span class="st">"138xxxx"</span>}  <span class="cm"># 添加新键</span>
+</code></pre>
+</div>
+
+<!-- S8 -->
+<div class="section" id="s8">
+  <div class="section-header">
+    <div class="section-num">8</div>
+    <h2>集合（Set）详解</h2>
+  </div>
+  <p>集合是一个<strong>无序、不重复</strong>的元素集合，用花括号 <code>{}</code> 表示（但和字典不同，没有键值对）。</p>
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🚫</div>
+      <h4>自动去重</h4>
+      <p>重复元素自动删除，完美用于去重</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚡</div>
+      <h4>查找极快</h4>
+      <p>判断元素是否存在，比列表快很多</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔢</div>
+      <h4>集合运算</h4>
+      <p>支持交集、并集、差集等数学运算</p>
+    </div>
+  </div>
+  <pre><code><span class="cm"># 创建集合</span>
+fruits <span class="op">=</span> {<span class="st">"苹果"</span>, <span class="st">"香蕉"</span>, <span class="st">"橙子"</span>}
+numbers <span class="op">=</span> {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>}
+empty_set <span class="op">=</span> <span class="fn">set</span>()  <span class="cm"># 注意：{} 创建的是空字典！</span>
+
+<span class="cm"># 自动去重！</span>
+duplicates <span class="op">=</span> [<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">3</span>, <span class="nm">3</span>, <span class="nm">4</span>]
+unique <span class="op">=</span> <span class="fn">set</span>(duplicates)
+<span class="fn">print</span>(unique)  <span class="cm"># {1, 2, 3, 4}</span>
+
+<span class="cm"># 常用操作</span>
+s <span class="op">=</span> {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>}
+s.add(<span class="nm">4</span>)           <span class="cm"># 添加元素</span>
+s.remove(<span class="nm">2</span>)        <span class="cm"># 删除元素（不存在会报错）</span>
+s.discard(<span class="nm">10</span>)      <span class="cm"># 安全删除（不存在不报错）</span>
+<span class="fn">print</span>(<span class="nm">3</span> <span class="kw">in</span> s)       <span class="cm"># True（成员判断）</span>
+<span class="fn">print</span>(<span class="fn">len</span>(s))       <span class="cm"># 集合大小</span>
+
+<span class="cm"># 实际用途：列表去重</span>
+names <span class="op">=</span> [<span class="st">"小明"</span>, <span class="st">"小红"</span>, <span class="st">"小明"</span>, <span class="st">"小李"</span>, <span class="st">"小红"</span>]
+unique_names <span class="op">=</span> <span class="fn">list</span>(<span class="fn">set</span>(names))
+<span class="fn">print</span>(unique_names)  <span class="cm"># ['小明', '小红', '小李']（顺序可能不同）</span>
+</code></pre>
+</div>
+
+<!-- S9 -->
+<div class="section" id="s9">
+  <div class="section-header">
+    <div class="section-num">9</div>
+    <h2>集合运算（数学味十足）</h2>
+  </div>
+  <pre><code>A <span class="op">=</span> {<span class="nm">1</span>, <span class="nm">2</span>, <span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>}
+B <span class="op">=</span> {<span class="nm">4</span>, <span class="nm">5</span>, <span class="nm">6</span>, <span class="nm">7</span>, <span class="nm">8</span>}
+
+<span class="cm"># 交集：两个集合共同拥有的</span>
+<span class="fn">print</span>(A <span class="op">&amp;</span> B)          <span class="cm"># {4, 5}</span>
+<span class="fn">print</span>(A.intersection(B))  <span class="cm"># 同上</span>
+
+<span class="cm"># 并集：两个集合合在一起（去重）</span>
+<span class="fn">print</span>(A <span class="op">|</span> B)          <span class="cm"># {1, 2, 3, 4, 5, 6, 7, 8}</span>
+<span class="fn">print</span>(A.union(B))         <span class="cm"># 同上</span>
+
+<span class="cm"># 差集：A有但B没有</span>
+<span class="fn">print</span>(A <span class="op">-</span> B)          <span class="cm"># {1, 2, 3}</span>
+<span class="fn">print</span>(A.difference(B))    <span class="cm"># 同上</span>
+
+<span class="cm"># 对称差集：只属于A或只属于B（不包括共有）</span>
+<span class="fn">print</span>(A <span class="op">^</span> B)          <span class="cm"># {1, 2, 3, 6, 7, 8}</span>
+<span class="fn">print</span>(A.symmetric_difference(B))  <span class="cm"># 同上</span>
+
+<span class="cm"># 子集判断</span>
+C <span class="op">=</span> {<span class="nm">1</span>, <span class="nm">2</span>}
+<span class="fn">print</span>(C.issubset(A))   <span class="cm"># True（C是A的子集）</span>
+<span class="fn">print</span>(A.issuperset(C)) <span class="cm"># True（A包含C）</span>
+<span class="fn">print</span>(A.isdisjoint(B)) <span class="cm"># False（有交集）</span>
+</code></pre>
+
+  <div class="practice">
+    <h4>🎯 实际应用：找出两个班级共同选修的课程</h4>
+  </div>
+  <pre><code>class_A_courses <span class="op">=</span> {<span class="st">"Python"</span>, <span class="st">"数学"</span>, <span class="st">"英语"</span>, <span class="st">"历史"</span>}
+class_B_courses <span class="op">=</span> {<span class="st">"Python"</span>, <span class="st">"物理"</span>, <span class="st">"英语"</span>, <span class="st">"化学"</span>}
+
+common <span class="op">=</span> class_A_courses <span class="op">&amp;</span> class_B_courses
+only_A <span class="op">=</span> class_A_courses <span class="op">-</span> class_B_courses
+only_B <span class="op">=</span> class_B_courses <span class="op">-</span> class_A_courses
+all_courses <span class="op">=</span> class_A_courses <span class="op">|</span> class_B_courses
+
+<span class="fn">print</span>(<span class="st">f"共同课程：{common}"</span>)     <span class="cm"># {'Python', '英语'}</span>
+<span class="fn">print</span>(<span class="st">f"只有A：{only_A}"</span>)       <span class="cm"># {'数学', '历史'}</span>
+<span class="fn">print</span>(<span class="st">f"只有B：{only_B}"</span>)       <span class="cm"># {'物理', '化学'}</span>
+<span class="fn">print</span>(<span class="st">f"所有课程：{all_courses}"</span>)
+</code></pre>
+</div>
+
+<!-- S10 -->
+<div class="section" id="s10">
+  <div class="section-header">
+    <div class="section-num">10</div>
+    <h2>综合实战</h2>
+  </div>
+
+  <div class="practice">
+    <h4>🎯 实战：词频统计 + 排行榜</h4>
+  </div>
+  <pre><code><span class="kw">from</span> collections <span class="kw">import</span> Counter
+
+text <span class="op">=</span> <span class="st">"""Python是一种简洁优雅的编程语言。
+Python非常易学，Python社区也很活跃。
+学习Python让你的编程之路更加顺畅。"""</span>
+
+<span class="cm"># 简单词频统计</span>
+words <span class="op">=</span> text.replace(<span class="st">"。"</span>, <span class="st">""</span>).replace(<span class="st">"，"</span>, <span class="st">""</span>).replace(<span class="st">"。\n"</span>, <span class="st">""</span>).split()
+counter <span class="op">=</span> {}
+<span class="kw">for</span> word <span class="kw">in</span> words:
+    counter[word] <span class="op">=</span> counter.get(word, <span class="nm">0</span>) <span class="op">+</span> <span class="nm">1</span>
+
+<span class="fn">print</span>(<span class="st">"=== 词频统计 ==="</span>)
+<span class="kw">for</span> word, count <span class="kw">in</span> <span class="fn">sorted</span>(counter.items(), key<span class="op">=</span><span class="kw">lambda</span> x: x[<span class="nm">1</span>], reverse<span class="op">=</span><span class="nb">True</span>):
+    bar <span class="op">=</span> <span class="st">"▓"</span> <span class="op">*</span> count
+    <span class="fn">print</span>(<span class="st">f"{word:8s} {count:2d}次 {bar}"</span>)
+
+<span class="cm"># 用Counter更简洁</span>
+word_counter <span class="op">=</span> Counter(words)
+<span class="fn">print</span>(<span class="st">"\n最常见的3个词："</span>, word_counter.most_common(<span class="nm">3</span>))
+</code></pre>
+
+  <table>
+    <tr><th>知识点</th><th>核心要点</th><th>掌握度</th></tr>
+    <tr><td>字典创建</td><td>{key: value} 或 dict()</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>d.get(key, default)</td><td>安全取值，避免KeyError</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>d.items()</td><td>遍历键值对</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>字典推导式</td><td>{k:v for k,v in ...}</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>嵌套字典</td><td>字典的值也是字典</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+    <tr><td>集合去重</td><td>list(set(lst))</td><td><span class="tag tag-green">必须掌握</span></td></tr>
+    <tr><td>集合运算</td><td>&amp; | - ^</td><td><span class="tag tag-blue">推荐掌握</span></td></tr>
+  </table>
+
+  <div class="tip">
+    🚀 <strong>第七周预告：</strong>函数基础 —— 把代码打包成工具！函数是提升代码复用性的关键，学好了写代码效率翻倍！
+  </div>
+
+  <div class="nav-btns">
+    <a href="python-week5.html" class="nav-btn outline">← 第五周</a>
+    <a href="index.html" class="nav-btn outline">🏠 首页</a>
+    <a href="python-week7.html" class="nav-btn">第七周 →</a>
+  </div>
+</div>
+</div>
+
+<div class="footer">
+  <p>🐍 Python 学习之路 · 第6周 · 字典 dict 与集合 set</p>
+  <p style="margin-top:8px"><a href="index.html">返回首页</a> · 持续学习，每天进步一点点！</p>
+</div>
+</body>
+</html>
