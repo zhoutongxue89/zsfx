@@ -1,0 +1,1643 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路 - 第12周：文件与IO操作</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #00d4aa;
+            --secondary: #7c3aed;
+            --accent: #f59e0b;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-hover: #1a1a2e;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --border: #27272a;
+            --code-bg: #16161e;
+            --gradient-1: linear-gradient(135deg, #00d4aa 0%, #7c3aed 100%);
+            --gradient-2: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%);
+            --gradient-3: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            --gradient-card: linear-gradient(145deg, #1a1a2e 0%, #12121a 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .hero {
+            background: var(--gradient-2);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .week-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .hero h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .hero-desc {
+            font-size: 1.2em;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Progress */
+        .progress-bar {
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .progress-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .progress-track {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-2);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .progress-percent {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: var(--gradient-card);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+        }
+        .toc h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toc h2::before {
+            content: '📑';
+        }
+        .toc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+        }
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-hover);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .toc-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+        .toc-num {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        /* Section */
+        .section {
+            background: var(--gradient-card);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+        }
+        .section:nth-child(2)::before { background: var(--gradient-2); }
+        .section:nth-child(3)::before { background: var(--gradient-3); }
+        .section:nth-child(4)::before { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); }
+        .section:nth-child(5)::before { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); }
+        .section:nth-child(6)::before { background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%); }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .section h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        .section h3 {
+            font-size: 1.3em;
+            color: var(--primary);
+            margin: 25px 0 15px 0;
+        }
+        
+        /* Concept Card */
+        .concept {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+        .concept-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 15px 0;
+        }
+        .info-box.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        .info-box.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Code Block */
+        pre[class*="language-"] {
+            background: var(--code-bg) !important;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+            border: 1px solid var(--border);
+        }
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', monospace !important;
+        }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--code-bg);
+            padding: 10px 16px;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            font-size: 13px;
+        }
+        .code-title {
+            color: var(--text-secondary);
+        }
+        .code-lang {
+            background: var(--secondary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Inline Code */
+        p code, li code {
+            background: var(--code-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+        
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: var(--bg-hover);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        tr:hover td {
+            background: var(--bg-hover);
+        }
+        
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .comparison-item {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .comparison-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        .comparison-item .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .comparison-item .name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .comparison-item .desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Output Block */
+        .output-block {
+            background: #000;
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #10b981;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+        }
+        .output-line { margin: 3px 0; }
+        
+        /* Practice Card */
+        .practice-card {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .practice-title {
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .practice-title::before { content: '💻'; font-size: 1.2em; }
+        
+        /* Summary */
+        .summary {
+            background: var(--bg-hover);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .summary h3 {
+            color: var(--primary);
+            margin: 0 0 20px 0;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .summary-item .emoji { font-size: 1.5em; margin-bottom: 8px; }
+        .summary-item .label { font-size: 13px; color: var(--text-secondary); }
+        
+        /* Navigation */
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            margin-top: 40px;
+            border: 1px solid var(--border);
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: var(--bg-hover);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+        .nav-link:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+        .nav-link.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .nav-info { text-align: center; flex: 1; }
+        .nav-info .week { font-size: 14px; color: var(--text-secondary); }
+        .nav-info .title { font-weight: 600; }
+        
+        /* Divider */
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 20px 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .section { padding: 25px; }
+            .nav-footer { flex-direction: column; }
+            .toc-list { grid-template-columns: 1fr; }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <div class="week-badge">第 12 周 · 阶段三</div>
+            <h1>文件与IO操作</h1>
+            <p class="hero-desc">深入学习文件读写、路径管理、二进制文件、CSV、JSON配置、logging日志系统</p>
+        </div>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-container">
+            <span class="progress-text">学习进度</span>
+            <div class="progress-track">
+                <div class="progress-fill" style="width: 23.1%"></div>
+            </div>
+            <span class="progress-percent">23.1%</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>章节导航</h2>
+            <div class="toc-list">
+                <a href="#sec1" class="toc-item">
+                    <span class="toc-num">1</span>
+                    <span>文件基础操作</span>
+                </a>
+                <a href="#sec2" class="toc-item">
+                    <span class="toc-num">2</span>
+                    <span>with语句与上下文管理</span>
+                </a>
+                <a href="#sec3" class="toc-item">
+                    <span class="toc-num">3</span>
+                    <span>Pathlib 路径管理</span>
+                </a>
+                <a href="#sec4" class="toc-item">
+                    <span class="toc-num">4</span>
+                    <span>CSV 文件处理</span>
+                </a>
+                <a href="#sec5" class="toc-item">
+                    <span class="toc-num">5</span>
+                    <span>logging 日志系统</span>
+                </a>
+                <a href="#sec6" class="toc-item">
+                    <span class="toc-num">6</span>
+                    <span>综合实战项目</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Section 1: 文件基础操作 -->
+        <div class="section" id="sec1">
+            <div class="section-header">
+                <div class="section-icon">📄</div>
+                <h2>文件基础操作</h2>
+            </div>
+            
+            <p>Python的文件操作是所有IO操作的基础。无论是读取配置文件、处理数据文件，还是生成报告，都离不开文件操作。</p>
+            
+            <h3>1.1 open() 函数</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p><code>open()</code> 函数用于打开文件，返回一个文件对象。基本语法：<code>open(file, mode='r', encoding=None)</code></p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <div class="icon">📖</div>
+                    <div class="name">r</div>
+                    <div class="desc">只读（默认）</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">✏️</div>
+                    <div class="name">w</div>
+                    <div class="desc">写入（覆盖）</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">➕</div>
+                    <div class="name">a</div>
+                    <div class="desc">追加（末尾）</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">🔢</div>
+                    <div class="name">x</div>
+                    <div class="desc">新建（排他创建）</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">📝</div>
+                    <div class="name">rb/wb</div>
+                    <div class="desc">二进制模式</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">🔄</div>
+                    <div class="name">+</div>
+                    <div class="desc">读写模式</div>
+                </div>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">文件读取方法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code># 读取整个文件内容
+with open('test.txt', 'r', encoding='utf-8') as f:
+    content = f.read()
+    print(content)
+
+# 按行读取
+with open('test.txt', 'r', encoding='utf-8') as f:
+    for line in f:  # 迭代器方式，一行一行读
+        print(line.rstrip())  # rstrip()去掉换行符
+
+# readline() - 读取一行
+with open('test.txt', 'r', encoding='utf-8') as f:
+    line1 = f.readline()
+    line2 = f.readline()
+    print(line1, line2)
+
+# readlines() - 读取所有行到列表
+with open('test.txt', 'r', encoding='utf-8') as f:
+    lines = f.readlines()
+    print(lines)</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">Hello, Python!</div>
+                <div class="output-line">这是第二行</div>
+                <div class="output-line">这是第三行</div>
+            </div>
+
+            <h3>1.2 文件写入</h3>
+            <div class="code-header">
+                <span class="code-title">文件写入方法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code># 写入单个文件
+with open('output.txt', 'w', encoding='utf-8') as f:
+    f.write('第一行内容\n')
+    f.write('第二行内容\n')
+
+# writelines() - 写入多行
+lines = ['第一行\n', '第二行\n', '第三行\n']
+with open('output.txt', 'w', encoding='utf-8') as f:
+    f.writelines(lines)
+
+# 追加模式
+with open('output.txt', 'a', encoding='utf-8') as f:
+    f.write('这是在末尾追加的内容\n')
+
+# 同时读写模式 (r+)
+with open('test.txt', 'r+', encoding='utf-8') as f:
+    content = f.read()
+    f.seek(0)  # 回到文件开头
+    f.write('新内容' + content)</code></pre>
+
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ 注意编码</div>
+                <p>Windows默认编码是GBK，Linux/Mac是UTF-8。为了跨平台兼容性，建议始终指定 <code>encoding='utf-8'</code>。</p>
+            </div>
+
+            <h3>1.3 文件指针操作</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p>文件指针标记当前读取/写入的位置。使用 <code>seek()</code> 移动指针，<code>tell()</code> 获取当前位置。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">文件指针操作</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>with open('test.txt', 'r', encoding='utf-8') as f:
+    print(f"初始位置: {f.tell()}")  # 0
+    
+    content = f.read(5)  # 读取5个字符
+    print(f"读取5字符后: {f.tell()}")  # 5
+    
+    f.seek(0)  # 回到开头
+    print(f"seek(0)后: {f.tell()}")  # 0
+    
+    f.seek(0, 2)  # 移到末尾（2表示从末尾计算）
+    print(f"文件末尾: {f.tell()}")
+    
+    # seek(offset, whence)
+    # whence=0: 从开头（默认）
+    # whence=1: 从当前位置
+    # whence=2: 从末尾</code></pre>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 2: with语句与上下文管理 -->
+        <div class="section" id="sec2">
+            <div class="section-header">
+                <div class="section-icon">🔐</div>
+                <h2>with语句与上下文管理</h2>
+            </div>
+            
+            <p><code>with</code> 语句是Python的上下文管理器协议，确保资源在使用后正确释放，即使发生异常也能保证清理代码执行。</p>
+            
+            <h3>2.1 为什么需要with</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item" style="border-color: #ef4444;">
+                    <div class="name">❌ 不用with</div>
+                    <div class="desc">需要手动close()<br>异常时可能不执行<br>代码繁琐</div>
+                </div>
+                <div class="comparison-item" style="border-color: #10b981;">
+                    <div class="name">✅ 用with</div>
+                    <div class="desc">自动close()<br>异常安全<br>简洁优雅</div>
+                </div>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">对比：不用with vs 用with</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code># ❌ 不推荐：需要手动关闭
+f = open('test.txt', 'r', encoding='utf-8')
+try:
+    content = f.read()
+    print(content)
+finally:
+    f.close()  # 必须手动关闭，忘记会导致资源泄漏
+
+# ✅ 推荐：使用with语句
+with open('test.txt', 'r', encoding='utf-8') as f:
+    content = f.read()
+    print(content)
+# with块结束后自动调用f.close()</code></pre>
+
+            <h3>2.2 上下文管理器原理</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p>上下文管理器需要实现 <code>__enter__</code> 和 <code>__exit__</code> 两个方法。with语句会自动调用它们来管理资源。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">自定义上下文管理器</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>class FileManager:
+    """自定义文件管理器（实现上下文管理器协议）"""
+    def __init__(self, filename, mode):
+        self.filename = filename
+        self.mode = mode
+        self.file = None
+    
+    def __enter__(self):
+        """进入with块时调用"""
+        print(f"打开文件: {self.filename}")
+        self.file = open(self.filename, self.mode, encoding='utf-8')
+        return self.file  # 返回值绑定到 as 后的变量
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """退出with块时调用"""
+        print(f"关闭文件: {self.filename}")
+        if self.file:
+            self.file.close()
+        # 返回True可以压制异常
+        return False
+
+# 使用自定义上下文管理器
+with FileManager('test.txt', 'r') as f:
+    content = f.read()
+    print(f"读取内容: {content[:50]}...")
+
+# 即使发生异常，__exit__也会执行
+try:
+    with FileManager('test.txt', 'r') as f:
+        raise ValueError("测试异常")
+except ValueError as e:
+    print(f"异常被捕获: {e}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">打开文件: test.txt</div>
+                <div class="output-line">读取内容: Hello, Python!...</div>
+                <div class="output-line">关闭文件: test.txt</div>
+                <div class="output-line">打开文件: test.txt</div>
+                <div class="output-line">关闭文件: test.txt</div>
+                <div class="output-line">异常被捕获: 测试异常</div>
+            </div>
+
+            <h3>2.3 contextlib简化写法</h3>
+            <div class="code-header">
+                <span class="code-title">@contextmanager装饰器</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from contextlib import contextmanager
+
+@contextmanager
+def file_manager(filename, mode):
+    """使用装饰器简化上下文管理器"""
+    f = open(filename, mode, encoding='utf-8')
+    try:
+        yield f  # yield之前的代码相当于__enter__
+    finally:
+        f.close()  # finally块相当于__exit__
+
+# 使用
+with file_manager('test.txt', 'r') as f:
+    content = f.read()
+    print(content)
+
+# 实战：计时器上下文管理器
+from contextlib import contextmanager
+import time
+
+@contextmanager
+def timer():
+    """简单的计时器"""
+    start = time.time()
+    yield
+    elapsed = time.time() - start
+    print(f"耗时: {elapsed:.3f}秒")
+
+with timer():
+    # 模拟耗时操作
+    total = sum(range(1000000))
+print(f"计算结果: {total}")</code></pre>
+
+            <div class="practice-card">
+                <div class="practice-title">实战：安全的文件合并工具</div>
+                <div class="code-header">
+                    <span class="code-title">文件合并</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>from contextlib import contextmanager
+
+@contextmanager
+def safe_file_merge(output_file, input_files):
+    """安全地合并多个文件"""
+    print(f"开始合并 {len(input_files)} 个文件...")
+    output = open(output_file, 'w', encoding='utf-8')
+    total_lines = 0
+    try:
+        yield output  # 提供输出文件对象给调用者
+        for fname in input_files:
+            with open(fname, 'r', encoding='utf-8') as inp:
+                for line in inp:
+                    output.write(line)
+                    total_lines += 1
+        print(f"合并完成: {total_lines} 行")
+    finally:
+        output.close()
+
+# 使用
+files_to_merge = ['file1.txt', 'file2.txt', 'file3.txt']
+with safe_file_merge('merged.txt', files_to_merge) as out:
+    out.write("# 合并文件头部\n")</code></pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 3: Pathlib -->
+        <div class="section" id="sec3">
+            <div class="section-header">
+                <div class="section-icon">📁</div>
+                <h2>Pathlib 路径管理</h2>
+            </div>
+            
+            <p><code>pathlib</code> 是Python 3.4引入的面向对象的路径操作库，比传统的 <code>os.path</code> 更直观、更强大。</p>
+            
+            <h3>3.1 Path基本创建</h3>
+            <div class="code-header">
+                <span class="code-title">创建Path对象</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from pathlib import Path
+
+# 当前目录
+p1 = Path('.')
+print(p1.absolute())  # E:\WorkBuddy\知识分享
+
+# 从字符串创建
+p2 = Path('C:/Users/Desktop/test.txt')
+
+# 路径拼接（推荐使用 / 运算符）
+p3 = Path('C:/Users') / 'Desktop' / 'test.txt'
+print(p3)  # C:\Users\Desktop\test.txt
+
+# 使用 /
+base = Path('C:/Users')
+desktop = base / 'Desktop'
+file_path = desktop / 'test.txt'
+print(file_path)
+
+# 获取各种路径属性
+print(f"父目录: {file_path.parent}")
+print(f"文件名: {file_path.name}")
+print(f"无扩展名: {file_path.stem}")
+print(f"扩展名: {file_path.suffix}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">E:\WorkBuddy\知识分享</div>
+                <div class="output-line">C:\Users\Desktop\test.txt</div>
+                <div class="output-line">C:\Users\Desktop\test.txt</div>
+                <div class="output-line">父目录: C:\Users\Desktop</div>
+                <div class="output-line">文件名: test.txt</div>
+                <div class="output-line">无扩展名: test</div>
+                <div class="output-line">扩展名: .txt</div>
+            </div>
+
+            <h3>3.2 路径检查与查询</h3>
+            <div class="code-header">
+                <span class="code-title">路径检查方法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from pathlib import Path
+
+p = Path('test.txt')
+
+# 检查方法（返回True/False）
+print(f"存在: {p.exists()}")
+print(f"是文件: {p.is_file()}")
+print(f"是目录: {p.is_dir()}")
+
+# 获取用户目录
+home = Path.home()
+print(f"用户目录: {home}")
+
+# 创建目录
+Path('new_folder').mkdir(exist_ok=True)  # exist_ok=True 忽略已存在错误
+
+# 创建多级目录
+Path('a/b/c/d').mkdir(parents=True, exist_ok=True)
+
+# 删除文件
+Path('temp.txt').unlink()  # 文件不存在会报错
+Path('temp.txt').unlink(missing_ok=True)  # 不存在不报错
+
+# 删除空目录
+Path('empty_folder').rmdir()
+
+# 重命名/移动
+Path('old.txt').rename('new.txt')
+Path('file.txt').replace('backup/file.txt')</code></pre>
+
+            <h3>3.3 目录遍历</h3>
+            <div class="code-header">
+                <span class="code-title">遍历目录</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from pathlib import Path
+
+base = Path('.')
+
+# iterdir() - 遍历目录下的所有项
+print("当前目录所有文件:")
+for item in base.iterdir():
+    print(f"  {item.name} ({'目录' if item.is_dir() else '文件'})")
+
+# glob() - 模式匹配
+print("\n所有Python文件:")
+for py_file in base.glob('*.py'):
+    print(f"  {py_file.name}")
+
+# 递归glob（**）
+print("\n所有Python文件（含子目录）:")
+for py_file in base.rglob('*.py'):
+    print(f"  {py_file}")
+
+# 过滤文件
+py_files = [f for f in base.glob('*.py') if f.stat().st_size > 1000]
+print(f"\n大于1KB的Python文件: {len(py_files)} 个")</code></pre>
+
+            <h3>3.4 读写文件</h3>
+            <div class="code-header">
+                <span class="code-title">Path对象读写</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from pathlib import Path
+
+# 读取文本
+content = Path('test.txt').read_text(encoding='utf-8')
+
+# 写入文本
+Path('output.txt').write_text('Hello, World!\n', encoding='utf-8')
+
+# 读取二进制
+data = Path('image.png').read_bytes()
+
+# 写入二进制
+Path('copy.png').write_bytes(data)
+
+# 追加文本
+Path('log.txt').write_text('新日志\n', encoding='utf-8')  # 会覆盖！
+# 追加的正确方式
+with Path('log.txt').open('a', encoding='utf-8') as f:
+    f.write('追加的日志\n')
+
+# 实战：递归搜索文件
+def find_files(directory, pattern):
+    """递归搜索匹配的文件"""
+    return list(Path(directory).rglob(pattern))
+
+py_files = find_files('.', '*.py')
+print(f"找到 {len(py_files)} 个Python文件")</code></pre>
+
+            <div class="practice-card">
+                <div class="practice-title">实战：递归文件搜索器</div>
+                <div class="code-header">
+                    <span class="code-title">文件搜索器</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>from pathlib import Path
+
+def search_files(root_dir, extensions=None, min_size=0, max_size=None):
+    """
+    递归搜索文件
+    
+    Args:
+        root_dir: 搜索根目录
+        extensions: 文件扩展名列表，如 ['.py', '.txt']
+        min_size: 最小文件大小（字节）
+        max_size: 最大文件大小（字节）
+    """
+    results = []
+    root = Path(root_dir)
+    
+    if not root.exists():
+        print(f"目录不存在: {root_dir}")
+        return results
+    
+    for path in root.rglob('*'):  # 递归遍历
+        if path.is_file():
+            # 检查扩展名
+            if extensions and path.suffix not in extensions:
+                continue
+            
+            # 检查大小
+            size = path.stat().st_size
+            if size < min_size:
+                continue
+            if max_size and size > max_size:
+                continue
+            
+            results.append({
+                'path': str(path),
+                'name': path.name,
+                'size': size,
+                'modified': path.stat().st_mtime
+            })
+    
+    return results
+
+# 搜索示例
+files = search_files(
+    '.',
+    extensions=['.py', '.md'],
+    min_size=1000
+)
+print(f"找到 {len(files)} 个符合条件的文件")
+for f in files[:5]:
+    print(f"  {f['name']} ({f['size']/1024:.1f}KB)")</code></pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 4: CSV文件 -->
+        <div class="section" id="sec4">
+            <div class="section-header">
+                <div class="section-icon">📊</div>
+                <h2>CSV 文件处理</h2>
+            </div>
+            
+            <p>CSV（Comma-Separated Values）是常用的数据交换格式。Python的 <code>csv</code> 模块提供了完整的CSV读写支持。</p>
+            
+            <h3>4.1 基础读写</h3>
+            <div class="code-header">
+                <span class="code-title">CSV基本操作</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import csv
+
+# 写入CSV
+with open('students.csv', 'w', newline='', encoding='utf-8') as f:
+    writer = csv.writer(f)
+    writer.writerow(['姓名', '年龄', '成绩'])  # 写入标题行
+    writer.writerow(['张三', 20, 85])
+    writer.writerow(['李四', 22, 92])
+    writer.writerow(['王五', 19, 78])
+
+# 读取CSV
+with open('students.csv', 'r', encoding='utf-8') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        print(row)
+
+# 读取为列表
+with open('students.csv', 'r', encoding='utf-8') as f:
+    rows = list(csv.reader(f))
+    print(f"共 {len(rows)} 行")
+    print(rows[1])  # 第二行</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">['姓名', '年龄', '成绩']</div>
+                <div class="output-line">['张三', '20', '85']</div>
+                <div class="output-line">['李四', '22', '92']</div>
+                <div class="output-line">['王五', '19', '78']</div>
+                <div class="output-line">共 4 行</div>
+                <div class="output-line">['张三', '20', '85']</div>
+            </div>
+
+            <h3>4.2 字典方式读写</h3>
+            <div class="code-header">
+                <span class="code-title">DictReader和DictWriter</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import csv
+
+# 字典写入
+with open('students_dict.csv', 'w', newline='', encoding='utf-8') as f:
+    fieldnames = ['姓名', '年龄', '成绩', '城市']
+    writer = csv.DictWriter(f, fieldnames=fieldnames)
+    
+    writer.writeheader()  # 写入标题行
+    writer.writerow({
+        '姓名': '张三',
+        '年龄': 20,
+        '成绩': 85,
+        '城市': '北京'
+    })
+    writer.writerow({'姓名': '李四', '年龄': 22, '成绩': 92, '城市': '上海'})
+
+# 字典读取（更易读）
+with open('students_dict.csv', 'r', encoding='utf-8') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(f"{row['姓名']}: {row['城市']}, 成绩={row['成绩']}")
+
+# 读取为字典列表
+with open('students_dict.csv', 'r', encoding='utf-8') as f:
+    reader = csv.DictReader(f)
+    students = list(reader)
+    print(f"\n所有学生: {students}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">张三: 北京, 成绩=85</div>
+                <div class="output-line">李四: 上海, 成绩=92</div>
+                <div class="output-line"></div>
+                <div class="output-line">所有学生: [{'姓名': '张三', '年龄': '20', '成绩': '85', '城市': '北京'}, ...]</div>
+            </div>
+
+            <h3>4.3 中文编码问题</h3>
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ CSV中文编码</div>
+                <p>Windows的Excel默认用GBK打开CSV。推荐使用UTF-8 with BOM（带BOM的UTF-8），这样Excel可以正确识别中文。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">UTF-8-BOM解决Excel打开乱码</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import csv
+
+# 写入UTF-8-BOM（Excel可正确识别）
+with open('students_utf8bom.csv', 'w', newline='', encoding='utf-8-sig') as f:
+    writer = csv.writer(f)
+    writer.writerow(['姓名', '城市', '备注'])
+    writer.writerow(['张三', '北京', '学习委员'])
+    writer.writerow(['李四', '上海', '班长'])
+print("已保存为UTF-8-BOM格式，Excel可正确打开")
+
+# 读取时自动处理编码
+with open('students_utf8bom.csv', 'r', encoding='utf-8-sig') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        print(row)</code></pre>
+
+            <h3>4.4 实战：CSV数据处理器</h3>
+            <div class="practice-card">
+                <div class="code-header">
+                    <span class="code-title">CSV数据处理</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import csv
+from pathlib import Path
+
+def process_csv(input_file, output_file, transform_fn):
+    """
+    处理CSV文件
+    
+    Args:
+        input_file: 输入文件路径
+        output_file: 输出文件路径
+        transform_fn: 转换函数，接收一行字典，返回处理后的字典或None（跳过）
+    """
+    with open(input_file, 'r', encoding='utf-8-sig') as fin, \
+         open(output_file, 'w', newline='', encoding='utf-8-sig') as fout:
+        
+        reader = csv.DictReader(fin)
+        writer = csv.DictWriter(fout, fieldnames=reader.fieldnames)
+        writer.writeheader()
+        
+        count = 0
+        for row in reader:
+            new_row = transform_fn(row)
+            if new_row:  # 返回None时跳过
+                writer.writerow(new_row)
+                count += 1
+        
+        print(f"处理完成: {count} 行")
+
+# 使用示例：筛选成绩大于80的学生
+def filter_good_students(row):
+    if int(row['成绩']) > 80:
+        return row  # 保留
+    return None  # 跳过
+
+process_csv('students.csv', 'good_students.csv', filter_good_students)
+
+# 使用示例：添加平均分列
+def add_average(row):
+    row['等级'] = 'A' if int(row['成绩']) >= 90 else \
+                  'B' if int(row['成绩']) >= 80 else \
+                  'C' if int(row['成绩']) >= 60 else 'D'
+    return row
+
+process_csv('students.csv', 'with_grade.csv', add_average)</code></pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 5: logging -->
+        <div class="section" id="sec5">
+            <div class="section-header">
+                <div class="section-icon">📝</div>
+                <h2>logging 日志系统</h2>
+            </div>
+            
+            <p><code>logging</code> 模块是Python的标准日志库，比print更专业，支持日志级别、输出格式、输出位置等灵活配置。</p>
+            
+            <h3>5.1 日志级别</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>级别</th><th>数值</th><th>用途</th></tr>
+                    <tr><td><code>DEBUG</code></td><td>10</td><td>调试信息（开发时用）</td></tr>
+                    <tr><td><code>INFO</code></td><td>20</td><td>一般信息</td></tr>
+                    <tr><td><code>WARNING</code></td><td>30</td><td>警告（默认值）</td></tr>
+                    <tr><td><code>ERROR</code></td><td>40</td><td>错误</td></tr>
+                    <tr><td><code>CRITICAL</code></td><td>50</td><td>严重错误</td></tr>
+                </table>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">基础日志使用</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import logging
+
+# 配置日志（basicConfig）
+logging.basicConfig(
+    level=logging.DEBUG,  # 显示所有级别
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+# 创建logger
+logger = logging.getLogger(__name__)  # 推荐用__name__
+
+logger.debug('这是调试信息')
+logger.info('这是普通信息')
+logger.warning('这是警告')
+logger.error('这是错误')
+logger.critical('这是严重错误')
+
+# 设置日志级别
+logger.setLevel(logging.INFO)  # 只显示INFO及以上
+logger.debug('这条不会显示')</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">2024-01-15 10:30:45 [DEBUG] __main__: 这是调试信息</div>
+                <div class="output-line">2024-01-15 10:30:45 [INFO] __main__: 这是普通信息</div>
+                <div class="output-line">2024-01-15 10:30:45 [WARNING] __main__: 这是警告</div>
+                <div class="output-line">2024-01-15 10:30:45 [ERROR] __main__: 这是错误</div>
+                <div class="output-line">2024-01-15 10:30:45 [CRITICAL] __main__: 这是严重错误</div>
+            </div>
+
+            <h3>5.2 输出到文件和屏幕</h3>
+            <div class="code-header">
+                <span class="code-title">配置多个处理器</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import logging
+
+def setup_logger(name, log_file, level=logging.INFO):
+    """创建logger，同时输出到控制台和文件"""
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    
+    # 格式化器
+    formatter = logging.Formatter(
+        '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+    )
+    
+    # 控制台处理器
+    console = logging.StreamHandler()
+    console.setFormatter(formatter)
+    logger.addHandler(console)
+    
+    # 文件处理器
+    file_handler = logging.FileHandler(log_file, encoding='utf-8')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    
+    return logger
+
+# 使用
+app_logger = setup_logger('app', 'app.log')
+app_logger.info('程序启动')
+app_logger.error('发生错误')
+
+# 不同模块使用不同logger
+db_logger = logging.getLogger('app.database')
+db_logger.info('连接数据库')</code></pre>
+
+            <h3>5.3 企业级日志配置</h3>
+            <div class="code-header">
+                <span class="code-title">完整的日志配置</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import logging
+import logging.handlers  # RotatingFileHandler, TimedRotatingFileHandler
+
+# 创建logger
+logger = logging.getLogger('myapp')
+logger.setLevel(logging.DEBUG)
+
+# 格式化器
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s'
+)
+
+# 控制台处理器（INFO级别）
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+console.setFormatter(formatter)
+logger.addHandler(console)
+
+# 文件处理器（DEBUG级别，自动轮转）
+file_handler = logging.handlers.RotatingFileHandler(
+    'app.log',
+    maxBytes=10*1024*1024,  # 10MB
+    backupCount=5,  # 保留5个备份
+    encoding='utf-8'
+)
+file_handler.setLevel(logging.DEBUG)
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
+
+# 按时间轮转（每天一个新文件）
+daily_handler = logging.handlers.TimedRotatingFileHandler(
+    'app_daily.log',
+    when='midnight',  # 每天午夜
+    interval=1,
+    backupCount=30,
+    encoding='utf-8'
+)
+daily_handler.setFormatter(formatter)
+logger.addHandler(daily_handler)
+
+# 使用
+logger.debug('调试信息')
+logger.info('普通信息')
+logger.warning('警告')
+logger.error('错误')</code></pre>
+
+            <div class="practice-card">
+                <div class="practice-title">实战：程序日志装饰器</div>
+                <div class="code-header">
+                    <span class="code-title">日志装饰器</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import logging
+from functools import wraps
+
+logger = logging.getLogger('decorator')
+
+def log_calls(func):
+    """自动记录函数调用的装饰器"""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        logger.info(f"调用函数: {func.__name__}")
+        logger.debug(f"  参数: args={args}, kwargs={kwargs}")
+        try:
+            result = func(*args, **kwargs)
+            logger.info(f"  返回: {result}")
+            return result
+        except Exception as e:
+            logger.error(f"  异常: {e}")
+            raise
+    return wrapper
+
+@log_calls
+def divide(a, b):
+    return a / b
+
+@log_calls
+def fetch_data(url):
+    return f"数据从 {url}"
+
+divide(10, 2)
+divide(10, 0)</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">INFO - 调用函数: divide</div>
+                <div class="output-line">DEBUG -   参数: args=(10, 2), kwargs={}</div>
+                <div class="output-line">INFO -   返回: 5.0</div>
+                <div class="output-line">INFO - 调用函数: divide</div>
+                <div class="output-line">DEBUG -   参数: args=(10, 0), kwargs={}</div>
+                <div class="output-line">ERROR -   异常: division by zero</div>
+            </div>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 6: 综合实战 -->
+        <div class="section" id="sec6">
+            <div class="section-header">
+                <div class="section-icon">💻</div>
+                <h2>综合实战：文件备份工具</h2>
+            </div>
+            
+            <p>整合所学知识，实现一个功能完整的文件备份工具。</p>
+            
+            <div class="practice-card">
+                <div class="code-header">
+                    <span class="code-title">文件备份工具</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import os
+import shutil
+import hashlib
+import json
+import logging
+from pathlib import Path
+from datetime import datetime
+
+# 配置日志
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s'
+)
+logger = logging.getLogger('backup')
+
+class FileBackup:
+    """文件备份工具"""
+    
+    def __init__(self, source_dir, backup_dir):
+        self.source = Path(source_dir)
+        self.backup = Path(backup_dir)
+        self.backup.mkdir(parents=True, exist_ok=True)
+        self.manifest_file = self.backup / 'manifest.json'
+        self.manifest = self._load_manifest()
+    
+    def _load_manifest(self):
+        """加载清单文件"""
+        if self.manifest_file.exists():
+            with open(self.manifest_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        return {}
+    
+    def _save_manifest(self):
+        """保存清单文件"""
+        with open(self.manifest_file, 'w', encoding='utf-8') as f:
+            json.dump(self.manifest, f, indent=2, ensure_ascii=False)
+    
+    def _get_file_hash(self, filepath):
+        """计算文件MD5"""
+        md5 = hashlib.md5()
+        with open(filepath, 'rb') as f:
+            for chunk in iter(lambda: f.read(8192), b''):
+                md5.update(chunk)
+        return md5.hexdigest()
+    
+    def backup_files(self, extensions=None):
+        """
+        备份文件
+        
+        Args:
+            extensions: 要备份的扩展名，如 ['.py', '.md']
+        """
+        backed_up = 0
+        skipped = 0
+        
+        for file_path in self.source.rglob('*'):
+            if not file_path.is_file():
+                continue
+            
+            # 检查扩展名
+            if extensions and file_path.suffix not in extensions:
+                continue
+            
+            # 计算相对路径和哈希
+            rel_path = file_path.relative_to(self.source)
+            file_hash = self._get_file_hash(file_path)
+            
+            # 检查是否需要备份（新增或修改）
+            if rel_path in self.manifest:
+                if self.manifest[rel_path]['hash'] == file_hash:
+                    logger.debug(f"跳过(未修改): {rel_path}")
+                    skipped += 1
+                    continue
+            
+            # 复制文件
+            dest_path = self.backup / rel_path
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(file_path, dest_path)
+            
+            # 更新清单
+            self.manifest[str(rel_path)] = {
+                'hash': file_hash,
+                'size': file_path.stat().st_size,
+                'backup_time': datetime.now().isoformat(),
+                'source_path': str(file_path)
+            }
+            
+            logger.info(f"已备份: {rel_path}")
+            backed_up += 1
+        
+        self._save_manifest()
+        print(f"\n备份完成: {backed_up} 个文件已更新, {skipped} 个文件已跳过")
+    
+    def restore_files(self, target_dir):
+        """从备份恢复文件"""
+        target = Path(target_dir)
+        target.mkdir(parents=True, exist_ok=True)
+        
+        for rel_path, info in self.manifest.items():
+            src = self.backup / rel_path
+            dst = target / rel_path
+            
+            if src.exists():
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(src, dst)
+                logger.info(f"已恢复: {rel_path}")
+        
+        print(f"\n恢复完成: {len(self.manifest)} 个文件")
+
+# 使用示例
+if __name__ == '__main__':
+    backup = FileBackup('.', 'backup')
+    backup.backup_files(extensions=['.py', '.md'])</code></pre>
+            </div>
+
+            <div class="mindmap">
+                <div class="mindmap-title">📁 本章知识图谱</div>
+<pre>
+文件IO操作
+    │
+    ├── 文件读写 ─── open(), read(), write()
+    │
+    ├── 上下文管理 ── with语句, __enter__/__exit__
+    │
+    ├── Pathlib ──── 面向对象路径操作
+    │
+    ├── CSV处理 ──── csv.reader/DictWriter
+    │
+    ├── logging ──── 日志系统配置
+    │
+    └── 实战项目 ──── 文件备份工具
+</pre>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="section">
+            <h2>📚 本周总结</h2>
+            
+            <div class="summary">
+                <h3>核心知识点回顾</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="emoji">📄</div>
+                        <div class="label">文件读写</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">🔐</div>
+                        <div class="label">上下文管理</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">📁</div>
+                        <div class="label">Pathlib</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">📊</div>
+                        <div class="label">CSV</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">📝</div>
+                        <div class="label">logging</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>Pathlib vs os.path</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>操作</th><th>传统os.path</th><th>Pathlib</th></tr>
+                    <tr><td>拼接路径</td><td><code>os.path.join(a, b)</code></td><td><code>a / b</code></td></tr>
+                    <tr><td>检查存在</td><td><code>os.path.exists(p)</code></td><td><code>p.exists()</code></td></tr>
+                    <tr><td>是否是文件</td><td><code>os.path.isfile(p)</code></td><td><code>p.is_file()</code></td></tr>
+                    <tr><td>创建目录</td><td><code>os.makedirs(p)</code></td><td><code>p.mkdir()</code></td></tr>
+                    <tr><td>读取文件</td><td><code>open(p).read()</code></td><td><code>p.read_text()</code></td></tr>
+                    <tr><td>遍历目录</td><td><code>os.listdir()</code></td><td><code>p.iterdir()</code></td></tr>
+                </table>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">📖 下周预告</div>
+                <p><strong>第13周：网络编程基础</strong> — TCP/UDP Socket编程、HTTP协议、urllib与requests、简单爬虫实战。</p>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-footer">
+            <a href="python-week11.html" class="nav-link">
+                <span>←</span>
+                <span>第11周</span>
+            </a>
+            <div class="nav-info">
+                <div class="week">第 12 周</div>
+                <div class="title">文件与IO操作</div>
+            </div>
+            <a href="python-week13.html" class="nav-link">
+                <span>第13周</span>
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script>
+        Prism.highlightAll();
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.querySelector('.progress-fill').style.width = progress + '%';
+        });
+    </script>
+</body>
+</html>
