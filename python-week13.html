@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路 - 第13周：网络编程基础</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00d4aa;
+            --secondary: #7c3aed;
+            --accent: #f59e0b;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-hover: #1a1a2e;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --border: #27272a;
+            --code-bg: #16161e;
+            --gradient-1: linear-gradient(135deg, #00d4aa 0%, #7c3aed 100%);
+            --gradient-2: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%);
+            --gradient-3: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            --gradient-card: linear-gradient(145deg, #1a1a2e 0%, #12121a 100%);
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.8; }
+        
+        .hero { background: var(--gradient-3); padding: 60px 20px; text-align: center; }
+        .hero h1 { font-size: 2.8em; margin-bottom: 15px; }
+        .week-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 8px 24px; border-radius: 50px; margin-bottom: 20px; }
+        
+        .progress-bar { background: var(--bg-card); padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .progress-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 15px; }
+        .progress-fill { height: 6px; background: var(--gradient-3); border-radius: 3px; transition: width 0.3s; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+        
+        .toc { background: var(--gradient-card); border-radius: 16px; padding: 30px; margin-bottom: 40px; border: 1px solid var(--border); }
+        .toc h2 { font-size: 1.5em; margin-bottom: 20px; }
+        .toc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+        .toc-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-hover); border-radius: 10px; text-decoration: none; color: var(--text-primary); transition: all 0.3s; border: 1px solid transparent; }
+        .toc-item:hover { border-color: var(--primary); transform: translateX(5px); }
+        .toc-num { width: 32px; height: 32px; background: var(--gradient-3); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        
+        .section { background: var(--gradient-card); border-radius: 20px; padding: 40px; margin-bottom: 40px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+        .section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-1); }
+        .section:nth-child(2)::before { background: var(--gradient-2); }
+        .section:nth-child(3)::before { background: var(--gradient-3); }
+        .section:nth-child(4)::before { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); }
+        .section:nth-child(5)::before { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); }
+        
+        .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .section-icon { width: 60px; height: 60px; background: var(--gradient-1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .section h2 { font-size: 1.8em; font-weight: 700; }
+        .section h3 { font-size: 1.3em; color: var(--primary); margin: 25px 0 15px 0; }
+        
+        .concept { background: var(--bg-hover); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid var(--primary); }
+        .concept-title { font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+        
+        .info-box { background: rgba(0, 212, 170, 0.1); border: 1px solid rgba(0, 212, 170, 0.3); border-radius: 12px; padding: 16px 20px; margin: 15px 0; }
+        .info-box.warning { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+        .info-box.danger { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
+        .info-box-title { font-weight: 600; margin-bottom: 8px; }
+        
+        pre[class*="language-"] { background: var(--code-bg) !important; border-radius: 12px; margin: 15px 0; font-size: 14px; border: 1px solid var(--border); }
+        code[class*="language-"] { font-family: 'Fira Code', monospace !important; }
+        .code-header { display: flex; justify-content: space-between; background: var(--code-bg); padding: 10px 16px; border-radius: 12px 12px 0 0; border: 1px solid var(--border); border-bottom: none; font-size: 13px; }
+        .code-title { color: var(--text-secondary); }
+        .code-lang { background: var(--secondary); color: white; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        
+        p code, li code { background: var(--code-bg); padding: 2px 8px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 0.9em; color: var(--accent); border: 1px solid var(--border); }
+        
+        .table-wrapper { overflow-x: auto; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-hover); font-weight: 600; color: var(--primary); }
+        tr:hover td { background: var(--bg-hover); }
+        
+        .comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .comparison-item { background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid var(--border); transition: all 0.3s; }
+        .comparison-item:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .comparison-item .icon { font-size: 2em; margin-bottom: 10px; }
+        .comparison-item .name { font-weight: 600; margin-bottom: 5px; }
+        .comparison-item .desc { font-size: 13px; color: var(--text-secondary); }
+        
+        .output-block { background: #000; border-radius: 8px; padding: 15px 20px; font-family: 'Fira Code', monospace; font-size: 13px; color: #10b981; margin: 10px 0; border: 1px solid var(--border); }
+        .output-line { margin: 3px 0; }
+        
+        .practice-card { background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.1) 100%); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 16px; padding: 25px; margin: 25px 0; }
+        .practice-title { font-weight: 700; color: var(--accent); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .practice-title::before { content: '💻'; font-size: 1.2em; }
+        
+        .summary { background: var(--bg-hover); border-radius: 16px; padding: 30px; margin: 30px 0; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .summary-item { text-align: center; padding: 15px; background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border); }
+        .summary-item .emoji { font-size: 1.5em; margin-bottom: 8px; }
+        .summary-item .label { font-size: 13px; color: var(--text-secondary); }
+        
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 30px; background: var(--bg-card); border-radius: 16px; margin-top: 40px; border: 1px solid var(--border); }
+        .nav-link { display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--bg-hover); border-radius: 10px; text-decoration: none; color: var(--text-primary); transition: all 0.3s; border: 1px solid var(--border); }
+        .nav-link:hover { border-color: var(--primary); }
+        .nav-info { text-align: center; flex: 1; }
+        .nav-info .week { font-size: 14px; color: var(--text-secondary); }
+        
+        .section-divider { height: 2px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 20px 0; }
+        
+        @media (max-width: 768px) { .hero h1 { font-size: 2em; } .section { padding: 25px; } .nav-footer { flex-direction: column; } }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--bg-dark); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="week-badge">第 13 周 · 阶段三</div>
+        <h1>网络编程基础</h1>
+        <p style="opacity: 0.95; max-width: 600px; margin: 0 auto;">TCP/UDP Socket编程、HTTP协议、urllib与requests、简单爬虫实战</p>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-container">
+            <span style="font-size: 14px; color: var(--text-secondary);">学习进度</span>
+            <div style="flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+                <div class="progress-fill" style="width: 25%"></div>
+            </div>
+            <span style="font-size: 13px; font-weight: 600; color: var(--accent);">25%</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="toc">
+            <h2>章节导航</h2>
+            <div class="toc-list">
+                <a href="#sec1" class="toc-item"><span class="toc-num">1</span><span>网络基础概念</span></a>
+                <a href="#sec2" class="toc-item"><span class="toc-num">2</span><span>Socket 编程</span></a>
+                <a href="#sec3" class="toc-item"><span class="toc-num">3</span><span>HTTP 协议</span></a>
+                <a href="#sec4" class="toc-item"><span class="toc-num">4</span><span>urllib 与 requests</span></a>
+                <a href="#sec5" class="toc-item"><span class="toc-num">5</span><span>简单爬虫实战</span></a>
+            </div>
+        </div>
+        
+        <!-- Section 1: 网络基础 -->
+        <div class="section" id="sec1">
+            <div class="section-header">
+                <div class="section-icon">🌐</div>
+                <h2>网络基础概念</h2>
+            </div>
+            
+            <h3>1.1 TCP vs UDP</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item" style="border-color: #10b981;">
+                    <div class="icon">🔌</div>
+                    <div class="name">TCP</div>
+                    <div class="desc">面向连接<br>可靠传输<br>速度较慢<br>一对一通信</div>
+                </div>
+                <div class="comparison-item" style="border-color: #f59e0b;">
+                    <div class="icon">📡</div>
+                    <div class="name">UDP</div>
+                    <div class="desc">无连接<br>不可靠但快<br>效率高<br>可一对多</div>
+                </div>
+            </div>
+            
+            <h3>1.2 TCP三次握手与四次挥手</h3>
+            <div class="concept">
+                <div class="concept-title">💡 三次握手（建立连接）</div>
+                <p>1. 客户端发送SYN包到服务器<br>
+                2. 服务器返回SYN+ACK包<br>
+                3. 客户端发送ACK包，连接建立</p>
+            </div>
+            <div class="concept">
+                <div class="concept-title">💡 四次挥手（断开连接）</div>
+                <p>1. 主动方发送FIN包<br>
+                2. 被动方返回ACK包<br>
+                3. 被动方发送FIN包<br>
+                4. 主动方返回ACK包，连接断开</p>
+            </div>
+            
+            <h3>1.3 常见端口</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>端口</th><th>服务</th><th>说明</th></tr>
+                    <tr><td>21</td><td>FTP</td><td>文件传输协议</td></tr>
+                    <tr><td>22</td><td>SSH</td><td>安全远程登录</td></tr>
+                    <tr><td>25</td><td>SMTP</td><td>邮件发送</td></tr>
+                    <tr><td>80</td><td>HTTP</td><td>网页访问</td></tr>
+                    <tr><td>443</td><td>HTTPS</td><td>加密网页</td></tr>
+                    <tr><td>3306</td><td>MySQL</td><td>数据库</td></tr>
+                    <tr><td>6379</td><td>Redis</td><td>缓存数据库</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 2: Socket -->
+        <div class="section" id="sec2">
+            <div class="section-header">
+                <div class="section-icon">🔌</div>
+                <h2>Socket 编程</h2>
+            </div>
+            
+            <p>Socket（套接字）是网络通信的基础，Python的 <code>socket</code> 模块提供了完整的Socket编程支持。</p>
+            
+            <h3>2.1 TCP服务器与客户端</h3>
+            <div class="code-header">
+                <span class="code-title">TCP服务器</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import socket
+
+def tcp_server(host='127.0.0.1', port=8888):
+    """TCP服务器"""
+    # 创建socket对象
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    # 绑定地址
+    server.bind((host, port))
+    
+    # 开始监听（最大5个连接）
+    server.listen(5)
+    print(f"服务器启动，监听 {host}:{port}")
+    
+    while True:
+        # 接受客户端连接
+        client_socket, addr = server.accept()
+        print(f"收到连接: {addr}")
+        
+        # 处理请求
+        try:
+            while True:
+                # 接收数据
+                data = client_socket.recv(1024)
+                if not data:  # 客户端断开
+                    break
+                
+                message = data.decode('utf-8')
+                print(f"收到消息: {message}")
+                
+                # 发送响应
+                response = f"服务器收到: {message}"
+                client_socket.send(response.encode('utf-8'))
+        
+        except Exception as e:
+            print(f"处理出错: {e}")
+        finally:
+            client_socket.close()
+            print(f"连接关闭: {addr}")
+
+# 启动服务器
+tcp_server()</code></pre>
+
+            <div class="code-header">
+                <span class="code-title">TCP客户端</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import socket
+
+def tcp_client(host='127.0.0.1', port=8888):
+    """TCP客户端"""
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    
+    # 连接服务器
+    client.connect((host, port))
+    print(f"已连接服务器 {host}:{port}")
+    
+    try:
+        while True:
+            # 发送消息
+            msg = input("请输入消息 (quit退出): ")
+            if msg.lower() == 'quit':
+                break
+            
+            client.send(msg.encode('utf-8'))
+            
+            # 接收响应
+            response = client.recv(1024)
+            print(f"服务器响应: {response.decode('utf-8')}")
+    
+    except KeyboardInterrupt:
+        print("\n客户端退出")
+    finally:
+        client.close()
+
+tcp_client()</code></pre>
+
+            <div class="output-block">
+                <div class="output-line"># 服务器端输出</div>
+                <div class="output-line">服务器启动，监听 127.0.0.1:8888</div>
+                <div class="output-line">收到连接: ('127.0.0.1', 54321)</div>
+                <div class="output-line">收到消息: Hello, Server!</div>
+                <div class="output-line">连接关闭: ('127.0.0.1', 54321)</div>
+            </div>
+
+            <h3>2.2 UDP服务器与客户端</h3>
+            <div class="code-header">
+                <span class="code-title">UDP通信</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import socket
+
+def udp_server(host='127.0.0.1', port=8889):
+    """UDP服务器"""
+    server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # SOCK_DGRAM = UDP
+    server.bind((host, port))
+    print(f"UDP服务器启动，监听 {host}:{port}")
+    
+    while True:
+        data, addr = server.recvfrom(1024)  # 接收数据和地址
+        message = data.decode('utf-8')
+        print(f"收到 {addr}: {message}")
+        
+        # 发送响应
+        response = f"收到: {message}"
+        server.sendto(response.encode('utf-8'), addr)
+
+def udp_client(host='127.0.0.1', port=8889):
+    """UDP客户端"""
+    client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    
+    msg = "Hello, UDP Server!"
+    client.sendto(msg.encode('utf-8'), (host, port))
+    
+    data, server_addr = client.recvfrom(1024)
+    print(f"服务器响应: {data.decode('utf-8')}")
+    
+    client.close()</code></pre>
+
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ TCP vs UDP选择</div>
+                <p>TCP适合：文件传输、网页访问、邮件收发等需要可靠传输的场景。<br>
+                UDP适合：实时音视频、DNS查询、在线游戏等允许少量丢包但要求低延迟的场景。</p>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 3: HTTP协议 -->
+        <div class="section" id="sec3">
+            <div class="section-header">
+                <div class="section-icon">📜</div>
+                <h2>HTTP 协议</h2>
+            </div>
+            
+            <h3>3.1 HTTP请求结构</h3>
+            <div class="concept">
+                <div class="concept-title">💡 HTTP请求报文</div>
+                <pre style="background: var(--code-bg); padding: 15px; border-radius: 8px; overflow-x: auto;">
+GET /index.html HTTP/1.1
+Host: www.example.com
+User-Agent: Mozilla/5.0
+Accept: text/html
+Content-Length: 0
+                </pre>
+            </div>
+            
+            <h3>3.2 HTTP响应结构</h3>
+            <div class="concept">
+                <div class="concept-title">💡 HTTP响应报文</div>
+                <pre style="background: var(--code-bg); padding: 15px; border-radius: 8px; overflow-x: auto;">
+HTTP/1.1 200 OK
+Content-Type: text/html; charset=utf-8
+Content-Length: 1234
+Server: nginx/1.18.0
+
+&lt;html&gt;...&lt;/html&gt;
+                </pre>
+            </div>
+            
+            <h3>3.3 状态码速查</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>状态码</th><th>含义</th><th>示例</th></tr>
+                    <tr><td>200</td><td>成功</td><td>OK</td></tr>
+                    <tr><td>301</td><td>永久重定向</td><td>Moved Permanently</td></tr>
+                    <tr><td>302</td><td>临时重定向</td><td>Found</td></tr>
+                    <tr><td>400</td><td>请求错误</td><td>Bad Request</td></tr>
+                    <tr><td>401</td><td>未授权</td><td>Unauthorized</td></tr>
+                    <tr><td>403</td><td>禁止访问</td><td>Forbidden</td></tr>
+                    <tr><td>404</td><td>资源不存在</td><td>Not Found</td></tr>
+                    <tr><td>500</td><td>服务器错误</td><td>Internal Server Error</td></tr>
+                    <tr><td>502</td><td>网关错误</td><td>Bad Gateway</td></tr>
+                    <tr><td>503</td><td>服务不可用</td><td>Service Unavailable</td></tr>
+                </table>
+            </div>
+            
+            <h3>3.4 请求方法</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>方法</th><th>说明</th><th>用途</th></tr>
+                    <tr><td>GET</td><td>获取资源</td><td>浏览网页、查询数据</td></tr>
+                    <tr><td>POST</td><td>提交数据</td><td>登录、注册、表单提交</td></tr>
+                    <tr><td>PUT</td><td>更新资源</td><td>完整更新文件/数据</td></tr>
+                    <tr><td>DELETE</td><td>删除资源</td><td>删除数据</td></tr>
+                    <tr><td>PATCH</td><td>部分更新</td><td>更新部分字段</td></tr>
+                    <tr><td>HEAD</td><td>获取头部</td><td>检查资源是否存在</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 4: urllib与requests -->
+        <div class="section" id="sec4">
+            <div class="section-header">
+                <div class="section-icon">📡</div>
+                <h2>urllib 与 requests</h2>
+            </div>
+            
+            <h3>4.1 urllib 发送请求</h3>
+            <div class="code-header">
+                <span class="code-title">urllib请求示例</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import urllib.request
+import urllib.parse
+import json
+
+# GET请求
+url = 'https://httpbin.org/get'
+with urllib.request.urlopen(url, timeout=10) as response:
+    data = json.loads(response.read())
+    print(f"URL: {data['url']}")
+    print(f"方法: {data['headers']['User-Agent']}")
+
+# GET带参数
+params = urllib.parse.urlencode({'name': '张三', 'age': 25})
+url = f'https://httpbin.org/get?{params}'
+with urllib.request.urlopen(url) as response:
+    data = json.loads(response.read())
+    print(f"参数: {data['args']}")
+
+# POST请求
+data = urllib.parse.urlencode({'username': 'admin', 'password': '123'}).encode()
+req = urllib.request.Request(
+    'https://httpbin.org/post',
+    data=data,
+    method='POST'
+)
+with urllib.request.urlopen(req) as response:
+    result = json.loads(response.read())
+    print(f"POST结果: {result['form']}")
+
+# 自定义请求头
+headers = {
+    'User-Agent': 'Mozilla/5.0',
+    'Accept': 'application/json',
+    'X-Custom-Header': 'PythonClient'
+}
+req = urllib.request.Request('https://httpbin.org/headers', headers=headers)
+with urllib.request.urlopen(req) as response:
+    data = json.loads(response.read())
+    print(f"请求头: {data['headers']}")</code></pre>
+
+            <h3>4.2 requests库（推荐）</h3>
+            <div class="concept">
+                <div class="concept-title">💡 为什么用requests</div>
+                <p>requests是Python最流行的HTTP库，API简洁直观，比urllib更易用。建议优先使用requests。</p>
+            </div>
+            <div class="info-box">
+                <div class="info-box-title">安装</div>
+                <p><code>pip install requests</code></p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">requests基础用法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import requests
+
+# GET请求
+response = requests.get('https://httpbin.org/get')
+print(f"状态码: {response.status_code}")
+print(f"响应头: {response.headers['Content-Type']}")
+print(f"响应体: {response.text}")
+
+# GET带参数
+params = {'name': '张三', 'city': '北京'}
+response = requests.get('https://httpbin.org/get', params=params)
+print(f"URL参数: {response.json()['args']}")
+
+# POST请求
+data = {'username': 'admin', 'password': '123456'}
+response = requests.post('https://httpbin.org/post', data=data)
+print(f"POST数据: {response.json()['form']}")
+
+# JSON请求体
+json_data = {'name': '张三', 'skills': ['Python', 'JavaScript']}
+response = requests.post('https://httpbin.org/post', json=json_data)
+print(f"JSON: {response.json()['json']}")
+
+# 自定义请求头
+headers = {'User-Agent': 'MyApp/1.0', 'Authorization': 'Bearer token123'}
+response = requests.get('https://httpbin.org/headers', headers=headers)
+print(f"请求头: {response.json()['headers']}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">状态码: 200</div>
+                <div class="output-line">响应头: application/json</div>
+                <div class="output-line">响应体: {...}</div>
+                <div class="output-line">URL参数: {'name': '张三', 'city': '北京'}</div>
+                <div class="output-line">POST数据: {'username': 'admin', 'password': '123456'}</div>
+            </div>
+
+            <h3>4.3 进阶用法</h3>
+            <div class="code-header">
+                <span class="code-title">requests进阶</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import requests
+
+# 会话保持（Session）
+session = requests.Session()
+session.headers.update({'User-Agent': 'MyApp/1.0'})
+
+# 先登录
+session.post('https://httpbin.org/post', data={'user': 'admin'})
+
+# 后续请求自动携带cookie
+response = session.get('https://httpbin.org/get')
+
+# 超时设置
+response = requests.get('https://httpbin.org/delay/5', timeout=3)  # 3秒超时
+
+# 异常处理
+try:
+    response = requests.get('https://invalid-url', timeout=5)
+    response.raise_for_status()  # 状态码不是2xx会抛出异常
+except requests.exceptions.Timeout:
+    print("请求超时")
+except requests.exceptions.ConnectionError:
+    print("连接错误")
+except requests.exceptions.HTTPError as e:
+    print(f"HTTP错误: {e}")
+
+# 下载文件
+response = requests.get('https://httpbin.org/image', stream=True)
+with open('image.png', 'wb') as f:
+    for chunk in response.iter_content(chunk_size=8192):
+        f.write(chunk)
+print("文件下载完成")</code></pre>
+
+            <h3>4.4 GitHub API调用</h3>
+            <div class="practice-card">
+                <div class="code-header">
+                    <span class="code-title">GitHub API示例</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import requests
+
+# GitHub API调用
+headers = {
+    'Accept': 'application/vnd.github.v3+json',
+    'Authorization': 'token YOUR_TOKEN'
+}
+
+# 获取用户信息
+username = 'zhoutongxue89'
+response = requests.get(
+    f'https://api.github.com/users/{username}',
+    headers=headers
+)
+user = response.json()
+print(f"用户名: {user.get('name', 'N/A')}")
+print(f"仓库数: {user.get('public_repos', 0)}")
+print(f"粉丝数: {user.get('followers', 0)}")
+
+# 获取仓库列表
+response = requests.get(
+    f'https://api.github.com/users/{username}/repos',
+    headers=headers,
+    params={'sort': 'updated', 'per_page': 5}
+)
+repos = response.json()
+print("\n最近的5个仓库:")
+for repo in repos:
+    print(f"  {repo['name']} - ⭐{repo['stargazers_count']} - {repo['language']}")</code></pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 5: 爬虫实战 -->
+        <div class="section" id="sec5">
+            <div class="section-header">
+                <div class="section-icon">🕷️</div>
+                <h2>简单爬虫实战</h2>
+            </div>
+            
+            <div class="info-box danger">
+                <div class="info-box-title">⚠️ 爬虫伦理与法律</div>
+                <p>1. 遵守网站的 robots.txt 规则<br>
+                2. 不要爬取个人隐私信息<br>
+                3. 控制请求频率，避免对服务器造成负担<br>
+                4. 尊重版权，合理使用数据<br>
+                5. 商业使用前请咨询法律意见</p>
+            </div>
+            
+            <h3>5.1 爬虫基本流程</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item"><div class="icon">📡</div><div class="name">1. 发送请求</div><div class="desc">获取网页内容</div></div>
+                <div class="comparison-item"><div class="icon">📄</div><div class="name">2. 解析HTML</div><div class="desc">提取需要的数据</div></div>
+                <div class="comparison-item"><div class="icon">💾</div><div class="name">3. 存储数据</div><div class="desc">保存到文件/数据库</div></div>
+                <div class="comparison-item"><div class="icon">🔗</div><div class="name">4. 爬取下一页</div><div class="desc">继续爬取更多内容</div></div>
+            </div>
+
+            <h3>5.2 BeautifulSoup4解析HTML</h3>
+            <div class="info-box">
+                <div class="info-box-title">安装</div>
+                <p><code>pip install beautifulsoup4 lxml</code></p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">BeautifulSoup基本用法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from bs4 import BeautifulSoup
+import requests
+
+# 获取网页
+response = requests.get('https://httpbin.org/html')
+html = response.text
+
+# 解析HTML
+soup = BeautifulSoup(html, 'lxml')  # 'lxml'是推荐解析器，速度快
+
+# 选择元素
+title = soup.title.string  # 获取标题
+print(f"标题: {title}")
+
+# CSS选择器
+headers = soup.select('h1, h2')  # 所有h1和h2标签
+for h in headers:
+    print(f"标题: {h.string}")
+
+# 提取链接
+links = soup.select('a')
+for link in links:
+    href = link.get('href')
+    text = link.string
+    print(f"链接: {text} -> {href}")
+
+# 提取文本
+paragraphs = soup.select('p')
+for p in paragraphs:
+    print(f"段落: {p.get_text()}")
+
+# 查找特定元素
+div = soup.find('div', class_='theme')  # 第一个匹配
+all_divs = soup.find_all('div', attrs={'id': 'container'})  # 所有匹配</code></pre>
+
+            <h3>5.3 实战：简易HTTP客户端</h3>
+            <div class="practice-card">
+                <div class="code-header">
+                    <span class="code-title">命令行HTTP客户端</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import requests
+import sys
+import time
+
+def http_client(url, method='GET', headers=None, data=None):
+    """简易HTTP客户端"""
+    print(f"\n{'='*60}")
+    print(f"URL: {url}")
+    print(f"Method: {method}")
+    print(f"{'='*60}\n")
+    
+    start_time = time.time()
+    
+    try:
+        # 发送请求
+        if method.upper() == 'GET':
+            response = requests.get(url, headers=headers, timeout=10)
+        elif method.upper() == 'POST':
+            response = requests.post(url, headers=headers, data=data, timeout=10)
+        else:
+            print(f"不支持的方法: {method}")
+            return
+        
+        elapsed = time.time() - start_time
+        
+        # 输出响应信息
+        print(f"状态码: {response.status_code}")
+        print(f"响应时间: {elapsed:.3f}s")
+        print(f"Content-Type: {response.headers.get('Content-Type', 'N/A')}")
+        print(f"Content-Length: {len(response.content)} bytes\n")
+        
+        print("响应头:")
+        for key, value in response.headers.items():
+            print(f"  {key}: {value}")
+        
+        print(f"\n响应体 (前500字符):")
+        print("-"*40)
+        print(response.text[:500])
+        
+    except requests.exceptions.Timeout:
+        print("请求超时！")
+    except requests.exceptions.ConnectionError as e:
+        print(f"连接错误: {e}")
+    except Exception as e:
+        print(f"错误: {e}")
+
+# 使用示例
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("用法: python http_client.py <URL>")
+        print("示例: python http_client.py https://httpbin.org/get")
+        sys.exit(1)
+    
+    url = sys.argv[1]
+    http_client(url)</code></pre>
+            </div>
+
+            <div class="mindmap">
+                <div class="mindmap-title" style="text-align: center; font-weight: 600; color: var(--primary); margin-bottom: 15px;">🕷️ 网络编程知识图谱</div>
+<pre style="background: var(--code-bg); padding: 20px; border-radius: 12px; font-family: monospace;">
+网络基础
+    │
+    ├── TCP vs UDP ─── 可靠 vs 高效
+    │
+    ├── Socket ──────── 网络通信基础
+    │       │
+    │       ├── TCP服务器/客户端
+    │       └── UDP服务器/客户端
+    │
+    ├── HTTP协议 ─────── 网页通信
+    │       │
+    │       ├── 请求方法 GET/POST/PUT/DELETE
+    │       ├── 状态码 200/404/500...
+    │       └── 请求头/响应头
+    │
+    └── 爬虫 ─────────── 数据采集
+            │
+            ├── requests ──── HTTP库
+            └── BeautifulSoup ─ HTML解析
+</pre>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="section">
+            <h2>📚 本周总结</h2>
+            
+            <div class="summary">
+                <h3>核心知识点回顾</h3>
+                <div class="summary-grid">
+                    <div class="summary-item"><div class="emoji">🌐</div><div class="label">网络基础</div></div>
+                    <div class="summary-item"><div class="emoji">🔌</div><div class="label">Socket</div></div>
+                    <div class="summary-item"><div class="emoji">📜</div><div class="label">HTTP协议</div></div>
+                    <div class="summary-item"><div class="emoji">📡</div><div class="label">requests</div></div>
+                    <div class="summary-item"><div class="emoji">🕷️</div><div class="label">爬虫</div></div>
+                </div>
+            </div>
+            
+            <h3>TCP vs UDP对比</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>特性</th><th>TCP</th><th>UDP</th></tr>
+                    <tr><td>连接方式</td><td>面向连接</td><td>无连接</td></tr>
+                    <tr><td>可靠性</td><td>可靠</td><td>不可靠</td></tr>
+                    <tr><td>速度</td><td>较慢</td><td>快</td></tr>
+                    <tr><td>适用场景</td><td>文件、网页、邮件</td><td>视频、游戏、DNS</td></tr>
+                </table>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">📖 下周预告</div>
+                <p><strong>第14周：数据库操作</strong> — SQLite、MySQL、SQLAlchemy ORM、Redis基础。</p>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-footer">
+            <a href="python-week12.html" class="nav-link"><span>←</span><span>第12周</span></a>
+            <div class="nav-info">
+                <div class="week">第 13 周</div>
+                <div class="title">网络编程基础</div>
+            </div>
+            <a href="python-week14.html" class="nav-link"><span>第14周</span><span>→</span></a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script>Prism.highlightAll();</script>
+</body>
+</html>
