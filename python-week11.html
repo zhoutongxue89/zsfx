@@ -1,0 +1,2126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路 - 第11周：模块进阶与标准库</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #00d4aa;
+            --secondary: #7c3aed;
+            --accent: #f59e0b;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-hover: #1a1a2e;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --border: #27272a;
+            --code-bg: #16161e;
+            --gradient-1: linear-gradient(135deg, #00d4aa 0%, #7c3aed 100%);
+            --gradient-2: linear-gradient(135deg, #7c3aed 0%, #f59e0b 100%);
+            --gradient-3: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+            --gradient-card: linear-gradient(145deg, #1a1a2e 0%, #12121a 100%);
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .hero {
+            background: var(--gradient-1);
+            padding: 60px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+        .hero-content { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; }
+        .week-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 8px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .hero h1 {
+            font-size: 2.8em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+        }
+        .hero-desc {
+            font-size: 1.2em;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Progress */
+        .progress-bar {
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        .progress-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        .progress-track {
+            flex: 1;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-1);
+            border-radius: 3px;
+            transition: width 0.3s ease;
+        }
+        .progress-percent {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        /* Table of Contents */
+        .toc {
+            background: var(--gradient-card);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+        }
+        .toc h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toc h2::before {
+            content: '📑';
+        }
+        .toc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+        }
+        .toc-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: var(--bg-hover);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        .toc-item:hover {
+            background: var(--bg-hover);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+        .toc-num {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        
+        /* Section */
+        .section {
+            background: var(--gradient-card);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+        }
+        .section:nth-child(2)::before { background: var(--gradient-2); }
+        .section:nth-child(3)::before { background: var(--gradient-3); }
+        .section:nth-child(4)::before { background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%); }
+        .section:nth-child(5)::before { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); }
+        .section:nth-child(6)::before { background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%); }
+        .section:nth-child(7)::before { background: linear-gradient(135deg, #f97316 0%, #ef4444 100%); }
+        .section:nth-child(8)::before { background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%); }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .section-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .section h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+        .section h3 {
+            font-size: 1.3em;
+            color: var(--primary);
+            margin: 25px 0 15px 0;
+        }
+        
+        /* Concept Card */
+        .concept {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid var(--primary);
+        }
+        .concept-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 15px 0;
+        }
+        .info-box.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+        .info-box.danger {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        .info-box-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Code Block */
+        pre[class*="language-"] {
+            background: var(--code-bg) !important;
+            border-radius: 12px;
+            margin: 15px 0;
+            font-size: 14px;
+            border: 1px solid var(--border);
+        }
+        code[class*="language-"] {
+            font-family: 'Fira Code', 'Consolas', monospace !important;
+        }
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--code-bg);
+            padding: 10px 16px;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            font-size: 13px;
+        }
+        .code-title {
+            color: var(--text-secondary);
+        }
+        .code-lang {
+            background: var(--secondary);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        /* Inline Code */
+        p code, li code {
+            background: var(--code-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+        
+        /* Table */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: var(--bg-hover);
+            font-weight: 600;
+            color: var(--primary);
+        }
+        tr:hover td {
+            background: var(--bg-hover);
+        }
+        
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .comparison-item {
+            background: var(--bg-hover);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+        .comparison-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+        .comparison-item .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .comparison-item .name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .comparison-item .desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        /* Mind Map (ASCII) */
+        .mindmap {
+            background: var(--code-bg);
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid var(--border);
+        }
+        .mindmap-title {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        /* Practice Card */
+        .practice-card {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(0, 212, 170, 0.1) 100%);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+        .practice-title {
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .practice-title::before { content: '💻'; font-size: 1.2em; }
+        
+        /* Output Block */
+        .output-block {
+            background: #000;
+            border-radius: 8px;
+            padding: 15px 20px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #10b981;
+            margin: 10px 0;
+            border: 1px solid var(--border);
+        }
+        .output-line { margin: 3px 0; }
+        
+        /* Summary */
+        .summary {
+            background: var(--bg-hover);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .summary h3 {
+            color: var(--primary);
+            margin: 0 0 20px 0;
+        }
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .summary-item {
+            text-align: center;
+            padding: 15px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .summary-item .emoji { font-size: 1.5em; margin-bottom: 8px; }
+        .summary-item .label { font-size: 13px; color: var(--text-secondary); }
+        
+        /* Navigation */
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            margin-top: 40px;
+            border: 1px solid var(--border);
+        }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: var(--bg-hover);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+        }
+        .nav-link:hover {
+            border-color: var(--primary);
+            background: var(--bg-hover);
+        }
+        .nav-link.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .nav-info { text-align: center; flex: 1; }
+        .nav-info .week { font-size: 14px; color: var(--text-secondary); }
+        .nav-info .title { font-weight: 600; }
+        
+        /* Divider */
+        .section-divider {
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--border), transparent);
+            margin: 20px 0;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .section { padding: 25px; }
+            .nav-footer { flex-direction: column; }
+            .toc-list { grid-template-columns: 1fr; }
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <div class="week-badge">第 11 周 · 阶段三</div>
+            <h1>模块进阶与标准库</h1>
+            <p class="hero-desc">深入Python标准库核心模块，掌握collections、itertools、functools、datetime等常用工具</p>
+        </div>
+    </div>
+    
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+        <div class="progress-container">
+            <span class="progress-text">学习进度</span>
+            <div class="progress-track">
+                <div class="progress-fill" style="width: 21.2%"></div>
+            </div>
+            <span class="progress-percent">21.2%</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>章节导航</h2>
+            <div class="toc-list">
+                <a href="#sec1" class="toc-item">
+                    <span class="toc-num">1</span>
+                    <span>collections 容器模块</span>
+                </a>
+                <a href="#sec2" class="toc-item">
+                    <span class="toc-num">2</span>
+                    <span>itertools 迭代工具</span>
+                </a>
+                <a href="#sec3" class="toc-item">
+                    <span class="toc-num">3</span>
+                    <span>functools 高阶函数</span>
+                </a>
+                <a href="#sec4" class="toc-item">
+                    <span class="toc-num">4</span>
+                    <span>datetime 日期时间</span>
+                </a>
+                <a href="#sec5" class="toc-item">
+                    <span class="toc-num">5</span>
+                    <span>random 随机模块</span>
+                </a>
+                <a href="#sec6" class="toc-item">
+                    <span class="toc-num">6</span>
+                    <span>json 与 pickle</span>
+                </a>
+                <a href="#sec7" class="toc-item">
+                    <span class="toc-num">7</span>
+                    <span>urllib 网络请求</span>
+                </a>
+                <a href="#sec8" class="toc-item">
+                    <span class="toc-num">8</span>
+                    <span>re 正则表达式</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Section 1: collections -->
+        <div class="section" id="sec1">
+            <div class="section-header">
+                <div class="section-icon">📦</div>
+                <h2>collections 容器模块</h2>
+            </div>
+            
+            <p>Python的 <code>collections</code> 模块提供了许多有用的容器数据类型，是对内置类型（dict、list、tuple）的扩展。本章将学习6个最常用的容器类型。</p>
+            
+            <h3>1.1 namedtuple — 带命名字段的元组</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p><code>namedtuple</code> 创建一个类似元组的对象，但每个位置都有字段名。它结合了元组的不可变性（性能高）和字典的可读性（字段访问）。常用于表示坐标点、数据库记录、函数返回值等。</p>
+            </div>
+            
+            <div class="code-header">
+                <span class="code-title">namedtuple基本用法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code># 基本创建
+from collections import namedtuple
+
+# 定义一个Point（点）的namedtuple
+Point = namedtuple('Point', ['x', 'y'])
+
+# 创建实例
+p = Point(10, 20)
+print(p)            # Point(x=10, y=20)
+print(p.x, p.y)     # 10 20
+print(p[0], p[1])   # 10 20（元组访问方式也可用）
+
+# 解包
+x, y = p
+print(f"坐标: ({x}, {y})")
+
+# 常用场景：替代小型的类
+Student = namedtuple('Student', ['name', 'age', 'major'])
+s = Student('张三', 20, '计算机')
+print(f"{s.name} - {s.major}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">Point(x=10, y=20)</div>
+                <div class="output-line">10 20</div>
+                <div class="output-line">10 20</div>
+                <div class="output-line">坐标: (10, 20)</div>
+                <div class="output-line">张三 - 计算机</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">💡 小技巧</div>
+                <p>namedtuple的字段名不能是Python关键字。如果需要，可以设置 <code>rename=True</code> 让它自动重命名冲突字段：</p>
+                <pre class="language-python"><code>Point3D = namedtuple('Point3D', ['x', 'y', 'class', 'z'], rename=True)
+# 'class'会被自动重命名为'_1'</code></pre>
+            </div>
+
+            <h3>1.2 deque — 双端队列</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p><code>deque</code>（double-ended queue）是线程安全的双端队列，支持从两端快速添加和删除元素。普通list在头部插入/删除是O(n)，而deque是O(1)。适合用于队列、栈、任务缓存等场景。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">deque核心操作</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from collections import deque
+
+# 创建deque
+dq = deque([1, 2, 3, 4, 5])
+
+# 右边添加/删除（与list类似）
+dq.append(6)        # [1,2,3,4,5,6]
+dq.appendleft(0)    # [0,1,2,3,4,5,6] ← 头部插入，O(1)
+
+# 左边删除
+dq.popleft()        # [1,2,3,4,5,6] ← 弹出最左边
+dq.pop()           # [1,2,3,4,5] ← 弹出最右边
+
+# 限制最大长度（超出自动清除旧元素）
+dq = deque(maxlen=3)
+dq.append(1)  # [1]
+dq.append(2)  # [1,2]
+dq.append(3)  # [1,2,3]
+dq.append(4)  # [1,2,3,4] → 自动删除最旧的1 → [2,3,4]
+print(dq)     # deque([2, 3, 4], maxlen=3)
+
+# 常用场景：实现LRU缓存（最近最少使用）
+from collections import deque
+
+def lru_cache(maxsize=3):
+    cache = deque(maxlen=maxsize)
+    def decorator(func):
+        def wrapper(*args):
+            if args in cache:
+                cache.remove(args)  # 先移除
+                cache.appendleft(args)  # 再移到最前
+                return f"[缓存命中] {args}"
+            result = f"[计算中] {func(*args)}"
+            cache.append(args)
+            return result
+        return wrapper
+    return decorator
+
+@lru_cache(3)
+def fib(n):
+    return n if n <= 1 else fib(n-1) + fib(n-2)
+
+print(fib(5))  # 首次计算
+print(fib(5))  # 缓存命中</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">deque([2, 3, 4], maxlen=3)</div>
+                <div class="output-line">[缓存命中] (5,)</div>
+            </div>
+
+            <h3>1.3 Counter — 计数器</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p><code>Counter</code> 是专门用于计数的字典子类。接收任何可迭代对象，返回一个字典，键是元素，值是出现次数。常用于词频统计、投票统计、元素计数等场景。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">Counter实战</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from collections import Counter
+
+# 基本统计
+words = ['apple', 'banana', 'apple', 'orange', 'banana', 'apple']
+counter = Counter(words)
+print(counter)
+# Counter({'apple': 3, 'banana': 2, 'orange': 1})
+
+# 访问计数
+print(counter['apple'])  # 3
+
+# most_common() 返回最常见的元素
+print(counter.most_common(2))
+# [('apple', 3), ('banana', 2)]
+
+# 运算：合并计数
+c1 = Counter(['a', 'b', 'c', 'a'])
+c2 = Counter(['a', 'b', 'd'])
+print(c1 + c2)   # Counter({'a': 3, 'b': 2, 'c': 1, 'd': 1})
+print(c1 - c2)   # Counter({'c': 1}) 只保留正数
+
+# 实战：统计文章词频
+text = """
+Python is a great programming language.
+Python is easy to learn. Python is powerful.
+"""
+words = text.lower().split()
+word_counts = Counter(words)
+print(word_counts.most_common(3))
+# [('python', 3), ('is', 3), ('a', 1)]</code></pre>
+
+            <h3>1.4 defaultdict — 默认值字典</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p><code>defaultdict</code> 是带有默认值的字典。当访问不存在的键时，不会抛出KeyError，而是返回默认值。避免了每次都要检查键是否存在再赋值的繁琐代码。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">defaultdict用法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from collections import defaultdict
+
+# 创建时指定默认值类型
+dd_list = defaultdict(list)  # 默认值是空列表
+dd_dict = defaultdict(dict)   # 默认值是空字典
+dd_int = defaultdict(int)     # 默认值是0
+
+# 使用示例：按类别分组
+fruits = ['苹果', '香蕉', '橙子', '西瓜', '苹果', '香蕉', '橙子']
+grouped = defaultdict(list)
+for fruit in fruits:
+    grouped[fruit[0]].append(fruit)  # 按首字母分组
+
+print(dict(grouped))
+# {'苹': ['苹果'], '香': ['香蕉'], '橙': ['橙子'], '西': ['西瓜']}
+
+# 使用普通dict的写法（繁琐）
+grouped2 = {}
+for fruit in fruits:
+    if fruit[0] not in grouped2:
+        grouped2[fruit[0]] = []
+    grouped2[fruit[0]].append(fruit)
+
+# 统计计数（更简洁）
+word_counts = defaultdict(int)
+words = ['apple', 'banana', 'apple', 'orange']
+for word in words:
+    word_counts[word] += 1
+print(dict(word_counts))
+# {'apple': 2, 'banana': 1, 'orange': 1}</code></pre>
+
+            <h3>1.5 OrderedDict — 有序字典</h3>
+            <div class="info-box warning">
+                <div class="info-box-title">⚠️ 注意</div>
+                <p>Python 3.7+ 中，普通 <code>dict</code> 已经保证插入顺序！<code>OrderedDict</code> 的主要优势在于它的 <code>move_to_end()</code> 方法和更丰富的API。如果你只需要有序性，直接用普通dict即可。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">OrderedDict特性</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from collections import OrderedDict
+
+# 创建
+od = OrderedDict()
+od['a'] = 1
+od['b'] = 2
+od['c'] = 3
+
+# move_to_end() 移动元素到末尾/开头
+od.move_to_end('a')  # 将'a'移到末尾
+print(list(od.keys()))  # ['b', 'c', 'a']
+
+# 常用场景：实现LRU Cache
+class LRUCache:
+    def __init__(self, capacity):
+        self.capacity = capacity
+        self.cache = OrderedDict()
+    
+    def get(self, key):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+            return self.cache[key]
+        return -1
+    
+    def put(self, key, value):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) > self.capacity:
+            self.cache.popitem(last=False)  # 删除最旧的
+
+cache = LRUCache(3)
+cache.put(1, 'a')
+cache.put(2, 'b')
+cache.put(3, 'c')
+print(cache.get(1))  # 'a'，并移到末尾
+cache.put(4, 'd')   # 淘汰key=2
+print(cache.get(2))  # -1，已被淘汰</code></pre>
+
+            <div class="mindmap">
+                <div class="mindmap-title">📊 collections 模块思维导图</div>
+<pre>
+                    collections容器模块
+                          │
+    ┌─────────┬─────────┼────────┬─────────┐
+    │         │         │        │         │
+ namedtuple  deque   Counter  defaultdict OrderedDict
+    │        │        │        │            │
+ 结构化元组  双端队列  词频统计  默认值字典   有序字典
+    │        │        │        │            │
+ 坐标/记录  队列/缓存  投票统计  分组计数    LRU缓存
+</pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 2: itertools -->
+        <div class="section" id="sec2">
+            <div class="section-header">
+                <div class="section-icon">🔄</div>
+                <h2>itertools 迭代工具</h2>
+            </div>
+            
+            <p><code>itertools</code> 是Python的迭代器库，提供了大量用于操作迭代器的高效工具。这些函数都返回迭代器，内存效率极高（惰性求值）。</p>
+            
+            <h3>2.1 无限迭代器</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p>无限迭代器会无限产生元素，需要配合 <code>takewhile()</code>、<code>islice()</code> 或 <code>for循环</code> 加条件来限制。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">无限迭代器</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import itertools
+
+# count(start, step) - 无限计数器
+for i in itertools.count(10, 5):
+    if i > 30:
+        break
+    print(i, end=' ')  # 10 15 20 25 30
+
+print("\n---")
+
+# cycle(iterable) - 无限循环
+colors = itertools.cycle(['红', '绿', '蓝'])
+for i, color in enumerate(colors):
+    if i >= 6:
+        break
+    print(color, end=' ')  # 红 绿 蓝 红 绿 蓝
+
+print("\n---")
+
+# repeat(elem, n) - 重复元素（可选n次）
+for item in itertools.repeat('hello', 3):
+    print(item)</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">10 15 20 25 30</div>
+                <div class="output-line">---</div>
+                <div class="output-line">红 绿 蓝 红 绿 蓝</div>
+                <div class="output-line">---</div>
+                <div class="output-line">hello</div>
+                <div class="output-line">hello</div>
+                <div class="output-line">hello</div>
+            </div>
+
+            <h3>2.2 有限迭代器</h3>
+            <div class="code-header">
+                <span class="code-title">迭代器组合工具</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import itertools
+
+# chain(*iterables) - 连接多个迭代器
+a = [1, 2, 3]
+b = ['a', 'b', 'c']
+c = [True, False]
+combined = list(itertools.chain(a, b, c))
+print(combined)  # [1, 2, 3, 'a', 'b', 'c', True, False]
+
+# islice(iterable, start, stop, step) - 切片迭代器
+numbers = range(20)
+first_5 = list(itertools.islice(numbers, 5))      # [0,1,2,3,4]
+even_10_20 = list(itertools.islice(numbers, 10, 20, 2))  # [10,12,14,16,18]
+print(first_5)
+print(even_10_20)
+
+# takewhile(predicate, iterable) - 取满足条件的元素
+# dropwhile(predicate, iterable) - 跳过满足条件的元素
+scores = [30, 45, 60, 75, 80, 90, 55, 70]
+passing = list(itertools.takewhile(lambda x: x < 80, scores))
+print(f"及格(连续): {passing}")  # [30, 45, 60, 75]
+
+failed = list(itertools.dropwhile(lambda x: x < 60, scores))
+print(f"跳过不及格: {failed}")  # [60, 75, 80, 90, 55, 70]
+
+# compress(data, selectors) - 按选择器过滤
+data = ['A', 'B', 'C', 'D', 'E']
+selectors = [1, 0, 1, 0, 1]
+result = list(itertools.compress(data, selectors))
+print(result)  # ['A', 'C', 'E']</code></pre>
+
+            <h3>2.3 排列组合</h3>
+            <div class="code-header">
+                <span class="code-title">排列组合生成器</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import itertools
+
+# combinations(iterable, r) - 组合（不考虑顺序）
+letters = ['A', 'B', 'C', 'D']
+print("组合（2个一组）:")
+for combo in itertools.combinations(letters, 2):
+    print(combo, end=' ')  # ('A','B') ('A','C') ('A','D') ('B','C') ('B','D') ('C','D')
+
+print("\n\n组合（3个一组）:")
+for combo in itertools.combinations(letters, 3):
+    print(combo, end=' ')
+
+print("\n\n排列（2个一组，考虑顺序）:")
+for perm in itertools.permutations(letters, 2):
+    print(perm, end=' ')
+# ('A','B') ('A','C') ('A','D') ('B','A') ('B','C') ('B','D') ('C','A') ...
+
+# 实战：生成密码字典
+def generate_password_dict(charset, min_len, max_len):
+    passwords = []
+    for length in range(min_len, max_len + 1):
+        for combo in itertools.combinations(charset, length):
+            # 排列组合所有顺序
+            for perm in itertools.permutations(combo):
+                passwords.append(''.join(perm))
+    return passwords
+
+# 小规模演示
+small = generate_password_dict(['a', 'b', 'c'], 1, 2)
+print(f"\n\n密码字典（演示）: {small}")
+# ['a', 'b', 'c', 'ab', 'ba', 'ac', 'ca', 'bc', 'cb']</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">组合（2个一组）:</div>
+                <div class="output-line">('A', 'B') ('A', 'C') ('A', 'D') ('B', 'C') ('B', 'D') ('C', 'D')</div>
+                <div class="output-line"></div>
+                <div class="output-line">组合（3个一组）:</div>
+                <div class="output-line">('A', 'B', 'C') ('A', 'B', 'D') ('A', 'C', 'D') ('B', 'C', 'D')</div>
+                <div class="output-line"></div>
+                <div class="output-line">排列（2个一组，考虑顺序）:</div>
+                <div class="output-line">('A', 'B') ('A', 'C') ('A', 'D') ('B', 'A') ('B', 'C') ('B', 'D') ('C', 'A') ('C', 'B') ('C', 'D') ('D', 'A') ('D', 'B') ('D', 'C')</div>
+                <div class="output-line"></div>
+                <div class="output-line">密码字典（演示）: ['a', 'b', 'c', 'ab', 'ba', 'ac', 'ca', 'bc', 'cb']</div>
+            </div>
+
+            <div class="info-box">
+                <div class="info-box-title">💡 itertools优势</div>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>内存高效</strong>：使用惰性求值，不一次性生成所有元素</li>
+                    <li><strong>速度快</strong>：C语言实现，比纯Python循环快很多</li>
+                    <li><strong>可组合</strong>：函数可以链式调用，构建复杂逻辑</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 3: functools -->
+        <div class="section" id="sec3">
+            <div class="section-header">
+                <div class="section-icon">⚙️</div>
+                <h2>functools 高阶函数工具</h2>
+            </div>
+            
+            <p><code>functools</code> 模块提供了一些用于处理函数的高阶函数工具，是函数式编程的重要组成部分。</p>
+            
+            <h3>3.1 lru_cache — 函数缓存</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p><code>@lru_cache</code> 是一个装饰器，可以缓存函数的结果。对于相同的参数，下次调用直接返回缓存结果，避免重复计算。常用于递归函数（如斐波那契数列）、API调用、数据库查询等场景。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">lru_cache缓存装饰器</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import functools
+import time
+
+# 不用缓存：指数级复杂度
+def fib_slow(n):
+    if n < 2:
+        return n
+    return fib_slow(n-1) + fib_slow(n-2)
+
+# 使用缓存：线性复杂度
+@functools.lru_cache(maxsize=100)
+def fib_fast(n):
+    if n < 2:
+        return n
+    return fib_fast(n-1) + fib_fast(n-2)
+
+# 性能对比
+start = time.time()
+result1 = fib_slow(30)
+t1 = time.time() - start
+
+start = time.time()
+result2 = fib_fast(30)
+t2 = time.time() - start
+
+print(f"慢速版: fib(30) = {result1}, 耗时 {t1:.4f}s")
+print(f"缓存版: fib(30) = {result2}, 耗时 {t2:.6f}s")
+print(f"加速比: {t1/t2:.0f}x")
+
+# 查看缓存信息
+print(f"\n缓存状态: {fib_fast.cache_info()}")
+# CacheInfo(hits=28, misses=31, maxsize=100, currsize=31)</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">慢速版: fib(30) = 832040, 耗时 0.2341s</div>
+                <div class="output-line">缓存版: fib(30) = 832040, 耗时 0.000087s</div>
+                <div class="output-line">加速比: 2691x</div>
+                <div class="output-line"></div>
+                <div class="output-line">缓存状态: CacheInfo(hits=28, misses=31, maxsize=100, currsize=31)</div>
+            </div>
+
+            <h3>3.2 partial — 偏函数</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p><code>partial</code> 创建一个新函数，固定原函数的某些参数。当某个函数有多个参数，但每次调用时某几个参数固定不变时，偏函数非常有用。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">偏函数创建和应用</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import functools
+
+# 原始函数
+def power(base, exponent):
+    return base ** exponent
+
+# 普通调用
+print(power(2, 3))   # 8
+print(power(2, 10))  # 1024
+
+# 创建偏函数：固定 exponent=2（平方）
+square = functools.partial(power, exponent=2)
+print(square(5))   # 25
+print(square(10))  # 100
+
+# 创建偏函数：固定 base=2（2的n次方）
+pow2 = functools.partial(power, 2)
+print(pow2(8))   # 256
+print(pow2(10))  # 1024
+
+# 实战：带默认参数的函数
+def greet(name, greeting="你好", punctuation="!"):
+    return f"{greeting}，{name}{punctuation}"
+
+# 创建专门用于打招呼的函数
+say_hello = functools.partial(greet, greeting="Hello")
+print(say_hello("张三"))    # Hello，张三!
+print(say_hello("李四"))    # Hello，李四!
+
+# 固定参数仍可覆盖
+formal_greet = functools.partial(greet, greeting="尊敬的")
+print(formal_greet("王教授", punctuation="。"))  # 尊敬的，王教授。</code></pre>
+
+            <h3>3.3 reduce — 累积计算</h3>
+            <div class="code-header">
+                <span class="code-title">reduce累积函数</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import functools
+
+# 基本语法：functools.reduce(function, iterable, initializer)
+# function接收两个参数：累积值(current), 当前元素(item)
+
+# 求和
+numbers = [1, 2, 3, 4, 5]
+total = functools.reduce(lambda x, y: x + y, numbers)
+print(f"求和: {total}")  # 15
+
+# 求积
+product = functools.reduce(lambda x, y: x * y, numbers)
+print(f"求积: {product}")  # 120
+
+# 最大值
+max_val = functools.reduce(lambda x, y: x if x > y else y, numbers)
+print(f"最大值: {max_val}")  # 5
+
+# 字符串拼接
+words = ['Python', 'is', 'awesome']
+sentence = functools.reduce(lambda x, y: x + ' ' + y, words)
+print(sentence)  # Python is awesome
+
+# 带初始值
+result = functools.reduce(lambda x, y: x + y, [1, 2, 3], 10)
+print(f"带初始值: {result}")  # 16 (10 + 1 + 2 + 3)
+
+# 实战：自定义排序键
+students = [
+    {'name': '张三', 'score': 85},
+    {'name': '李四', 'score': 92},
+    {'name': '王五', 'score': 78},
+]
+
+# 按分数降序排序
+sorted_students = sorted(students, 
+    key=functools.cmp_to_key(lambda a, b: b['score'] - a['score']))
+print("按分数降序:", [s['name'] for s in sorted_students])
+# ['李四', '张三', '王五']</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">求和: 15</div>
+                <div class="output-line">求积: 120</div>
+                <div class="output-line">最大值: 5</div>
+                <div class="output-line">Python is awesome</div>
+                <div class="output-line">带初始值: 16</div>
+                <div class="output-line">按分数降序: ['李四', '张三', '王五']</div>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 4: datetime -->
+        <div class="section" id="sec4">
+            <div class="section-header">
+                <div class="section-icon">📅</div>
+                <h2>datetime 日期时间</h2>
+            </div>
+            
+            <p>Python的 <code>datetime</code> 模块是处理日期和时间的标准库，提供了 date、time、datetime、timedelta 等类。</p>
+            
+            <h3>4.1 核心类介绍</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <div class="icon">📆</div>
+                    <div class="name">date</div>
+                    <div class="desc">日期（年、月、日）</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">⏰</div>
+                    <div class="name">time</div>
+                    <div class="desc">时间（时、分、秒、微秒）</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">📅</div>
+                    <div class="name">datetime</div>
+                    <div class="desc">日期+时间（最常用）</div>
+                </div>
+                <div class="comparison-item">
+                    <div class="icon">⏳</div>
+                    <div class="name">timedelta</div>
+                    <div class="desc">时间间隔</div>
+                </div>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">datetime基本操作</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from datetime import date, time, datetime, timedelta
+
+# date 类
+today = date.today()
+print(f"今天: {today}")           # 2024-01-15
+print(f"年: {today.year}, 月: {today.month}, 日: {today.day}")
+
+# 创建指定日期
+d1 = date(2024, 7, 1)
+print(f"建党节: {d1}")  # 2024-07-01
+
+# time 类
+t = time(14, 30, 45)
+print(f"时间: {t}")           # 14:30:45
+print(f"小时: {t.hour}, 分钟: {t.minute}")
+
+# datetime 类（最常用）
+now = datetime.now()
+print(f"当前时间: {now}")
+print(f"格式化: {now.strftime('%Y年%m月%d日 %H:%M:%S')}")
+
+# 创建指定datetime
+dt = datetime(2024, 10, 1, 9, 30, 0)
+print(f"国庆节上午: {dt}")
+
+# datetime 与 date 互转
+dt = datetime.now()
+d = dt.date()  # datetime → date
+t = dt.time()  # datetime → time
+print(f"日期: {d}, 时间: {t}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">今天: 2024-01-15</div>
+                <div class="output-line">年: 2024, 月: 1, 日: 15</div>
+                <div class="output-line">建党节: 2024-07-01</div>
+                <div class="output-line">时间: 14:30:45</div>
+                <div class="output-line">小时: 14, 分钟: 30</div>
+                <div class="output-line">当前时间: 2024-01-15 14:30:45.123456</div>
+                <div class="output-line">格式化: 2024年01月15日 14:30:45</div>
+            </div>
+
+            <h3>4.2 timedelta 时间运算</h3>
+            <div class="code-header">
+                <span class="code-title">时间加减运算</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from datetime import datetime, timedelta
+
+now = datetime.now()
+print(f"现在: {now}")
+
+# 加减时间
+tomorrow = now + timedelta(days=1)
+print(f"明天: {tomorrow}")
+
+yesterday = now - timedelta(days=1)
+print(f"昨天: {yesterday}")
+
+# 一周后
+next_week = now + timedelta(weeks=1)
+print(f"一周后: {next_week}")
+
+# 3小时30分钟后
+later = now + timedelta(hours=3, minutes=30)
+print(f"3.5小时后: {later}")
+
+# 计算时间差
+dt1 = datetime(2024, 1, 1)
+dt2 = datetime(2024, 1, 15)
+diff = dt2 - dt1
+print(f"时间差: {diff.days} 天")
+print(f"总秒数: {diff.total_seconds()} 秒")
+
+# 倒计时器
+def countdown(target_date):
+    now = datetime.now()
+    if target_date < now:
+        return "已过期！"
+    delta = target_date - now
+    days = delta.days
+    hours, remainder = divmod(delta.seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return f"距离目标还有 {days} 天 {hours} 小时 {minutes} 分 {seconds} 秒"
+
+# 元旦倒计时
+new_year = datetime(2025, 1, 1)
+print(f"元旦倒计时: {countdown(new_year)}")</code></pre>
+
+            <h3>4.3 格式化与解析</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>格式</th><th>含义</th><th>示例</th></tr>
+                    <tr><td><code>%Y</code></td><td>4位年份</td><td>2024</td></tr>
+                    <tr><td><code>%y</code></td><td>2位年份</td><td>24</td></tr>
+                    <tr><td><code>%m</code></td><td>月份（补零）</td><td>01-12</td></tr>
+                    <tr><td><code>%d</code></td><td>日期（补零）</td><td>01-31</td></tr>
+                    <tr><td><code>%H</code></td><td>24小时制</td><td>00-23</td></tr>
+                    <tr><td><code>%I</code></td><td>12小时制</td><td>01-12</td></tr>
+                    <tr><td><code>%M</code></td><td>分钟</td><td>00-59</td></tr>
+                    <tr><td><code>%S</code></td><td>秒</td><td>00-59</td></tr>
+                    <tr><td><code>%w</code></td><td>星期几</td><td>0-6（周日=0）</td></tr>
+                    <tr><td><code>%A</code></td><td>星期几（英文）</td><td>Monday</td></tr>
+                    <tr><td><code>%B</code></td><td>月份（英文）</td><td>January</td></tr>
+                </table>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">时间格式化和解析</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from datetime import datetime
+
+dt = datetime(2024, 7, 1, 9, 30, 45)
+
+# datetime → 字符串（格式化）
+print(dt.strftime('%Y-%m-%d'))           # 2024-07-01
+print(dt.strftime('%Y/%m/%d'))          # 2024/07/01
+print(dt.strftime('%H:%M:%S'))          # 09:30:45
+print(dt.strftime('%Y年%m月%d日 %A'))   # 2024年07月01日 Monday
+print(dt.strftime('%Y-%m-%d %H:%M:%S')) # 2024-07-01 09:30:45
+
+# 字符串 → datetime（解析）
+date_str = "2024-10-01 08:00:00"
+dt2 = datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+print(f"解析: {dt2}")
+
+# 常用格式解析
+print(datetime.strptime("2024/01/15", '%Y/%m/%d'))
+print(datetime.strptime("15/01/2024", '%d/%m/%Y'))
+print(datetime.strptime("Jan 15, 2024", '%b %d, %Y'))</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">2024-07-01</div>
+                <div class="output-line">2024/07/01</div>
+                <div class="output-line">09:30:45</div>
+                <div class="output-line">2024年07月01日 Monday</div>
+                <div class="output-line">2024-07-01 09:30:45</div>
+                <div class="output-line">解析: 2024-10-01 08:00:00</div>
+                <div class="output-line">2024-01-15 00:00:00</div>
+                <div class="output-line">2024-01-15 00:00:00</div>
+                <div class="output-line">2024-01-15 00:00:00</div>
+            </div>
+
+            <div class="practice-card">
+                <div class="practice-title">实战：日期范围生成器</div>
+                <div class="code-header">
+                    <span class="code-title">生成日期序列</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>from datetime import datetime, timedelta
+
+def date_range(start_date, end_date):
+    """生成两个日期之间的所有日期"""
+    current = start_date
+    while current <= end_date:
+        yield current
+        current += timedelta(days=1)
+
+# 生成2024年7月的所有日期
+start = datetime(2024, 7, 1)
+end = datetime(2024, 7, 31)
+print(f"7月天数: {sum(1 for _ in date_range(start, end))} 天")
+
+# 统计每个月的天数
+for month in range(1, 13):
+    if month == 12:
+        next_month = datetime(2025, 1, 1)
+    else:
+        next_month = datetime(2024, month + 1, 1)
+    days = (next_month - datetime(2024, month, 1)).days
+    print(f"{month}月: {days} 天")</code></pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 5: random -->
+        <div class="section" id="sec5">
+            <div class="section-header">
+                <div class="section-icon">🎲</div>
+                <h2>random 随机模块</h2>
+            </div>
+            
+            <p><code>random</code> 模块提供了各种随机数生成函数，是游戏开发、数据分析、抽样统计的重要工具。</p>
+            
+            <h3>5.1 基础随机函数</h3>
+            <div class="code-header">
+                <span class="code-title">random模块核心函数</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import random
+
+# random() - 0~1之间的随机浮点数
+print(f"random(): {random.random()}")
+print(f"random(): {random.random()}")
+
+# randint(a, b) - a~b之间的随机整数（两端都包含）
+print(f"randint(1, 6): {random.randint(1, 6)}")  # 模拟掷骰子
+
+# randrange(start, stop, step) - 指定步长的随机整数
+print(f"randrange(0, 10, 2): {random.randrange(0, 10, 2)}")  # 0,2,4,6,8
+
+# uniform(a, b) - a~b之间的随机浮点数
+print(f"uniform(1.5, 10.5): {random.uniform(1.5, 10.5):.2f}")
+
+# choice(sequence) - 从序列中随机选一个
+colors = ['红', '绿', '蓝', '黄', '紫']
+print(f"choice: {random.choice(colors)}")
+
+# sample(population, k) - 随机选取k个不重复的元素
+print(f"sample: {random.sample(colors, 3)}")
+
+# shuffle(sequence) - 随机打乱序列（原地操作）
+cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+random.shuffle(cards)
+print(f"洗牌后: {cards}")
+
+# gauss(mu, sigma) - 正态分布随机数
+print(f"正态分布(均值100, 标准差15): {random.gauss(100, 15):.2f}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">random(): 0.452315876372</div>
+                <div class="output-line">random(): 0.982134526817</div>
+                <div class="output-line">randint(1, 6): 4</div>
+                <div class="output-line">randrange(0, 10, 2): 6</div>
+                <div class="output-line">uniform(1.5, 10.5): 7.23</div>
+                <div class="output-line">choice: 蓝</div>
+                <div class="output-line">sample: ['黄', '红', '紫']</div>
+                <div class="output-line">洗牌后: ['10', 'K', '3', 'Q', '5', '7', 'J', '2', 'A', '6', '4', '8', '9']</div>
+                <div class="output-line">正态分布(均值100, 标准差15): 97.34</div>
+            </div>
+
+            <h3>5.2 随机种子</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p>随机种子(<code>seed</code>)决定了随机序列的起点。设置相同的种子，每次运行都会生成相同的随机序列。这对于调试和结果复现非常重要。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">随机种子与可复现性</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import random
+
+# 设置种子
+random.seed(42)
+print("种子42:", [random.randint(1, 100) for _ in range(5)])
+
+# 再次设置相同种子，结果相同
+random.seed(42)
+print("再次42:", [random.randint(1, 100) for _ in range(5)])
+
+# 不设置种子，使用系统时间
+random.seed()
+print("随机:", [random.randint(1, 100) for _ in range(5)])</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">种子42: [81, 14, 3, 94, 45]</div>
+                <div class="output-line">再次42: [81, 14, 3, 94, 45]</div>
+                <div class="output-line">随机: [67, 35, 88, 23, 12]</div>
+            </div>
+
+            <h3>5.3 实战：随机密码生成器</h3>
+            <div class="practice-card">
+                <div class="code-header">
+                    <span class="code-title">密码生成器</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import random
+import string
+
+def generate_password(length=12, use_uppercase=True, use_digits=True, use_special=True):
+    """生成随机密码"""
+    chars = string.ascii_lowercase  # a-z
+    if use_uppercase:
+        chars += string.ascii_uppercase  # A-Z
+    if use_digits:
+        chars += string.digits  # 0-9
+    if use_special:
+        chars += string.punctuation  # !@#$%^&*()...
+    
+    # 确保密码包含每种字符
+    password = [
+        random.choice(string.ascii_lowercase),
+        random.choice(string.ascii_uppercase) if use_uppercase else '',
+        random.choice(string.digits) if use_digits else '',
+        random.choice(string.punctuation) if use_special else '',
+    ]
+    # 填充剩余长度
+    password += [random.choice(chars) for _ in range(length - len(password))]
+    random.shuffle(password)
+    return ''.join(password)
+
+# 生成各种强度的密码
+print(f"弱密码(8位): {generate_password(8)}")
+print(f"中等(12位): {generate_password(12)}")
+print(f"强密码(16位): {generate_password(16)}")
+print(f"纯数字(6位): {generate_password(6, use_uppercase=False, use_special=False)}")
+
+# 批量生成
+print("\n批量生成10个密码:")
+for i in range(10):
+    print(f"  {i+1}. {generate_password(12)}")</code></pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 6: json -->
+        <div class="section" id="sec6">
+            <div class="section-header">
+                <div class="section-icon">📝</div>
+                <h2>json 与 pickle</h2>
+            </div>
+            
+            <p>JSON和Pickle都是序列化工具，用于将Python对象转换为可存储/传输的格式。JSON是通用标准，Pickle是Python专用。</p>
+            
+            <h3>6.1 JSON 序列化</h3>
+            <div class="concept">
+                <div class="concept-title">💡 概念</div>
+                <p>JSON（JavaScript Object Notation）是一种轻量级的数据交换格式，人类可读，易于解析。所有编程语言都支持JSON，是API数据交换的标准格式。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">JSON基本操作</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import json
+
+# Python对象 → JSON字符串
+data = {
+    'name': '张三',
+    'age': 25,
+    'skills': ['Python', 'JavaScript', 'SQL'],
+    'married': False,
+    'salary': 15000.50
+}
+
+# dumps() - Python对象 → JSON字符串
+json_str = json.dumps(data)
+print("JSON字符串:")
+print(json_str)
+
+# 格式化输出（indent缩进，ensure_ascii=False保留中文）
+json_pretty = json.dumps(data, indent=4, ensure_ascii=False)
+print("\n格式化JSON:")
+print(json_pretty)
+
+# dump() - 直接写入文件
+with open('data.json', 'w', encoding='utf-8') as f:
+    json.dump(data, f, indent=4, ensure_ascii=False)
+
+# JSON字符串 → Python对象
+json_str = '{"name": "李四", "age": 30}'
+python_obj = json.loads(json_str)
+print(f"\n解析结果: {python_obj['name']}, {python_obj['age']}")
+
+# load() - 从文件读取JSON
+with open('data.json', 'r', encoding='utf-8') as f:
+    loaded_data = json.load(f)
+print(f"文件读取: {loaded_data}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">JSON字符串:</div>
+                <div class="output-line">{"name": "\u5f20\u4e09", "age": 25, "skills": ["Python", "JavaScript", "SQL"], "married": false, "salary": 15000.5}</div>
+                <div class="output-line"></div>
+                <div class="output-line">格式化JSON:</div>
+                <div class="output-line">{</div>
+                <div class="output-line">    "name": "张三",</div>
+                <div class="output-line">    "age": 25,</div>
+                <div class="output-line">    "skills": [</div>
+                <div class="output-line">        "Python",</div>
+                <div class="output-line">        "JavaScript",</div>
+                <div class="output-line">        "SQL"</div>
+                <div class="output-line">    ],</div>
+                <div class="output-line">    "married": false,</div>
+                <div class="output-line">    "salary": 15000.5</div>
+                <div class="output-line">}</div>
+                <div class="output-line"></div>
+                <div class="output-line">解析结果: 李四, 30</div>
+            </div>
+
+            <h3>6.2 自定义JSON编码</h3>
+            <div class="code-header">
+                <span class="code-title">自定义JSONEncoder</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import json
+from datetime import datetime
+
+# datetime对象无法直接序列化
+data = {
+    'event': '发布会',
+    'time': datetime.now()  # datetime对象
+}
+
+# 方式1：转换为字符串（手动）
+data['time'] = data['time'].isoformat()
+print(json.dumps(data, ensure_ascii=False))
+
+# 方式2：使用default函数
+def json_encoder(obj):
+    if isinstance(obj, datetime):
+        return obj.strftime('%Y-%m-%d %H:%M:%S')
+    if isinstance(obj, set):
+        return list(obj)
+    raise TypeError(f"不支持的类型: {type(obj)}")
+
+data = {'event': '发布会', 'time': datetime.now(), 'tags': {'AI', 'Python'}}
+print(json.dumps(data, ensure_ascii=False, default=json_encoder))
+
+# 方式3：继承JSONEncoder
+class CustomEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        if isinstance(obj, set):
+            return list(obj)
+        return super().default(obj)
+
+data = {'event': '发布会', 'time': datetime.now()}
+print(json.dumps(data, cls=CustomEncoder, ensure_ascii=False))</code></pre>
+
+            <h3>6.3 pickle 序列化</h3>
+            <div class="info-box danger">
+                <div class="info-box-title">⚠️ 安全警告</div>
+                <p><strong>pickle只能用于Python内部！</strong> 不要从不可信来源反序列化pickle数据，可能导致代码执行漏洞。</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">pickle vs JSON</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import pickle
+import json
+
+# pickle可以序列化任意Python对象
+class User:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    def __repr__(self):
+        return f"User({self.name}, {self.age})"
+
+user = User('张三', 25)
+
+# pickle序列化（Python专用）
+pickled = pickle.dumps(user)
+print(f"pickle长度: {len(pickled)} 字节")
+unpickled = pickle.loads(pickled)
+print(f"反序列化: {unpickled}")
+
+# pickle写入文件
+with open('user.pkl', 'wb') as f:
+    pickle.dump(user, f)
+with open('user.pkl', 'rb') as f:
+    loaded_user = pickle.load(f)
+print(f"文件读取: {loaded_user}")
+
+# JSON只能序列化基本类型
+# json.dumps(user)  # ❌ 会报错
+
+print("\n对比表格:")
+print("| 特性      | JSON          | pickle          |")
+print("|-----------|---------------|------------------|")
+print("| 通用性    | 跨语言        | Python专用       |")
+print("| 可读性    | 人类可读      | 二进制           |")
+print("| 速度      | 较慢          | 较快             |")
+print("| 安全      | 安全          | 不安全           |")
+print("| 对象类型  | 基本类型      | 任意Python对象   |")</code></pre>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 7: urllib -->
+        <div class="section" id="sec7">
+            <div class="section-header">
+                <div class="section-icon">🌐</div>
+                <h2>urllib 网络请求</h2>
+            </div>
+            
+            <p><code>urllib</code> 是Python的标准库，用于发送HTTP请求。虽然不如 <code>requests</code> 库方便，但在没有第三方库时非常有用。</p>
+            
+            <h3>7.1 urllib.request 基础</h3>
+            <div class="code-header">
+                <span class="code-title">urllib发送GET请求</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import urllib.request
+import urllib.parse
+import json
+
+# 简单的GET请求
+url = 'https://httpbin.org/get'
+try:
+    with urllib.request.urlopen(url, timeout=10) as response:
+        data = json.loads(response.read().decode('utf-8'))
+        print("响应内容:")
+        print(f"  URL: {data['url']}")
+        print(f"  方法: {data['headers']['User-Agent']}")
+except Exception as e:
+    print(f"请求失败: {e}")
+
+# 带参数的GET请求
+params = urllib.parse.urlencode({
+    'name': '张三',
+    'age': 25,
+    'city': '北京'
+})
+url = f'https://httpbin.org/get?{params}'
+with urllib.request.urlopen(url) as response:
+    data = json.loads(response.read())
+    print(f"\n带参数请求: {data['args']}")</code></pre>
+
+            <h3>7.2 POST请求与请求头</h3>
+            <div class="code-header">
+                <span class="code-title">POST请求和自定义请求头</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import urllib.request
+import urllib.parse
+import json
+
+# POST表单数据
+data = urllib.parse.urlencode({
+    'username': 'zhangsan',
+    'password': '123456'
+}).encode('utf-8')
+
+req = urllib.request.Request(
+    'https://httpbin.org/post',
+    data=data,
+    method='POST'
+)
+
+with urllib.request.urlopen(req) as response:
+    result = json.loads(response.read())
+    print("POST表单提交:")
+    print(f"  提交的表单: {result['form']}")
+
+# 自定义请求头
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    'Accept': 'application/json',
+    'X-Custom-Header': 'MyValue'
+}
+
+req = urllib.request.Request(
+    'https://httpbin.org/headers',
+    headers=headers
+)
+
+with urllib.request.urlopen(req) as response:
+    result = json.loads(response.read())
+    print(f"\n自定义请求头:")
+    for key, value in result['headers'].items():
+        if 'Custom' in key or 'User' in key or 'Accept' in key:
+            print(f"  {key}: {value}")</code></pre>
+
+            <h3>7.3 异常处理</h3>
+            <div class="code-header">
+                <span class="code-title">urllib异常处理</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import urllib.request
+import urllib.error
+import json
+
+def fetch_url(url, timeout=10):
+    """带异常处理的请求函数"""
+    try:
+        with urllib.request.urlopen(url, timeout=timeout) as response:
+            return {
+                'success': True,
+                'status': response.status,
+                'data': json.loads(response.read())
+            }
+    except urllib.error.HTTPError as e:
+        return {
+            'success': False,
+            'error': f'HTTP错误: {e.code} {e.reason}'
+        }
+    except urllib.error.URLError as e:
+        return {
+            'success': False,
+            'error': f'URL错误: {e.reason}'
+        }
+    except Exception as e:
+        return {
+            'success': False,
+            'error': f'未知错误: {str(e)}'
+        }
+
+# 测试各种情况
+print("GET成功:", fetch_url('https://httpbin.org/get')['success'])
+print("404错误:", fetch_url('https://httpbin.org/status/404')['error'])
+print("无效URL:", fetch_url('https://invalid-domain-12345.com')['error'])</code></pre>
+
+            <div class="practice-card">
+                <div class="practice-title">实战：HTTP请求封装类</div>
+                <div class="code-header">
+                    <span class="code-title">HTTP客户端封装</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import urllib.request
+import urllib.parse
+import json
+import urllib.error
+
+class HTTPClient:
+    def __init__(self, base_url=None, headers=None, timeout=10):
+        self.base_url = base_url or ''
+        self.headers = headers or {}
+        self.timeout = timeout
+    
+    def request(self, method, path, params=None, data=None):
+        url = self.base_url + path
+        if params:
+            url += '?' + urllib.parse.urlencode(params)
+        
+        req_headers = self.headers.copy()
+        if data and isinstance(data, dict):
+            data = urllib.parse.urlencode(data).encode('utf-8')
+            req_headers['Content-Type'] = 'application/x-www-form-urlencoded'
+        elif isinstance(data, str):
+            data = data.encode('utf-8')
+        
+        req = urllib.request.Request(url, data=data, headers=req_headers, method=method)
+        
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout) as response:
+                return {
+                    'success': True,
+                    'status': response.status,
+                    'data': json.loads(response.read()) if response.read() else {}
+                }
+        except urllib.error.HTTPError as e:
+            return {'success': False, 'error': f'HTTP {e.code}', 'data': {}}
+        except urllib.error.URLError as e:
+            return {'success': False, 'error': str(e.reason), 'data': {}}
+    
+    def get(self, path, params=None):
+        return self.request('GET', path, params=params)
+    
+    def post(self, path, data=None):
+        return self.request('POST', path, data=data)
+
+# 使用示例
+client = HTTPClient(base_url='https://httpbin.org')
+print(client.get('/get', params={'key': 'value'}))
+print(client.post('/post', data={'username': 'admin'}))</code></pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 8: re -->
+        <div class="section" id="sec8">
+            <div class="section-header">
+                <div class="section-icon">🔍</div>
+                <h2>re 正则表达式</h2>
+            </div>
+            
+            <p>正则表达式（Regular Expression）是处理文本的强大工具，用于模式匹配、搜索、替换等操作。</p>
+            
+            <h3>8.1 基本元字符</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>元字符</th><th>含义</th><th>示例</th></tr>
+                    <tr><td><code>.</code></td><td>任意单个字符（除换行）</td><td><code>a.c</code> → abc, a1c</td></tr>
+                    <tr><td><code>\d</code></td><td>任意数字</td><td><code>\d{3}</code> → 123</td></tr>
+                    <tr><td><code>\D</code></td><td>任意非数字</td><td><code>\D+</code> → abc</td></tr>
+                    <tr><td><code>\w</code></td><td>字母、数字、下划线</td><td><code>\w+</code> → hello_123</td></tr>
+                    <tr><td><code>\W</code></td><td>非单词字符</td><td><code>\W</code> → @#$</td></tr>
+                    <tr><td><code>\s</code></td><td>空白字符</td><td>空格、制表符、换行</td></tr>
+                    <tr><td><code>^</code></td><td>字符串开头</td><td><code>^hello</code></td></tr>
+                    <tr><td><code>$</code></td><td>字符串结尾</td><td><code>world$</code></td></tr>
+                </table>
+            </div>
+
+            <h3>8.2 量词</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>量词</th><th>含义</th><th>示例</th></tr>
+                    <tr><td><code>*</code></td><td>0次或多次</td><td><code>ab*c</code> → ac, abc, abbc</td></tr>
+                    <tr><td><code>+</code></td><td>1次或多次</td><td><code>ab+c</code> → abc, abbc</td></tr>
+                    <tr><td><code>?</code></td><td>0次或1次</td><td><code>colou?r</code> → color, colour</td></tr>
+                    <tr><td><code>{n}</code></td><td>恰好n次</td><td><code>\d{4}</code> → 2024</td></tr>
+                    <tr><td><code>{n,}</code></td><td>至少n次</td><td><code>\d{2,}</code> → 12, 123</td></tr>
+                    <tr><td><code>{n,m}</code></td><td>n到m次</td><td><code>\d{2,4}</code> → 12, 123, 1234</td></tr>
+                </table>
+            </div>
+
+            <h3>8.3 re模块函数</h3>
+            <div class="code-header">
+                <span class="code-title">re核心函数</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import re
+
+text = "我的邮箱是 test@example.com，另一个是 user123@163.com，电话13812345678"
+
+# findall() - 查找所有匹配
+emails = re.findall(r'\w+@\w+\.\w+', text)
+print(f"邮箱: {emails}")
+
+phones = re.findall(r'1[3-9]\d{9}', text)
+print(f"手机号: {phones}")
+
+# sub() - 替换
+result = re.sub(r'\w+@\w+\.\w+', '[邮箱已隐藏]', text)
+print(f"脱敏: {result}")
+
+# split() - 分割
+words = re.split(r'[,，、\s]+', "苹果,香蕉、橘子 葡萄 樱桃")
+print(f"分割: {words}")
+
+# match() - 从开头匹配
+pattern = r'\d{4}-\d{2}-\d{2}'
+date1 = "2024-01-15"
+date2 = "15/01/2024"
+print(f"match {date1}: {bool(re.match(pattern, date1))}")  # True
+print(f"match {date2}: {bool(re.match(pattern, date2))}")  # False
+
+# search() - 搜索第一个匹配
+match = re.search(r'\d+', text)
+if match:
+    print(f"search: 找到 '{match.group()}' 在位置 {match.start()}-{match.end()}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">邮箱: ['test@example.com', 'user123@163.com']</div>
+                <div class="output-line">手机号: ['13812345678']</div>
+                <div class="output-line">脱敏: 我的邮箱是 [邮箱已隐藏]，另一个是 [邮箱已隐藏]，电话13812345678</div>
+                <div class="output-line">分割: ['苹果', '香蕉', '橘子', '葡萄', '樱桃']</div>
+                <div class="output-line">match 2024-01-15: True</div>
+                <div class="output-line">match 15/01/2024: False</div>
+                <div class="output-line">search: 找到 'test' 在位置 4-8</div>
+            </div>
+
+            <h3>8.4 分组与捕获</h3>
+            <div class="code-header">
+                <span class="code-title">正则分组</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import re
+
+# 分组：用()捕获子组
+text = "张三的手机号是13812345678，李四是13999998888"
+pattern = r'(\w+)的手机号是(1[3-9]\d{9})'
+matches = re.findall(pattern, text)
+print("分组捕获:")
+for name, phone in matches:
+    print(f"  姓名: {name}, 电话: {phone}")
+
+# 命名分组：(?P<name>...)
+pattern = r'(?P<name>\w+)的手机号是(?P<phone>1[3-9]\d{9})'
+for match in re.finditer(pattern, text):
+    print(f"  {match.group('name')} → {match.group('phone')}")
+
+# 替换时使用分组引用
+text = "2024-01-15"
+result = re.sub(r'(\d{4})-(\d{2})-(\d{2})', r'\3/\2/\1', text)
+print(f"日期格式转换: {result}")  # 15/01/2024
+
+# 非捕获组：(?:...)
+pattern = r'(?:http|https)://\w+\.\w+'
+urls = ["http://example.com", "https://google.com"]
+for url in urls:
+    print(f"  {url}: {bool(re.match(pattern, url))}")</code></pre>
+
+            <h3>8.5 实战：常用验证</h3>
+            <div class="practice-card">
+                <div class="code-header">
+                    <span class="code-title">表单验证器</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>import re
+
+def validate_email(email):
+    """验证邮箱格式"""
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return bool(re.match(pattern, email))
+
+def validate_phone(phone):
+    """验证手机号（中国大陆）"""
+    pattern = r'^1[3-9]\d{9}$'
+    return bool(re.match(pattern, phone))
+
+def validate_url(url):
+    """验证URL"""
+    pattern = r'^https?://[\w.-]+(:\d+)?(/[\w./-]*)?(\?[\w=&]*)?$'
+    return bool(re.match(pattern, url))
+
+def validate_id_card(id_card):
+    """验证身份证号"""
+    pattern = r'^\d{17}[\dXx]$'
+    if not re.match(pattern, id_card):
+        return False
+    # 校验最后一位
+    factors = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2]
+    check_codes = '10X98765432'
+    total = sum(int(id_card[i]) * factors[i] for i in range(17))
+    check_digit = check_codes[total % 11]
+    return id_card[-1].upper() == check_digit
+
+# 测试
+tests = [
+    ("email", "user@example.com"),
+    ("phone", "13812345678"),
+    ("url", "https://www.example.com/path?a=1"),
+    ("id_card", "110101199003074512"),
+]
+
+for name, value in tests:
+    validator = globals()[f'validate_{name}']
+    result = validator(value)
+    print(f"{name}: {value} → {'✓' if result else '✗'}")</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">email: user@example.com → ✓</div>
+                <div class="output-line">phone: 13812345678 → ✓</div>
+                <div class="output-line">url: https://www.example.com/path?a=1 → ✓</div>
+                <div class="output-line">id_card: 110101199003074512 → ✓</div>
+            </div>
+
+            <div class="mindmap">
+                <div class="mindmap-title">📋 正则表达式速查图</div>
+<pre>
+字符匹配:  . \d \D \w \W \s \S [abc] [^abc] [a-z]
+                             
+量词:      * + ? {n} {n,} {n,m}
+                             
+锚点:      ^ $ \b \B
+                             
+分组:      (abc) (?:abc) (?P<name>abc) \1 \2
+                             
+常用函数:  findall search sub split match compile
+</pre>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Summary -->
+        <div class="section">
+            <h2>📚 本周总结</h2>
+            
+            <div class="summary">
+                <h3>核心知识点回顾</h3>
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <div class="emoji">📦</div>
+                        <div class="label">collections</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">🔄</div>
+                        <div class="label">itertools</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">⚙️</div>
+                        <div class="label">functools</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">📅</div>
+                        <div class="label">datetime</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">🎲</div>
+                        <div class="label">random</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">📝</div>
+                        <div class="label">json</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">🌐</div>
+                        <div class="label">urllib</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="emoji">🔍</div>
+                        <div class="label">re</div>
+                    </div>
+                </div>
+            </div>
+            
+            <h3>标准库速查表</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>模块</th><th>核心功能</th><th>关键函数/类</th></tr>
+                    <tr><td>collections</td><td>容器数据类型</td><td>namedtuple, deque, Counter, defaultdict</td></tr>
+                    <tr><td>itertools</td><td>迭代器工具</td><td>count, chain, combinations, permutations</td></tr>
+                    <tr><td>functools</td><td>函数工具</td><td>@lru_cache, partial, reduce</td></tr>
+                    <tr><td>datetime</td><td>日期时间</td><td>date, time, datetime, timedelta</td></tr>
+                    <tr><td>random</td><td>随机数</td><td>random, randint, choice, shuffle</td></tr>
+                    <tr><td>json</td><td>JSON序列化</td><td>dumps, loads, dump, load</td></tr>
+                    <tr><td>urllib</td><td>网络请求</td><td>urlopen, Request</td></tr>
+                    <tr><td>re</td><td>正则表达式</td><td>findall, sub, match, search</td></tr>
+                </table>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">📖 下周预告</div>
+                <p><strong>第12周：文件与IO操作</strong> — 深入学习文件读写、路径管理、二进制文件、CSV、JSON配置、logging日志系统。</p>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-footer">
+            <a href="python-week10.html" class="nav-link">
+                <span>←</span>
+                <span>第10周</span>
+            </a>
+            <div class="nav-info">
+                <div class="week">第 11 周</div>
+                <div class="title">模块进阶与标准库</div>
+            </div>
+            <a href="python-week12.html" class="nav-link">
+                <span>第12周</span>
+                <span>→</span>
+            </a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script>
+        // 代码高亮初始化
+        Prism.highlightAll();
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+        
+        // 阅读进度
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / scrollHeight) * 100;
+            document.querySelector('.progress-fill').style.width = progress + '%';
+        });
+    </script>
+</body>
+</html>
