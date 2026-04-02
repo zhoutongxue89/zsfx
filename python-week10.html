@@ -1,0 +1,1162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路 - 第10周：面向对象进阶与异常处理</title>
+<style>
+:root{--primary:#00b894;--secondary:#00cec9;--accent:#6c5ce7;--success:#27ae60;--warning:#f39c12;--danger:#e74c3c;--dark:#2d3436;--light:#f8f9fa;--code-bg:#1e1e2e;--border:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#f0faf8;color:#2d3436;line-height:1.8}
+.hero{background:linear-gradient(135deg,#00b894,#00cec9,#6c5ce7);color:#fff;padding:60px 40px;text-align:center}
+.hero h1{font-size:2.8em;margin-bottom:15px;text-shadow:0 2px 10px rgba(0,0,0,.2)}
+.hero p{font-size:1.2em;opacity:.9;max-width:700px;margin:0 auto}
+.hero .badges{margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:5px 16px;border-radius:20px;font-size:.9em}
+.container{max-width:1000px;margin:0 auto;padding:30px 20px}
+.toc{background:#fff;border-radius:16px;padding:30px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,.08);border-left:5px solid var(--primary)}
+.toc h2{color:var(--primary);margin-bottom:15px;font-size:1.4em}
+.toc ol{padding-left:20px}
+.toc li{margin:6px 0}
+.toc a{color:var(--dark);text-decoration:none;transition:.2s}
+.toc a:hover{color:var(--primary)}
+.section{background:#fff;border-radius:16px;padding:35px;margin-bottom:25px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.section h2{color:var(--primary);font-size:1.6em;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--secondary);display:flex;align-items:center;gap:10px}
+.section h3{color:var(--dark);font-size:1.25em;margin:25px 0 12px;padding-left:12px;border-left:4px solid var(--secondary)}
+.section h4{color:#636e72;font-size:1.05em;margin:18px 0 8px}
+p{margin:10px 0;line-height:1.9}
+.concept-box{background:linear-gradient(135deg,#00b89411,#00cec911);border:1px solid #00b89455;border-radius:12px;padding:20px 24px;margin:15px 0}
+.concept-box .concept-title{font-weight:700;color:var(--primary);margin-bottom:8px;font-size:1.05em}
+.tip{background:#e8f5e9;border-left:4px solid var(--success);border-radius:8px;padding:14px 18px;margin:12px 0}
+.warning{background:#fff8e1;border-left:4px solid var(--warning);border-radius:8px;padding:14px 18px;margin:12px 0}
+.danger{background:#fce4ec;border-left:4px solid var(--danger);border-radius:8px;padding:14px 18px;margin:12px 0}
+.info{background:#e3f2fd;border-left:4px solid #2196f3;border-radius:8px;padding:14px 18px;margin:12px 0}
+.tip::before{content:"💡 ";font-weight:700}
+.warning::before{content:"⚠️ ";font-weight:700}
+.danger::before{content:"🚨 ";font-weight:700}
+.info::before{content:"ℹ️ ";font-weight:700}
+pre{background:var(--code-bg);border-radius:10px;padding:20px;overflow-x:auto;margin:15px 0;position:relative}
+code.block{display:block;color:#cdd6f4;font-family:'Consolas','Monaco',monospace;font-size:.9em;line-height:1.7}
+code.inline{background:#f0f0f0;color:#e17055;padding:2px 7px;border-radius:4px;font-family:'Consolas',monospace;font-size:.9em}
+.cm{color:#6272a4}.kw{color:#ff79c6}.st{color:#f1fa8c}.nm{color:#bd93f9}.fn{color:#50fa7b}.cl{color:#8be9fd}.dc{color:#ffb86c}.op{color:#ff5555}.bl{color:#f8f8f2}
+table{width:100%;border-collapse:collapse;margin:15px 0;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+th{background:var(--primary);color:#fff;padding:12px 15px;text-align:left}
+td{padding:11px 15px;border-bottom:1px solid var(--border)}
+tr:nth-child(even) td{background:#f0faf8}
+tr:hover td{background:#d0f0e8}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:15px 0}
+.card{background:#f0faf8;border-radius:12px;padding:20px;border:1px solid #b2dfdb}
+.card h4{color:var(--primary);margin-bottom:10px}
+.analogy{background:linear-gradient(135deg,#ffeaa711,#fab1a011);border:1px solid #fab1a055;border-radius:12px;padding:20px;margin:15px 0}
+.analogy-title{font-weight:700;color:#e17055;margin-bottom:8px}
+.practice{background:linear-gradient(135deg,#6c5ce711,#a29bfe11);border:1px solid #6c5ce755;border-radius:12px;padding:25px;margin:20px 0}
+.practice h3{color:var(--accent);margin:0 0 15px}
+.step-list{counter-reset:step;list-style:none;padding:0}
+.step-list li{counter-increment:step;padding:10px 10px 10px 50px;margin:8px 0;position:relative;background:#f0faf8;border-radius:8px}
+.step-list li::before{content:counter(step);position:absolute;left:12px;top:50%;transform:translateY(-50%);background:var(--primary);color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em}
+.exc-hier{background:#1e1e2e;border-radius:12px;padding:20px;margin:15px 0;font-family:'Consolas',monospace;font-size:.9em;line-height:2}
+.exc-hier .e-base{color:#8be9fd}.exc-hier .e-std{color:#50fa7b}.exc-hier .e-type{color:#f1fa8c}.exc-hier .e-val{color:#ffb86c}.exc-hier .e-rt{color:#ff5555}.exc-hier .e-io{color:#bd93f9}.exc-hier .e-attr{color:#ff79c6}.exc-hier .e-key{color:#50fa7b}.exc-hier .e-idx{color:#ffb86c}.exc-hier .e-name{color:#8be9fd}
+.nav-links{display:flex;justify-content:space-between;margin-top:30px;flex-wrap:wrap;gap:10px}
+.nav-btn{background:var(--primary);color:#fff;padding:12px 25px;border-radius:25px;text-decoration:none;font-weight:600;transition:.3s}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 5px 15px rgba(0,184,148,.4)}
+.footer{text-align:center;padding:40px;color:#636e72;font-size:.9em}
+.progress-bar-wrap{background:#e0e0e0;border-radius:10px;height:12px;margin:5px 0 15px}
+.progress-bar{height:12px;border-radius:10px;background:linear-gradient(90deg,var(--primary),var(--secondary))}
+@media(max-width:768px){.hero h1{font-size:2em}.grid-2{grid-template-columns:1fr}.container{padding:15px}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>🐍 Python学习之路</h1>
+  <p>第10周：面向对象进阶 — 异常处理、模块化与装饰器</p>
+  <div class="badges">
+    <span class="badge">📅 第10周</span>
+    <span class="badge">⏱️ 建议学习时间：8-12小时</span>
+    <span class="badge">🎯 阶段3：面向对象 &amp; 模块化</span>
+    <span class="badge">🔥 进阶突破</span>
+  </div>
+</div>
+<div class="container">
+<div class="toc">
+  <h2>📚 本周目录</h2>
+  <ol>
+    <li><a href="#s1">异常处理机制与原理深入</a></li>
+    <li><a href="#s2">自定义异常类</a></li>
+    <li><a href="#s3">上下文管理器（with语句）</a></li>
+    <li><a href="#s4">装饰器（Decorator）原理与应用</a></li>
+    <li><a href="#s5">生成器与迭代器</a></li>
+    <li><a href="#s6">模块与包的组织</a></li>
+    <li><a href="#s7">面向对象高级特性</a></li>
+    <li><a href="#s8">综合实战：任务管理系统</a></li>
+  </ol>
+</div>
+
+
+<!-- Section 1: 异常处理 -->
+<div class="section" id="s1">
+<h2>🚨 1. 异常处理机制与原理深入</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔑 什么是异常？</div>
+  <p>异常（Exception）是程序在运行时遇到的<strong>非预期情况</strong>，比如除以零、访问不存在的文件、索引越界等。Python 用"异常对象"来描述这些错误，当异常发生时，程序会沿着调用栈向上传播，直到被 <code class="inline">try-except</code> 捕获，否则程序崩溃并打印错误信息。</p>
+  <p>异常处理的核心思想：<strong>将正常流程和错误处理分离</strong>，让代码更清晰、更健壮。</p>
+</div>
+
+<h3>1.1 Python 异常层次结构</h3>
+<p>Python 所有异常都继承自 <code class="inline">BaseException</code>，形成一棵完整的继承树：</p>
+<div class="exc-hier">
+<span class="e-base">BaseException</span><br>
+&nbsp;&nbsp;├── <span class="e-std">SystemExit</span>　　　　<span style="color:#6272a4"># sys.exit() 触发</span><br>
+&nbsp;&nbsp;├── <span class="e-std">KeyboardInterrupt</span>　<span style="color:#6272a4"># Ctrl+C 触发</span><br>
+&nbsp;&nbsp;├── <span class="e-std">GeneratorExit</span>　　　<span style="color:#6272a4"># 生成器关闭时触发</span><br>
+&nbsp;&nbsp;└── <span class="e-std">Exception</span>　　　　　<span style="color:#6272a4"># ← 我们通常捕获的根类</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-type">TypeError</span>　　　　<span style="color:#6272a4"># 类型错误：1 + "a"</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-val">ValueError</span>　　　　<span style="color:#6272a4"># 值错误：int("abc")</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-rt">ZeroDivisionError</span>　<span style="color:#6272a4"># 除以零</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-io">OSError</span>　　　　　　<span style="color:#6272a4"># 操作系统错误（FileNotFoundError等）</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-attr">AttributeError</span>　　<span style="color:#6272a4"># 访问不存在的属性</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-key">KeyError</span>　　　　　<span style="color:#6272a4"># 字典不存在的键</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-idx">IndexError</span>　　　　<span style="color:#6272a4"># 列表索引越界</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="e-name">NameError</span>　　　　　<span style="color:#6272a4"># 变量未定义</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="e-std">StopIteration</span>　　<span style="color:#6272a4"># 迭代器耗尽</span>
+</div>
+<div class="tip">捕获异常时应尽量精确。捕获父类异常（如 <code class="inline">Exception</code>）会掩盖所有子类错误，导致难以调试。永远不要裸写 <code class="inline">except:</code>（不带异常类型），这会连 <code class="inline">KeyboardInterrupt</code> 也捕获！</div>
+
+<h3>1.2 try-except-else-finally 完整语法</h3>
+<pre><code class="block"><span class="kw">try</span>:
+    <span class="cm"># 可能出错的代码</span>
+    result = <span class="nm">10</span> / <span class="nm">0</span>
+<span class="kw">except</span> <span class="cl">ZeroDivisionError</span> <span class="kw">as</span> e:
+    <span class="cm"># 处理特定异常</span>
+    <span class="fn">print</span>(<span class="st">f"除以零错误：{e}"</span>)
+<span class="kw">except</span> (<span class="cl">TypeError</span>, <span class="cl">ValueError</span>) <span class="kw">as</span> e:
+    <span class="cm"># 同时捕获多个异常类型</span>
+    <span class="fn">print</span>(<span class="st">f"类型或值错误：{e}"</span>)
+<span class="kw">except</span> <span class="cl">Exception</span> <span class="kw">as</span> e:
+    <span class="cm"># 兜底：捕获所有其他 Exception</span>
+    <span class="fn">print</span>(<span class="st">f"未知错误：{type(e).__name__}: {e}"</span>)
+<span class="kw">else</span>:
+    <span class="cm"># 只有 try 块没有异常时才执行</span>
+    <span class="fn">print</span>(<span class="st">f"计算成功：{result}"</span>)
+<span class="kw">finally</span>:
+    <span class="cm"># 无论是否发生异常，始终执行（用于清理资源）</span>
+    <span class="fn">print</span>(<span class="st">"清理完成"</span>)</code></pre>
+
+<div class="concept-box">
+  <div class="concept-title">🔑 else 和 finally 的执行时机</div>
+  <p><strong>else：</strong>仅在 <code class="inline">try</code> 块<strong>完全成功</strong>（无异常抛出）时执行。它的存在让"正常逻辑"和"错误处理"的边界更清晰。</p>
+  <p><strong>finally：</strong>无论发生什么都会执行，即使在 <code class="inline">except</code> 中 <code class="inline">return</code> 了，<code class="inline">finally</code> 也会先运行。常用于：关闭文件、释放数据库连接、记录日志等。</p>
+</div>
+
+<h3>1.3 异常的传播与调用栈</h3>
+<pre><code class="block"><span class="kw">def</span> <span class="fn">c</span>():
+    <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"c 函数出错了"</span>)  <span class="cm"># 异常在这里产生</span>
+
+<span class="kw">def</span> <span class="fn">b</span>():
+    <span class="fn">c</span>()  <span class="cm"># 没有捕获，继续向上传播</span>
+
+<span class="kw">def</span> <span class="fn">a</span>():
+    <span class="kw">try</span>:
+        <span class="fn">b</span>()  <span class="cm"># 在 a 里捕获来自 c 的异常</span>
+    <span class="kw">except</span> <span class="cl">ValueError</span> <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="st">f"a 捕获到异常：{e}"</span>)
+        <span class="cm"># 查看完整调用栈</span>
+        <span class="kw">import</span> traceback
+        traceback.<span class="fn">print_exc</span>()
+
+<span class="fn">a</span>()
+<span class="cm"># 输出：a 捕获到异常：c 函数出错了</span>
+<span class="cm"># Traceback 会显示 a→b→c 的完整调用链</span></code></pre>
+
+<h3>1.4 异常链：raise from</h3>
+<pre><code class="block"><span class="kw">def</span> <span class="fn">read_config</span>(path):
+    <span class="kw">try</span>:
+        <span class="kw">with</span> <span class="fn">open</span>(path) <span class="kw">as</span> f:
+            <span class="kw">return</span> f.<span class="fn">read</span>()
+    <span class="kw">except</span> <span class="cl">FileNotFoundError</span> <span class="kw">as</span> e:
+        <span class="cm"># raise from 保留原始异常作为上下文</span>
+        <span class="kw">raise</span> <span class="cl">RuntimeError</span>(<span class="st">f"配置文件不存在：{path}"</span>) <span class="kw">from</span> e
+
+<span class="kw">try</span>:
+    <span class="fn">read_config</span>(<span class="st">"config.json"</span>)
+<span class="kw">except</span> <span class="cl">RuntimeError</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(e)            <span class="cm"># 配置文件不存在：config.json</span>
+    <span class="fn">print</span>(e.__cause__)  <span class="cm"># 原始 FileNotFoundError</span></code></pre>
+
+<div class="warning">使用 <code class="inline">raise from</code> 时，错误信息会包含"The above exception was the direct cause of..."，帮助使用者了解根本原因。不使用 from 时用 <code class="inline">raise ... from None</code> 可以隐藏原因链。</div>
+
+<h3>1.5 常见异常类型速查表</h3>
+<table>
+  <tr><th>异常类型</th><th>触发场景</th><th>示例</th></tr>
+  <tr><td><code class="inline">TypeError</code></td><td>操作/函数应用于错误类型</td><td><code class="inline">1 + "a"</code></td></tr>
+  <tr><td><code class="inline">ValueError</code></td><td>类型正确但值不合法</td><td><code class="inline">int("abc")</code></td></tr>
+  <tr><td><code class="inline">IndexError</code></td><td>序列索引越界</td><td><code class="inline">lst[99]</code>（lst只有3个元素）</td></tr>
+  <tr><td><code class="inline">KeyError</code></td><td>字典键不存在</td><td><code class="inline">d["x"]</code>（d无x键）</td></tr>
+  <tr><td><code class="inline">AttributeError</code></td><td>访问不存在的属性/方法</td><td><code class="inline">"abc".upper2()</code></td></tr>
+  <tr><td><code class="inline">FileNotFoundError</code></td><td>文件/目录不存在</td><td><code class="inline">open("no.txt")</code></td></tr>
+  <tr><td><code class="inline">ZeroDivisionError</code></td><td>除以零</td><td><code class="inline">1/0</code></td></tr>
+  <tr><td><code class="inline">NameError</code></td><td>变量未定义</td><td><code class="inline">print(xyz)</code></td></tr>
+  <tr><td><code class="inline">RecursionError</code></td><td>递归深度超限（默认1000层）</td><td>无穷递归函数</td></tr>
+  <tr><td><code class="inline">MemoryError</code></td><td>内存不足</td><td>创建超大列表</td></tr>
+  <tr><td><code class="inline">OverflowError</code></td><td>数值运算结果太大</td><td><code class="inline">math.exp(1000)</code></td></tr>
+</table>
+
+<div class="practice">
+  <h3>🛠️ 实践练习1：异常处理强化</h3>
+  <p><strong>练习目标：</strong>编写一个健壮的用户输入处理函数，涵盖多种异常情况。</p>
+  <pre><code class="block"><span class="kw">def</span> <span class="fn">safe_divide</span>(numerator, denominator):
+    <span class="st">"""安全除法，处理各种边界情况"""</span>
+    <span class="kw">if not</span> <span class="fn">isinstance</span>(numerator, (int, float)):
+        <span class="kw">raise</span> <span class="cl">TypeError</span>(<span class="st">f"分子必须是数字，得到 {type(numerator).__name__}"</span>)
+    <span class="kw">if not</span> <span class="fn">isinstance</span>(denominator, (int, float)):
+        <span class="kw">raise</span> <span class="cl">TypeError</span>(<span class="st">f"分母必须是数字，得到 {type(denominator).__name__}"</span>)
+    <span class="kw">if</span> denominator == <span class="nm">0</span>:
+        <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"分母不能为零"</span>)
+    <span class="kw">return</span> numerator / denominator
+
+<span class="cm"># 带完整错误处理的调用示例</span>
+<span class="kw">def</span> <span class="fn">calculate_from_input</span>():
+    <span class="kw">while True</span>:
+        <span class="kw">try</span>:
+            a = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"请输入分子："</span>))
+            b = <span class="fn">float</span>(<span class="fn">input</span>(<span class="st">"请输入分母："</span>))
+            result = <span class="fn">safe_divide</span>(a, b)
+            <span class="fn">print</span>(<span class="st">f"结果：{a} / {b} = {result:.4f}"</span>)
+            <span class="kw">break</span>
+        <span class="kw">except</span> <span class="cl">ValueError</span> <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="st">f"❌ 输入值错误：{e}，请重试"</span>)
+        <span class="kw">except</span> <span class="cl">KeyboardInterrupt</span>:
+            <span class="fn">print</span>(<span class="st">"\n用户取消，退出"</span>)
+            <span class="kw">break</span></code></pre>
+</div>
+</div>
+
+
+<!-- Section 2: 自定义异常类 -->
+<div class="section" id="s2">
+<h2>🎯 2. 自定义异常类</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔑 为什么要自定义异常？</div>
+  <p>内置异常往往表达不了具体的业务语义。比如用 <code class="inline">ValueError</code> 表示"余额不足"，调用方无法精确区分。自定义异常能让代码意图更明确、错误处理更精准，是大型项目和库设计的标准做法。</p>
+</div>
+
+<h3>2.1 基本自定义异常</h3>
+<pre><code class="block"><span class="cm"># 最简单的自定义异常：继承 Exception</span>
+<span class="kw">class</span> <span class="cl">InsufficientFundsError</span>(<span class="cl">Exception</span>):
+    <span class="st">"""余额不足异常"""</span>
+    <span class="kw">pass</span>
+
+<span class="cm"># 携带额外信息的异常</span>
+<span class="kw">class</span> <span class="cl">InvalidAgeError</span>(<span class="cl">ValueError</span>):
+    <span class="st">"""年龄值非法异常"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, age, message=<span class="kw">None</span>):
+        <span class="kw">self</span>.age = age
+        <span class="kw">self</span>.message = message <span class="kw">or</span> <span class="st">f"年龄 {age} 不合法（应在0-150之间）"</span>
+        <span class="fn">super</span>().<span class="fn">__init__</span>(<span class="kw">self</span>.message)
+
+<span class="cm"># 使用</span>
+<span class="kw">try</span>:
+    age = -<span class="nm">5</span>
+    <span class="kw">if</span> <span class="kw">not</span> (<span class="nm">0</span> <= age <= <span class="nm">150</span>):
+        <span class="kw">raise</span> <span class="cl">InvalidAgeError</span>(age)
+<span class="kw">except</span> <span class="cl">InvalidAgeError</span> <span class="kw">as</span> e:
+    <span class="fn">print</span>(<span class="st">f"捕获到：{e}"</span>)         <span class="cm"># 年龄 -5 不合法（应在0-150之间）</span>
+    <span class="fn">print</span>(<span class="st">f"非法年龄值：{e.age}"</span>)  <span class="cm"># -5</span></code></pre>
+
+<h3>2.2 构建业务异常层次体系</h3>
+<p>实际项目中，按模块建立异常继承树，方便统一处理：</p>
+<pre><code class="block"><span class="cm"># ── 应用根异常</span>
+<span class="kw">class</span> <span class="cl">AppError</span>(<span class="cl">Exception</span>):
+    <span class="st">"""所有应用级异常的基类"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, message, code=<span class="kw">None</span>):
+        <span class="kw">super</span>().<span class="fn">__init__</span>(message)
+        <span class="kw">self</span>.code = code  <span class="cm"># 错误码，方便前端处理</span>
+
+<span class="cm"># ── 用户模块异常</span>
+<span class="kw">class</span> <span class="cl">UserError</span>(<span class="cl">AppError</span>):
+    <span class="st">"""用户相关异常基类"""</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cl">UserNotFoundError</span>(<span class="cl">UserError</span>):
+    <span class="st">"""用户不存在"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, user_id):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(<span class="st">f"用户 {user_id} 不存在"</span>, code=<span class="nm">404</span>)
+        <span class="kw">self</span>.user_id = user_id
+
+<span class="kw">class</span> <span class="cl">AuthenticationError</span>(<span class="cl">UserError</span>):
+    <span class="st">"""认证失败"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, username):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(<span class="st">f"用户 {username} 认证失败"</span>, code=<span class="nm">401</span>)
+
+<span class="cm"># ── 账户模块异常</span>
+<span class="kw">class</span> <span class="cl">AccountError</span>(<span class="cl">AppError</span>):
+    <span class="st">"""账户相关异常基类"""</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cl">InsufficientFundsError</span>(<span class="cl">AccountError</span>):
+    <span class="st">"""余额不足"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, balance, amount):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(
+            <span class="st">f"余额不足：需要 {amount}，当前余额 {balance}"</span>, code=<span class="nm">402</span>
+        )
+        <span class="kw">self</span>.balance = balance
+        <span class="kw">self</span>.amount = amount
+
+<span class="cm"># ── 统一捕获和精确捕获</span>
+<span class="kw">def</span> <span class="fn">transfer</span>(from_user, to_user, amount):
+    <span class="kw">try</span>:
+        <span class="cm"># ... 业务逻辑 ...</span>
+        <span class="kw">raise</span> <span class="cl">InsufficientFundsError</span>(<span class="nm">50</span>, <span class="nm">100</span>)
+    <span class="kw">except</span> <span class="cl">InsufficientFundsError</span> <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="st">f"精确处理：{e}，code={e.code}"</span>)
+    <span class="kw">except</span> <span class="cl">AccountError</span> <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="st">f"账户错误：{e}"</span>)
+    <span class="kw">except</span> <span class="cl">AppError</span> <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="st">f"应用错误：{e}"</span>)</code></pre>
+
+<div class="tip">自定义异常的命名约定：以 <code class="inline">Error</code> 结尾（如 <code class="inline">ValueError</code>），或以 <code class="inline">Exception</code> 结尾（如 <code class="inline">TimeoutException</code>）。尽量继承语义相近的内置异常：表示参数问题继承 <code class="inline">ValueError</code>，表示资源问题继承 <code class="inline">RuntimeError</code>。</div>
+</div>
+
+<!-- Section 3: 上下文管理器 -->
+<div class="section" id="s3">
+<h2>🔒 3. 上下文管理器（with 语句）</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔑 上下文管理器的本质</div>
+  <p><code class="inline">with</code> 语句背后是<strong>上下文管理协议</strong>：实现了 <code class="inline">__enter__</code> 和 <code class="inline">__exit__</code> 的对象就是上下文管理器。<code class="inline">__enter__</code> 在进入 with 块时调用，<code class="inline">__exit__</code> 在离开时调用（无论是否发生异常）。</p>
+  <p>本质上，<code class="inline">with open("file") as f:</code> 等价于手动调用 <code class="inline">f = open("file").__enter__()</code>，退出后调用 <code class="inline">f.__exit__(...)</code>。</p>
+</div>
+
+<h3>3.1 类实现上下文管理器</h3>
+<pre><code class="block"><span class="kw">class</span> <span class="cl">Timer</span>:
+    <span class="st">"""计时器上下文管理器"""</span>
+    <span class="kw">import</span> time
+    
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw">self</span>):
+        <span class="kw">import</span> time
+        <span class="kw">self</span>.start = time.<span class="fn">time</span>()
+        <span class="fn">print</span>(<span class="st">"⏱️ 计时开始"</span>)
+        <span class="kw">return self</span>  <span class="cm"># as 子句接收的对象</span>
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="kw">import</span> time
+        elapsed = time.<span class="fn">time</span>() - <span class="kw">self</span>.start
+        <span class="fn">print</span>(<span class="st">f"⏱️ 耗时：{elapsed:.4f} 秒"</span>)
+        <span class="cm"># 返回 True 则吞掉异常；返回 False 则异常继续传播</span>
+        <span class="kw">if</span> exc_type <span class="kw">is not None</span>:
+            <span class="fn">print</span>(<span class="st">f"❌ 发生异常：{exc_type.__name__}: {exc_val}"</span>)
+        <span class="kw">return False</span>  <span class="cm"># 不吞掉异常</span>
+
+<span class="cm"># 使用方式</span>
+<span class="kw">with</span> <span class="cl">Timer</span>() <span class="kw">as</span> t:
+    result = <span class="fn">sum</span>(<span class="fn">range</span>(<span class="nm">1000000</span>))
+    <span class="fn">print</span>(<span class="st">f"计算结果：{result}"</span>)
+<span class="cm"># 输出：⏱️ 计时开始 → 计算结果：... → ⏱️ 耗时：0.0xxx 秒</span></code></pre>
+
+<h3>3.2 数据库连接的上下文管理器（经典用例）</h3>
+<pre><code class="block"><span class="kw">class</span> <span class="cl">DatabaseConnection</span>:
+    <span class="st">"""模拟数据库连接管理"""</span>
+    
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, host, db):
+        <span class="kw">self</span>.host = host
+        <span class="kw">self</span>.db = db
+        <span class="kw">self</span>.connection = <span class="kw">None</span>
+    
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="st">f"🔗 连接数据库 {self.host}/{self.db}"</span>)
+        <span class="kw">self</span>.connection = {<span class="st">"host"</span>: <span class="kw">self</span>.host, <span class="st">"status"</span>: <span class="st">"connected"</span>}
+        <span class="kw">return self</span>.connection
+    
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="kw">if</span> exc_type:
+            <span class="fn">print</span>(<span class="st">f"❌ 发生错误，回滚事务：{exc_val}"</span>)
+            <span class="cm"># 这里应该执行 ROLLBACK</span>
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">"✅ 提交事务"</span>)
+            <span class="cm"># 这里应该执行 COMMIT</span>
+        <span class="fn">print</span>(<span class="st">f"🔌 断开数据库连接"</span>)
+        <span class="kw">self</span>.connection = <span class="kw">None</span>
+        <span class="kw">return False</span>
+
+<span class="kw">with</span> <span class="cl">DatabaseConnection</span>(<span class="st">"localhost"</span>, <span class="st">"mydb"</span>) <span class="kw">as</span> conn:
+    <span class="fn">print</span>(<span class="st">f"执行查询，连接状态：{conn['status']}"</span>)
+    <span class="cm"># 无论这里是否出错，__exit__ 都会执行断开连接</span></code></pre>
+
+<h3>3.3 用 contextlib 简化：@contextmanager</h3>
+<pre><code class="block"><span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="dc">@contextmanager</span>
+<span class="kw">def</span> <span class="fn">managed_file</span>(path, mode=<span class="st">"r"</span>):
+    <span class="st">"""用生成器实现文件上下文管理器"""</span>
+    <span class="fn">print</span>(<span class="st">f"📂 打开文件：{path}"</span>)
+    f = <span class="fn">open</span>(path, mode, encoding=<span class="st">"utf-8"</span>)
+    <span class="kw">try</span>:
+        <span class="kw">yield</span> f      <span class="cm"># yield 前 = __enter__；yield 后 = __exit__</span>
+    <span class="kw">finally</span>:
+        f.<span class="fn">close</span>()
+        <span class="fn">print</span>(<span class="st">f"📁 关闭文件：{path}"</span>)
+
+<span class="kw">with</span> <span class="fn">managed_file</span>(<span class="st">"test.txt"</span>, <span class="st">"w"</span>) <span class="kw">as</span> f:
+    f.<span class="fn">write</span>(<span class="st">"Hello, Context Manager!"</span>)
+
+<span class="cm"># contextlib 还提供：</span>
+<span class="kw">from</span> contextlib <span class="kw">import</span> suppress, redirect_stdout
+
+<span class="cm"># suppress：忽略指定异常</span>
+<span class="kw">with</span> <span class="fn">suppress</span>(<span class="cl">FileNotFoundError</span>):
+    <span class="fn">open</span>(<span class="st">"不存在的文件.txt"</span>)  <span class="cm"># 不会抛出异常</span></code></pre>
+
+<div class="tip"><code class="inline">@contextmanager</code> 的原理：yield 之前的代码相当于 <code class="inline">__enter__</code>，yield 的值就是 <code class="inline">as</code> 获得的对象，yield 之后（通常在 finally 中）的代码相当于 <code class="inline">__exit__</code>。</div>
+</div>
+
+
+<!-- Section 4: 装饰器 -->
+<div class="section" id="s4">
+<h2>✨ 4. 装饰器（Decorator）原理与应用</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔑 装饰器的本质</div>
+  <p>装饰器本质上是一个<strong>高阶函数</strong>：接受一个函数作为参数，返回一个新的函数。它利用 Python 的<strong>函数是一等公民</strong>特性，实现在不修改原函数的情况下扩展其行为。</p>
+  <p><code class="inline">@decorator</code> 语法糖等价于：<code class="inline">func = decorator(func)</code></p>
+</div>
+
+<div class="analogy">
+  <div class="analogy-title">🎭 生活类比：装饰器就像"咖啡加料"</div>
+  <p>一杯黑咖啡（原函数）是基础，加糖装饰器可以在不改变咖啡本身的情况下让它更甜，加奶装饰器让它更顺滑。装饰器就是这些"加料"的配方，而且可以叠加多个。</p>
+</div>
+
+<h3>4.1 从零理解装饰器的演化过程</h3>
+<pre><code class="block"><span class="cm"># ── 第一步：手动包装函数</span>
+<span class="kw">def</span> <span class="fn">greet</span>():
+    <span class="fn">print</span>(<span class="st">"Hello!"</span>)
+
+<span class="kw">def</span> <span class="fn">log_wrapper</span>(func):
+    <span class="st">"""手动包装：在调用前后打印日志"""</span>
+    <span class="kw">def</span> <span class="fn">wrapper</span>():
+        <span class="fn">print</span>(<span class="st">f"调用 {func.__name__}"</span>)
+        func()
+        <span class="fn">print</span>(<span class="st">f"{func.__name__} 调用完毕"</span>)
+    <span class="kw">return</span> wrapper
+
+<span class="cm"># 手动包装</span>
+greet = <span class="fn">log_wrapper</span>(greet)
+<span class="fn">greet</span>()
+
+<span class="cm"># ── 第二步：等价的 @ 语法糖</span>
+<span class="dc">@log_wrapper</span>
+<span class="kw">def</span> <span class="fn">greet</span>():
+    <span class="fn">print</span>(<span class="st">"Hello!"</span>)
+<span class="cm"># 完全等价于：greet = log_wrapper(greet)</span></code></pre>
+
+<h3>4.2 带参数的通用装饰器（functools.wraps）</h3>
+<pre><code class="block"><span class="kw">import</span> functools
+
+<span class="kw">def</span> <span class="fn">logger</span>(func):
+    <span class="st">"""通用日志装饰器（支持任意参数函数）"""</span>
+    <span class="dc">@functools.wraps</span>(func)  <span class="cm"># 保留原函数的 __name__、__doc__ 等元信息</span>
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+        <span class="fn">print</span>(<span class="st">f"📝 调用 {func.__name__}，参数：{args}, {kwargs}"</span>)
+        <span class="kw">try</span>:
+            result = <span class="fn">func</span>(*args, **kwargs)
+            <span class="fn">print</span>(<span class="st">f"✅ {func.__name__} 返回：{result}"</span>)
+            <span class="kw">return</span> result
+        <span class="kw">except</span> <span class="cl">Exception</span> <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="st">f"❌ {func.__name__} 出错：{e}"</span>)
+            <span class="kw">raise</span>
+    <span class="kw">return</span> wrapper
+
+<span class="dc">@logger</span>
+<span class="kw">def</span> <span class="fn">add</span>(a, b):
+    <span class="st">"""加法函数"""</span>
+    <span class="kw">return</span> a + b
+
+<span class="fn">add</span>(<span class="nm">3</span>, <span class="nm">5</span>)   <span class="cm"># 📝 调用 add，参数：(3, 5), {}  ✅ add 返回：8</span>
+<span class="fn">print</span>(add.__name__)  <span class="cm"># add（而不是 wrapper，感谢 @wraps）</span></code></pre>
+
+<h3>4.3 带参数的装饰器工厂</h3>
+<pre><code class="block"><span class="kw">import</span> functools, time
+
+<span class="kw">def</span> <span class="fn">retry</span>(max_attempts=<span class="nm">3</span>, delay=<span class="nm">1.0</span>, exceptions=(<span class="cl">Exception</span>,)):
+    <span class="st">"""重试装饰器：失败后自动重试"""</span>
+    <span class="kw">def</span> <span class="fn">decorator</span>(func):
+        <span class="dc">@functools.wraps</span>(func)
+        <span class="kw">def</span> <span class="fn">wrapper</span>(*args, **kwargs):
+            <span class="kw">for</span> attempt <span class="kw">in</span> <span class="fn">range</span>(max_attempts):
+                <span class="kw">try</span>:
+                    <span class="kw">return</span> <span class="fn">func</span>(*args, **kwargs)
+                <span class="kw">except</span> exceptions <span class="kw">as</span> e:
+                    <span class="kw">if</span> attempt == max_attempts - <span class="nm">1</span>:
+                        <span class="fn">print</span>(<span class="st">f"❌ {func.__name__} 失败 {max_attempts} 次，放弃"</span>)
+                        <span class="kw">raise</span>
+                    <span class="fn">print</span>(<span class="st">f"⚠️ 第{attempt+1}次失败：{e}，{delay}s后重试"</span>)
+                    time.<span class="fn">sleep</span>(delay)
+        <span class="kw">return</span> wrapper
+    <span class="kw">return</span> decorator
+
+<span class="dc">@retry</span>(max_attempts=<span class="nm">3</span>, delay=<span class="nm">0.5</span>, exceptions=(<span class="cl">ConnectionError</span>,))
+<span class="kw">def</span> <span class="fn">fetch_data</span>(url):
+    <span class="cm"># 模拟不稳定的网络请求</span>
+    <span class="kw">import</span> random
+    <span class="kw">if</span> random.<span class="fn">random</span>() < <span class="nm">0.7</span>:
+        <span class="kw">raise</span> <span class="cl">ConnectionError</span>(<span class="st">"网络不稳定"</span>)
+    <span class="kw">return</span> <span class="st">f"数据来自 {url}"</span></code></pre>
+
+<h3>4.4 类装饰器</h3>
+<pre><code class="block"><span class="kw">class</span> <span class="cl">Timer</span>:
+    <span class="st">"""类实现的计时装饰器"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, func):
+        <span class="dc">@functools.wraps</span>(func)
+        <span class="kw">self</span>.func = func
+        <span class="kw">self</span>.call_count = <span class="nm">0</span>
+        <span class="kw">self</span>.total_time = <span class="nm">0.0</span>
+    
+    <span class="kw">def</span> <span class="fn">__call__</span>(<span class="kw">self</span>, *args, **kwargs):
+        start = time.<span class="fn">time</span>()
+        result = <span class="kw">self</span>.<span class="fn">func</span>(*args, **kwargs)
+        elapsed = time.<span class="fn">time</span>() - start
+        <span class="kw">self</span>.call_count += <span class="nm">1</span>
+        <span class="kw">self</span>.total_time += elapsed
+        <span class="fn">print</span>(<span class="st">f"⏱️ {self.func.__name__} 耗时 {elapsed:.4f}s（累计调用{self.call_count}次）"</span>)
+        <span class="kw">return</span> result
+
+<span class="dc">@Timer</span>
+<span class="kw">def</span> <span class="fn">heavy_compute</span>(n):
+    <span class="kw">return</span> <span class="fn">sum</span>(i**<span class="nm">2</span> <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n))
+
+<span class="fn">heavy_compute</span>(<span class="nm">1000000</span>)
+<span class="fn">heavy_compute</span>(<span class="nm">500000</span>)
+<span class="fn">print</span>(<span class="st">f"总调用次数：{heavy_compute.call_count}"</span>)</code></pre>
+
+<h3>4.5 装饰器叠加</h3>
+<pre><code class="block"><span class="kw">def</span> <span class="fn">bold</span>(func):
+    <span class="dc">@functools.wraps</span>(func)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*a, **kw):
+        <span class="kw">return</span> <span class="st">f"&lt;b&gt;{func(*a, **kw)}&lt;/b&gt;"</span>
+    <span class="kw">return</span> wrapper
+
+<span class="kw">def</span> <span class="fn">italic</span>(func):
+    <span class="dc">@functools.wraps</span>(func)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*a, **kw):
+        <span class="kw">return</span> <span class="st">f"&lt;i&gt;{func(*a, **kw)}&lt;/i&gt;"</span>
+    <span class="kw">return</span> wrapper
+
+<span class="dc">@bold</span>
+<span class="dc">@italic</span>      <span class="cm"># 先执行离函数最近的（bottom-up）：italic 先包装，bold 外包装</span>
+<span class="kw">def</span> <span class="fn">say</span>(text):
+    <span class="kw">return</span> text
+
+<span class="fn">print</span>(<span class="fn">say</span>(<span class="st">"Hello"</span>))  <span class="cm"># &lt;b&gt;&lt;i&gt;Hello&lt;/i&gt;&lt;/b&gt;</span>
+<span class="cm"># 等价于：say = bold(italic(say))</span></code></pre>
+
+<div class="practice">
+  <h3>🛠️ 实践练习2：缓存装饰器（memoize）</h3>
+  <pre><code class="block"><span class="kw">import</span> functools
+
+<span class="kw">def</span> <span class="fn">memoize</span>(func):
+    <span class="st">"""函数结果缓存装饰器"""</span>
+    cache = {}
+    <span class="dc">@functools.wraps</span>(func)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(*args):
+        <span class="kw">if</span> args <span class="kw">not in</span> cache:
+            cache[args] = <span class="fn">func</span>(*args)
+            <span class="fn">print</span>(<span class="st">f"  计算并缓存 f({args})"</span>)
+        <span class="kw">else</span>:
+            <span class="fn">print</span>(<span class="st">f"  命中缓存 f({args})"</span>)
+        <span class="kw">return</span> cache[args]
+    wrapper.cache = cache   <span class="cm"># 暴露缓存字典，便于调试</span>
+    <span class="kw">return</span> wrapper
+
+<span class="dc">@memoize</span>
+<span class="kw">def</span> <span class="fn">fib</span>(n):
+    <span class="kw">if</span> n <= <span class="nm">1</span>: <span class="kw">return</span> n
+    <span class="kw">return</span> <span class="fn">fib</span>(n-<span class="nm">1</span>) + <span class="fn">fib</span>(n-<span class="nm">2</span>)
+
+<span class="fn">print</span>(<span class="fn">fib</span>(<span class="nm">10</span>))   <span class="cm"># 仅计算10次，后续命中缓存</span>
+
+<span class="cm"># Python 内置：functools.lru_cache 更强大</span>
+<span class="dc">@functools.lru_cache</span>(maxsize=<span class="nm">128</span>)
+<span class="kw">def</span> <span class="fn">fib2</span>(n):
+    <span class="kw">if</span> n <= <span class="nm">1</span>: <span class="kw">return</span> n
+    <span class="kw">return</span> <span class="fn">fib2</span>(n-<span class="nm">1</span>) + <span class="fn">fib2</span>(n-<span class="nm">2</span>)</code></pre>
+</div>
+</div>
+
+
+<!-- Section 5: 生成器与迭代器 -->
+<div class="section" id="s5">
+<h2>⚡ 5. 生成器与迭代器</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔑 迭代器协议与惰性计算</div>
+  <p><strong>迭代器协议</strong>：实现了 <code class="inline">__iter__()</code> 和 <code class="inline">__next__()</code> 的对象就是迭代器。<code class="inline">__next__()</code> 每次返回一个值，没有更多值时抛出 <code class="inline">StopIteration</code>。</p>
+  <p><strong>惰性计算（Lazy Evaluation）</strong>：生成器不预先计算所有值，而是按需生成。处理100GB文件时，逐行生成不需要把整个文件加载到内存，这是生成器的核心价值。</p>
+</div>
+
+<h3>5.1 迭代器 vs 可迭代对象</h3>
+<table>
+  <tr><th>概念</th><th>要求</th><th>示例</th><th>是否可多次迭代</th></tr>
+  <tr><td><strong>可迭代对象</strong>（Iterable）</td><td>实现 <code class="inline">__iter__()</code></td><td>list, tuple, str, dict</td><td>✅ 是</td></tr>
+  <tr><td><strong>迭代器</strong>（Iterator）</td><td>实现 <code class="inline">__iter__()</code> 和 <code class="inline">__next__()</code></td><td>文件对象、zip、map、生成器</td><td>❌ 否（用完即止）</td></tr>
+</table>
+
+<h3>5.2 自定义迭代器</h3>
+<pre><code class="block"><span class="kw">class</span> <span class="cl">Countdown</span>:
+    <span class="st">"""倒计时迭代器"""</span>
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, start):
+        <span class="kw">self</span>.current = start
+    
+    <span class="kw">def</span> <span class="fn">__iter__</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>  <span class="cm"># 自身就是迭代器</span>
+    
+    <span class="kw">def</span> <span class="fn">__next__</span>(<span class="kw">self</span>):
+        <span class="kw">if self</span>.current <= <span class="nm">0</span>:
+            <span class="kw">raise</span> <span class="cl">StopIteration</span>  <span class="cm"># 告知 for 循环迭代结束</span>
+        val = <span class="kw">self</span>.current
+        <span class="kw">self</span>.current -= <span class="nm">1</span>
+        <span class="kw">return</span> val
+
+<span class="kw">for</span> n <span class="kw">in</span> <span class="cl">Countdown</span>(<span class="nm">5</span>):
+    <span class="fn">print</span>(n, end=<span class="st">" "</span>)  <span class="cm"># 5 4 3 2 1</span></code></pre>
+
+<h3>5.3 生成器函数（yield）</h3>
+<pre><code class="block"><span class="cm"># 生成器函数：含 yield 的函数</span>
+<span class="kw">def</span> <span class="fn">countdown</span>(start):
+    <span class="st">"""等价的生成器版倒计时"""</span>
+    <span class="kw">while</span> start > <span class="nm">0</span>:
+        <span class="kw">yield</span> start     <span class="cm"># 暂停并返回值，下次 next() 时从这里继续</span>
+        start -= <span class="nm">1</span>
+
+gen = <span class="fn">countdown</span>(<span class="nm">5</span>)
+<span class="fn">print</span>(<span class="fn">type</span>(gen))     <span class="cm"># &lt;class 'generator'&gt;</span>
+<span class="fn">print</span>(<span class="fn">next</span>(gen))     <span class="cm"># 5</span>
+<span class="fn">print</span>(<span class="fn">next</span>(gen))     <span class="cm"># 4</span>
+
+<span class="cm"># yield 执行流程：</span>
+<span class="cm"># 1. 调用 countdown(5) → 返回生成器对象（函数体不执行）</span>
+<span class="cm"># 2. 第一次 next(gen) → 运行到 yield start，返回5，暂停</span>
+<span class="cm"># 3. 第二次 next(gen) → 从 yield 之后继续（start -= 1），再次到yield，返回4</span>
+<span class="cm"># 4. 函数结束 → 抛出 StopIteration</span></code></pre>
+
+<h3>5.4 生成器的实际应用：大文件逐行处理</h3>
+<pre><code class="block"><span class="kw">def</span> <span class="fn">read_large_file</span>(filepath):
+    <span class="st">"""惰性逐行读取大文件，不占用大量内存"""</span>
+    <span class="kw">with</span> <span class="fn">open</span>(filepath, encoding=<span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+        <span class="kw">for</span> line <span class="kw">in</span> f:
+            <span class="kw">yield</span> line.<span class="fn">strip</span>()
+
+<span class="kw">def</span> <span class="fn">filter_non_empty</span>(lines):
+    <span class="st">"""过滤空行的生成器管道"""</span>
+    <span class="kw">for</span> line <span class="kw">in</span> lines:
+        <span class="kw">if</span> line:
+            <span class="kw">yield</span> line
+
+<span class="kw">def</span> <span class="fn">count_words</span>(lines):
+    <span class="st">"""统计词数的生成器管道"""</span>
+    <span class="kw">for</span> line <span class="kw">in</span> lines:
+        words = line.<span class="fn">split</span>()
+        <span class="kw">yield</span> (line, <span class="fn">len</span>(words))
+
+<span class="cm"># 生成器管道（pipeline）：内存使用始终维持在O(1)</span>
+<span class="cm"># lines = read_large_file("huge.log")</span>
+<span class="cm"># non_empty = filter_non_empty(lines)</span>
+<span class="cm"># counted = count_words(non_empty)</span>
+<span class="cm"># for line, count in counted:</span>
+<span class="cm">#     print(f"{count} words: {line[:50]}")</span></code></pre>
+
+<h3>5.5 生成器表达式</h3>
+<pre><code class="block"><span class="cm"># 列表推导（立即计算，存储所有值）</span>
+squares_list = [x**<span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1000000</span>)]  <span class="cm"># ~8MB 内存</span>
+
+<span class="cm"># 生成器表达式（惰性，几乎不占内存）</span>
+squares_gen = (x**<span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1000000</span>))   <span class="cm"># ~120B 内存</span>
+
+<span class="cm"># 只需要聚合结果时优先用生成器表达式</span>
+total = <span class="fn">sum</span>(x**<span class="nm">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">1000000</span>))
+max_val = <span class="fn">max</span>(x <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="nm">100</span>) <span class="kw">if</span> x % <span class="nm">3</span> == <span class="nm">0</span>)
+
+<span class="cm"># yield from：委托给子生成器</span>
+<span class="kw">def</span> <span class="fn">chain_gen</span>(*iterables):
+    <span class="st">"""拼接多个可迭代对象"""</span>
+    <span class="kw">for</span> iterable <span class="kw">in</span> iterables:
+        <span class="kw">yield from</span> iterable  <span class="cm"># 等价于 for x in iterable: yield x</span>
+
+<span class="fn">print</span>(<span class="fn">list</span>(<span class="fn">chain_gen</span>([<span class="nm">1</span>,<span class="nm">2</span>], [<span class="nm">3</span>,<span class="nm">4</span>], [<span class="nm">5</span>])))  <span class="cm"># [1, 2, 3, 4, 5]</span></code></pre>
+
+<div class="warning">生成器是<strong>一次性</strong>的：遍历完一次后就耗尽了，再次遍历得到空序列。如果需要多次遍历，要么转成列表，要么每次重新创建生成器。</div>
+</div>
+
+<!-- Section 6: 模块与包 -->
+<div class="section" id="s6">
+<h2>📦 6. 模块与包的组织</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🔑 模块化的意义</div>
+  <p>模块（Module）是 Python 代码组织的基本单元，每个 <code class="inline">.py</code> 文件就是一个模块。包（Package）是含 <code class="inline">__init__.py</code> 的目录，用于组织多个模块。模块化的核心价值：<strong>代码复用、命名空间隔离、便于测试和维护</strong>。</p>
+</div>
+
+<h3>6.1 import 的工作原理</h3>
+<pre><code class="block"><span class="cm"># Python 查找模块的顺序（sys.path）：</span>
+<span class="cm"># 1. 当前脚本所在目录</span>
+<span class="cm"># 2. PYTHONPATH 环境变量中的目录</span>
+<span class="cm"># 3. 标准库目录</span>
+<span class="cm"># 4. site-packages（第三方包）</span>
+
+<span class="kw">import</span> sys
+<span class="fn">print</span>(sys.path)  <span class="cm"># 查看完整搜索路径</span>
+
+<span class="cm"># 各种 import 方式</span>
+<span class="kw">import</span> math                    <span class="cm"># 导入整个模块</span>
+<span class="kw">from</span> math <span class="kw">import</span> sqrt, pi      <span class="cm"># 只导入需要的名字</span>
+<span class="kw">from</span> math <span class="kw">import</span> sqrt <span class="kw">as</span> sq   <span class="cm"># 导入并起别名</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np            <span class="cm"># 模块别名（约定俗成）</span>
+<span class="kw">from</span> math <span class="kw">import</span> *            <span class="cm"># 不推荐！污染命名空间</span></code></pre>
+
+<h3>6.2 项目包结构设计</h3>
+<pre><code class="block"><span class="cm"># 典型的项目包结构</span>
+myproject/
+├── main.py                  <span class="cm"># 入口文件</span>
+├── README.md
+├── requirements.txt         <span class="cm"># 依赖清单</span>
+└── src/
+    ├── __init__.py          <span class="cm"># 将 src 变成一个包</span>
+    ├── models/
+    │   ├── __init__.py
+    │   ├── user.py
+    │   └── product.py
+    ├── services/
+    │   ├── __init__.py
+    │   ├── auth.py
+    │   └── payment.py
+    └── utils/
+        ├── __init__.py
+        ├── logger.py
+        └── validators.py</code></pre>
+
+<h3>6.3 __init__.py 的作用</h3>
+<pre><code class="block"><span class="cm"># src/models/__init__.py</span>
+<span class="cm"># 作用1：标记这个目录是一个 Python 包</span>
+<span class="cm"># 作用2：控制 from models import * 导出哪些符号</span>
+<span class="cm"># 作用3：提供便捷的导入接口</span>
+
+<span class="kw">from</span> .user <span class="kw">import</span> User
+<span class="kw">from</span> .product <span class="kw">import</span> Product
+
+<span class="bl">__all__</span> = [<span class="st">"User"</span>, <span class="st">"Product"</span>]
+
+<span class="cm"># 这样外部就可以：</span>
+<span class="cm"># from src.models import User  （而不是 from src.models.user import User）</span></code></pre>
+
+<h3>6.4 相对导入与绝对导入</h3>
+<pre><code class="block"><span class="cm"># src/services/auth.py 中引用 utils</span>
+
+<span class="cm"># 绝对导入（推荐，清晰）</span>
+<span class="kw">from</span> src.utils.validators <span class="kw">import</span> validate_email
+<span class="kw">from</span> src.models <span class="kw">import</span> User
+
+<span class="cm"># 相对导入（用 . 表示当前包）</span>
+<span class="kw">from</span> ..utils.validators <span class="kw">import</span> validate_email  <span class="cm"># .. 表示上一级包</span>
+<span class="kw">from</span> ..models <span class="kw">import</span> User
+
+<span class="cm"># __name__ 和 __main__ 的用途</span>
+<span class="cm"># utils/logger.py</span>
+<span class="kw">def</span> <span class="fn">setup_logger</span>():
+    <span class="fn">print</span>(<span class="st">"Logger initialized"</span>)
+
+<span class="kw">if</span> <span class="bl">__name__</span> == <span class="st">"__main__"</span>:
+    <span class="cm"># 只有直接运行此文件时才执行，被 import 时不执行</span>
+    <span class="fn">setup_logger</span>()
+    <span class="fn">print</span>(<span class="st">"独立测试 logger 模块"</span>)</code></pre>
+
+<div class="tip"><code class="inline">if __name__ == "__main__":</code> 是 Python 最重要的惯用法之一。它使每个模块既可以被导入复用，又可以独立运行测试——每个模块都应该有这个保护。</div>
+
+<h3>6.5 常用标准库速查</h3>
+<table>
+  <tr><th>模块</th><th>用途</th><th>常用内容</th></tr>
+  <tr><td><code class="inline">os</code></td><td>操作系统接口</td><td>os.path, os.getcwd, os.listdir, os.environ</td></tr>
+  <tr><td><code class="inline">sys</code></td><td>解释器信息</td><td>sys.argv, sys.path, sys.exit</td></tr>
+  <tr><td><code class="inline">pathlib</code></td><td>面向对象路径（推荐）</td><td>Path(), .read_text(), .glob()</td></tr>
+  <tr><td><code class="inline">json</code></td><td>JSON序列化</td><td>json.dumps, json.loads, json.dump, json.load</td></tr>
+  <tr><td><code class="inline">datetime</code></td><td>日期时间</td><td>datetime.now(), timedelta, strftime</td></tr>
+  <tr><td><code class="inline">collections</code></td><td>特殊容器</td><td>defaultdict, Counter, deque, namedtuple</td></tr>
+  <tr><td><code class="inline">itertools</code></td><td>迭代器工具</td><td>chain, product, groupby, islice</td></tr>
+  <tr><td><code class="inline">functools</code></td><td>函数工具</td><td>wraps, lru_cache, partial, reduce</td></tr>
+  <tr><td><code class="inline">re</code></td><td>正则表达式</td><td>re.match, re.findall, re.sub</td></tr>
+  <tr><td><code class="inline">logging</code></td><td>日志系统</td><td>getLogger, basicConfig, DEBUG/INFO/ERROR</td></tr>
+</table>
+</div>
+
+
+<!-- Section 7: 面向对象高级特性 -->
+<div class="section" id="s7">
+<h2>🔬 7. 面向对象高级特性</h2>
+
+<h3>7.1 __slots__：内存优化</h3>
+<div class="concept-box">
+  <div class="concept-title">🔑 __slots__ 的原理</div>
+  <p>默认情况下，每个对象有一个 <code class="inline">__dict__</code> 字典存储属性，灵活但占内存。<code class="inline">__slots__</code> 用固定的描述符替换字典，大量对象时可节省 40-50% 内存。</p>
+</div>
+<pre><code class="block"><span class="cm"># 普通类：每个实例有 __dict__（字典）</span>
+<span class="kw">class</span> <span class="cl">Point</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x
+        <span class="kw">self</span>.y = y
+
+<span class="cm"># __slots__ 类：固定属性，节省内存</span>
+<span class="kw">class</span> <span class="cl">PointOptimized</span>:
+    <span class="bl">__slots__</span> = (<span class="st">"x"</span>, <span class="st">"y"</span>)   <span class="cm"># 只允许 x 和 y 这两个属性</span>
+    
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x
+        <span class="kw">self</span>.y = y
+
+<span class="cm"># 对比内存占用</span>
+<span class="kw">import</span> sys
+p1 = <span class="cl">Point</span>(<span class="nm">1</span>, <span class="nm">2</span>)
+p2 = <span class="cl">PointOptimized</span>(<span class="nm">1</span>, <span class="nm">2</span>)
+<span class="fn">print</span>(<span class="fn">sys.getsizeof</span>(p1))  <span class="cm"># ~48 bytes + dict ~232 bytes</span>
+<span class="fn">print</span>(<span class="fn">sys.getsizeof</span>(p2))  <span class="cm"># ~56 bytes（无 dict）</span>
+
+<span class="cm"># 限制：有 __slots__ 的类无法动态添加属性</span>
+<span class="cm"># p2.z = 3  # AttributeError: 'PointOptimized' object has no attribute 'z'</span></code></pre>
+
+<h3>7.2 dataclasses：数据类</h3>
+<pre><code class="block"><span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field, asdict
+
+<span class="dc">@dataclass</span>
+<span class="kw">class</span> <span class="cl">Student</span>:
+    <span class="st">"""数据类：自动生成 __init__、__repr__、__eq__"""</span>
+    name: str
+    age: int
+    score: float = <span class="nm">0.0</span>         <span class="cm"># 带默认值</span>
+    courses: list = <span class="fn">field</span>(default_factory=list)  <span class="cm"># 可变默认值用 field</span>
+    
+    <span class="kw">def</span> <span class="fn">is_passing</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>.score >= <span class="nm">60</span>
+
+s1 = <span class="cl">Student</span>(<span class="st">"Alice"</span>, <span class="nm">20</span>, <span class="nm">85.5</span>)
+s2 = <span class="cl">Student</span>(<span class="st">"Bob"</span>, <span class="nm">22</span>)
+<span class="fn">print</span>(s1)           <span class="cm"># Student(name='Alice', age=20, score=85.5, courses=[])</span>
+<span class="fn">print</span>(s1 == s2)     <span class="cm"># False（自动生成的 __eq__）</span>
+<span class="fn">print</span>(<span class="fn">asdict</span>(s1))   <span class="cm"># 转字典：{'name': 'Alice', 'age': 20, ...}</span>
+
+<span class="cm"># 不可变数据类（frozen=True）</span>
+<span class="dc">@dataclass</span>(frozen=<span class="kw">True</span>)
+<span class="kw">class</span> <span class="cl">Color</span>:
+    r: int; g: int; b: int
+    
+red = <span class="cl">Color</span>(<span class="nm">255</span>, <span class="nm">0</span>, <span class="nm">0</span>)
+<span class="cm"># red.r = 100  # FrozenInstanceError</span>
+hash(red)  <span class="cm"># frozen=True 时可哈希，可用作字典键</span></code></pre>
+
+<h3>7.3 枚举类（Enum）</h3>
+<pre><code class="block"><span class="kw">from</span> enum <span class="kw">import</span> Enum, auto, IntEnum
+
+<span class="kw">class</span> <span class="cl">Status</span>(<span class="cl">Enum</span>):
+    <span class="st">"""订单状态枚举"""</span>
+    PENDING = <span class="st">"pending"</span>
+    CONFIRMED = <span class="st">"confirmed"</span>
+    SHIPPED = <span class="st">"shipped"</span>
+    DELIVERED = <span class="st">"delivered"</span>
+    CANCELLED = <span class="st">"cancelled"</span>
+
+<span class="kw">class</span> <span class="cl">Priority</span>(<span class="cl">IntEnum</span>):
+    <span class="st">"""任务优先级（支持比较）"""</span>
+    LOW = <span class="fn">auto</span>()     <span class="cm"># 自动赋值 1</span>
+    MEDIUM = <span class="fn">auto</span>()  <span class="cm"># 自动赋值 2</span>
+    HIGH = <span class="fn">auto</span>()    <span class="cm"># 自动赋值 3</span>
+
+<span class="cm"># 使用枚举</span>
+order_status = <span class="cl">Status</span>.PENDING
+<span class="fn">print</span>(order_status)         <span class="cm"># Status.PENDING</span>
+<span class="fn">print</span>(order_status.value)   <span class="cm"># pending</span>
+<span class="fn">print</span>(order_status.name)    <span class="cm"># PENDING</span>
+
+<span class="cm"># IntEnum 支持数字比较</span>
+<span class="fn">print</span>(<span class="cl">Priority</span>.HIGH > <span class="cl">Priority</span>.LOW)   <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="cl">Priority</span>.MEDIUM == <span class="nm">2</span>)           <span class="cm"># True</span>
+
+<span class="cm"># 防止魔法数字（Magic Number）</span>
+<span class="kw">def</span> <span class="fn">process_order</span>(order):
+    <span class="kw">if</span> order.status == <span class="cl">Status</span>.PENDING:  <span class="cm"># ✅ 清晰</span>
+        <span class="kw">pass</span>
+    <span class="cm"># 而不是：if order.status == "pending":  # ❌ 魔法字符串</span></code></pre>
+
+<h3>7.4 抽象基类（ABC）</h3>
+<pre><code class="block"><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> <span class="cl">Shape</span>(<span class="cl">ABC</span>):
+    <span class="st">"""图形抽象基类：定义接口规范"""</span>
+    
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>) -> float:
+        <span class="st">"""计算面积（子类必须实现）"""</span>
+        <span class="kw">pass</span>
+    
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>) -> float:
+        <span class="st">"""计算周长（子类必须实现）"""</span>
+        <span class="kw">pass</span>
+    
+    <span class="kw">def</span> <span class="fn">describe</span>(<span class="kw">self</span>):
+        <span class="st">"""已实现的公共方法（子类可直接使用）"""</span>
+        <span class="kw">return</span> <span class="st">f"{type(self).__name__}: 面积={self.area():.2f}, 周长={self.perimeter():.2f}"</span>
+
+<span class="kw">import</span> math
+
+<span class="kw">class</span> <span class="cl">Circle</span>(<span class="cl">Shape</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, r): <span class="kw">self</span>.r = r
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> math.pi * <span class="kw">self</span>.r ** <span class="nm">2</span>
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="nm">2</span> * math.pi * <span class="kw">self</span>.r
+
+<span class="cm"># Shape() 会报错：TypeError: Can't instantiate abstract class</span>
+c = <span class="cl">Circle</span>(<span class="nm">5</span>)
+<span class="fn">print</span>(c.<span class="fn">describe</span>())  <span class="cm"># Circle: 面积=78.54, 周长=31.42</span></code></pre>
+</div>
+
+
+<!-- Section 8: 综合实战 -->
+<div class="section" id="s8">
+<h2>🏗️ 8. 综合实战：任务管理系统</h2>
+
+<div class="concept-box">
+  <div class="concept-title">🎯 项目目标</div>
+  <p>综合运用本周所有知识点，构建一个完整的命令行任务管理系统，涵盖：自定义异常、上下文管理器、装饰器、生成器、枚举、dataclasses、模块化设计。</p>
+</div>
+
+<h3>8.1 数据模型设计</h3>
+<pre><code class="block"><span class="cm"># models.py</span>
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass, field
+<span class="kw">from</span> enum <span class="kw">import</span> Enum, auto
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> typing <span class="kw">import</span> Optional
+<span class="kw">import</span> uuid
+
+<span class="kw">class</span> <span class="cl">Priority</span>(<span class="cl">Enum</span>):
+    LOW = <span class="st">"低"</span>
+    MEDIUM = <span class="st">"中"</span>
+    HIGH = <span class="st">"高"</span>
+    URGENT = <span class="st">"紧急"</span>
+
+<span class="kw">class</span> <span class="cl">TaskStatus</span>(<span class="cl">Enum</span>):
+    TODO = <span class="st">"待办"</span>
+    IN_PROGRESS = <span class="st">"进行中"</span>
+    DONE = <span class="st">"已完成"</span>
+    CANCELLED = <span class="st">"已取消"</span>
+
+<span class="dc">@dataclass</span>
+<span class="kw">class</span> <span class="cl">Task</span>:
+    title: str
+    description: str = <span class="st">""</span>
+    priority: <span class="cl">Priority</span> = <span class="cl">Priority</span>.MEDIUM
+    status: <span class="cl">TaskStatus</span> = <span class="cl">TaskStatus</span>.TODO
+    tags: list = <span class="fn">field</span>(default_factory=list)
+    task_id: str = <span class="fn">field</span>(default_factory=<span class="kw">lambda</span>: str(uuid.<span class="fn">uuid4</span>())[:<span class="nm">8</span>])
+    created_at: datetime = <span class="fn">field</span>(default_factory=datetime.now)
+    completed_at: Optional[datetime] = <span class="kw">None</span>
+    
+    <span class="kw">def</span> <span class="fn">complete</span>(<span class="kw">self</span>):
+        <span class="kw">self</span>.status = <span class="cl">TaskStatus</span>.DONE
+        <span class="kw">self</span>.completed_at = datetime.<span class="fn">now</span>()
+    
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="kw">self</span>):
+        status_icon = {
+            <span class="cl">TaskStatus</span>.TODO: <span class="st">"⬜"</span>,
+            <span class="cl">TaskStatus</span>.IN_PROGRESS: <span class="st">"🔄"</span>,
+            <span class="cl">TaskStatus</span>.DONE: <span class="st">"✅"</span>,
+            <span class="cl">TaskStatus</span>.CANCELLED: <span class="st">"❌"</span>
+        }
+        icon = status_icon[<span class="kw">self</span>.status]
+        <span class="kw">return</span> <span class="st">f"{icon} [{self.task_id}] {self.title} ({self.priority.value}优先级)"</span></code></pre>
+
+<h3>8.2 自定义异常</h3>
+<pre><code class="block"><span class="cm"># exceptions.py</span>
+<span class="kw">class</span> <span class="cl">TaskManagerError</span>(<span class="cl">Exception</span>):
+    <span class="st">"""任务管理器根异常"""</span>
+    <span class="kw">pass</span>
+
+<span class="kw">class</span> <span class="cl">TaskNotFoundError</span>(<span class="cl">TaskManagerError</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, task_id):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(<span class="st">f"任务 {task_id} 不存在"</span>)
+        <span class="kw">self</span>.task_id = task_id
+
+<span class="kw">class</span> <span class="cl">DuplicateTaskError</span>(<span class="cl">TaskManagerError</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, title):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(<span class="st">f"任务标题 '{title}' 已存在"</span>)
+
+<span class="kw">class</span> <span class="cl">InvalidStatusTransitionError</span>(<span class="cl">TaskManagerError</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, from_status, to_status):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(<span class="st">f"不允许从 {from_status.value} 变更为 {to_status.value}"</span>)</code></pre>
+
+<h3>8.3 任务管理器核心类</h3>
+<pre><code class="block"><span class="cm"># manager.py</span>
+<span class="kw">import</span> json, functools
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">from</span> contextlib <span class="kw">import</span> contextmanager
+
+<span class="kw">def</span> <span class="fn">log_operation</span>(func):
+    <span class="st">"""操作日志装饰器"""</span>
+    <span class="dc">@functools.wraps</span>(func)
+    <span class="kw">def</span> <span class="fn">wrapper</span>(<span class="kw">self</span>, *args, **kwargs):
+        <span class="kw">try</span>:
+            result = <span class="fn">func</span>(<span class="kw">self</span>, *args, **kwargs)
+            <span class="fn">print</span>(<span class="st">f"✅ [{func.__name__}] 操作成功"</span>)
+            <span class="kw">return</span> result
+        <span class="kw">except</span> <span class="cl">TaskManagerError</span> <span class="kw">as</span> e:
+            <span class="fn">print</span>(<span class="st">f"❌ [{func.__name__}] 业务错误：{e}"</span>)
+            <span class="kw">raise</span>
+    <span class="kw">return</span> wrapper
+
+<span class="kw">class</span> <span class="cl">TaskManager</span>:
+    <span class="st">"""任务管理器"""</span>
+    
+    <span class="cm"># 允许的状态流转</span>
+    VALID_TRANSITIONS = {
+        <span class="cl">TaskStatus</span>.TODO: {<span class="cl">TaskStatus</span>.IN_PROGRESS, <span class="cl">TaskStatus</span>.CANCELLED},
+        <span class="cl">TaskStatus</span>.IN_PROGRESS: {<span class="cl">TaskStatus</span>.DONE, <span class="cl">TaskStatus</span>.CANCELLED},
+        <span class="cl">TaskStatus</span>.DONE: set(),        <span class="cm"># 终态</span>
+        <span class="cl">TaskStatus</span>.CANCELLED: set(),   <span class="cm"># 终态</span>
+    }
+    
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, data_file=<span class="st">"tasks.json"</span>):
+        <span class="kw">self</span>.data_file = <span class="cl">Path</span>(data_file)
+        <span class="kw">self</span>._tasks: dict[str, <span class="cl">Task</span>] = {}  <span class="cm"># task_id → Task</span>
+        <span class="kw">self</span>._load()
+    
+    <span class="dc">@contextmanager</span>
+    <span class="kw">def</span> <span class="fn">_auto_save</span>(<span class="kw">self</span>):
+        <span class="st">"""操作后自动保存的上下文管理器"""</span>
+        <span class="kw">yield</span>
+        <span class="kw">self</span>.<span class="fn">_save</span>()
+    
+    <span class="dc">@log_operation</span>
+    <span class="kw">def</span> <span class="fn">add_task</span>(<span class="kw">self</span>, title, description=<span class="st">""</span>, priority=<span class="cl">Priority</span>.MEDIUM, tags=<span class="kw">None</span>):
+        <span class="st">"""添加任务"""</span>
+        <span class="kw">if</span> <span class="fn">any</span>(t.title == title <span class="kw">for</span> t <span class="kw">in</span> <span class="kw">self</span>._tasks.<span class="fn">values</span>()):
+            <span class="kw">raise</span> <span class="cl">DuplicateTaskError</span>(title)
+        task = <span class="cl">Task</span>(title=title, description=description,
+                    priority=priority, tags=tags <span class="kw">or</span> [])
+        <span class="kw">with self</span>.<span class="fn">_auto_save</span>():
+            <span class="kw">self</span>._tasks[task.task_id] = task
+        <span class="kw">return</span> task
+    
+    <span class="dc">@log_operation</span>
+    <span class="kw">def</span> <span class="fn">update_status</span>(<span class="kw">self</span>, task_id, new_status):
+        <span class="st">"""更新任务状态（带流转验证）"""</span>
+        task = <span class="kw">self</span>.<span class="fn">_get_task</span>(task_id)
+        allowed = <span class="kw">self</span>.VALID_TRANSITIONS[task.status]
+        <span class="kw">if</span> new_status <span class="kw">not in</span> allowed:
+            <span class="kw">raise</span> <span class="cl">InvalidStatusTransitionError</span>(task.status, new_status)
+        <span class="kw">with self</span>.<span class="fn">_auto_save</span>():
+            task.status = new_status
+            <span class="kw">if</span> new_status == <span class="cl">TaskStatus</span>.DONE:
+                task.<span class="fn">complete</span>()
+    
+    <span class="kw">def</span> <span class="fn">iter_tasks</span>(<span class="kw">self</span>, status=<span class="kw">None</span>, priority=<span class="kw">None</span>):
+        <span class="st">"""生成器：按条件筛选任务"""</span>
+        <span class="kw">for</span> task <span class="kw">in</span> <span class="kw">self</span>._tasks.<span class="fn">values</span>():
+            <span class="kw">if</span> status <span class="kw">and</span> task.status != status:
+                <span class="kw">continue</span>
+            <span class="kw">if</span> priority <span class="kw">and</span> task.priority != priority:
+                <span class="kw">continue</span>
+            <span class="kw">yield</span> task
+    
+    <span class="kw">def</span> <span class="fn">stats</span>(<span class="kw">self</span>):
+        <span class="st">"""统计各状态任务数量"""</span>
+        <span class="kw">from</span> collections <span class="kw">import</span> Counter
+        <span class="kw">return</span> <span class="cl">Counter</span>(t.status.value <span class="kw">for</span> t <span class="kw">in</span> <span class="kw">self</span>._tasks.<span class="fn">values</span>())
+    
+    <span class="kw">def</span> <span class="fn">_get_task</span>(<span class="kw">self</span>, task_id):
+        <span class="kw">if</span> task_id <span class="kw">not in self</span>._tasks:
+            <span class="kw">raise</span> <span class="cl">TaskNotFoundError</span>(task_id)
+        <span class="kw">return self</span>._tasks[task_id]
+    
+    <span class="kw">def</span> <span class="fn">_load</span>(<span class="kw">self</span>):
+        <span class="st">"""从 JSON 文件加载数据"""</span>
+        <span class="kw">if</span> <span class="kw">self</span>.data_file.<span class="fn">exists</span>():
+            <span class="kw">with</span> <span class="fn">open</span>(<span class="kw">self</span>.data_file, encoding=<span class="st">"utf-8"</span>) <span class="kw">as</span> f:
+                data = json.<span class="fn">load</span>(f)
+            <span class="cm"># 将字典重建为 Task 对象（实际项目会有更完整的反序列化）</span>
+            <span class="fn">print</span>(<span class="st">f"📂 加载 {len(data)} 条任务"</span>)
+    
+    <span class="kw">def</span> <span class="fn">_save</span>(<span class="kw">self</span>):
+        <span class="st">"""持久化到 JSON 文件"""</span>
+        <span class="fn">print</span>(<span class="st">f"💾 自动保存 {len(self._tasks)} 条任务"</span>)</code></pre>
+
+<h3>8.4 使用示例</h3>
+<pre><code class="block"><span class="cm"># main.py</span>
+<span class="kw">if</span> <span class="bl">__name__</span> == <span class="st">"__main__"</span>:
+    mgr = <span class="cl">TaskManager</span>()
+    
+    <span class="cm"># 添加任务</span>
+    t1 = mgr.<span class="fn">add_task</span>(<span class="st">"学习装饰器"</span>, priority=<span class="cl">Priority</span>.HIGH, tags=[<span class="st">"Python"</span>])
+    t2 = mgr.<span class="fn">add_task</span>(<span class="st">"完成项目报告"</span>, priority=<span class="cl">Priority</span>.URGENT)
+    t3 = mgr.<span class="fn">add_task</span>(<span class="st">"阅读技术博客"</span>, priority=<span class="cl">Priority</span>.LOW)
+    
+    <span class="cm"># 更新状态</span>
+    mgr.<span class="fn">update_status</span>(t1.task_id, <span class="cl">TaskStatus</span>.IN_PROGRESS)
+    mgr.<span class="fn">update_status</span>(t1.task_id, <span class="cl">TaskStatus</span>.DONE)
+    
+    <span class="cm"># 错误处理演示</span>
+    <span class="kw">try</span>:
+        mgr.<span class="fn">update_status</span>(t1.task_id, <span class="cl">TaskStatus</span>.IN_PROGRESS)  <span class="cm"># 已完成不能改为进行中</span>
+    <span class="kw">except</span> <span class="cl">InvalidStatusTransitionError</span> <span class="kw">as</span> e:
+        <span class="fn">print</span>(<span class="st">f"状态流转错误：{e}"</span>)
+    
+    <span class="cm"># 用生成器遍历高优先级任务</span>
+    <span class="fn">print</span>(<span class="st">"\n📋 高优先级任务："</span>)
+    <span class="kw">for</span> task <span class="kw">in</span> mgr.<span class="fn">iter_tasks</span>(priority=<span class="cl">Priority</span>.HIGH):
+        <span class="fn">print</span>(<span class="st">f"  {task}"</span>)
+    
+    <span class="cm"># 统计</span>
+    stats = mgr.<span class="fn">stats</span>()
+    <span class="fn">print</span>(<span class="st">f"\n📊 任务统计：{dict(stats)}"</span>)</code></pre>
+
+<div class="practice">
+  <h3>🏆 课后挑战练习</h3>
+  <ol class="step-list">
+    <li>为 TaskManager 添加 <code class="inline">search(keyword)</code> 方法（用生成器），支持按标题/描述/标签搜索</li>
+    <li>实现 <code class="inline">@validate_input</code> 装饰器，在调用 add_task 前验证 title 非空且不超过50字符</li>
+    <li>为 Task 实现 <code class="inline">__lt__</code> 方法（按优先级+创建时间排序），支持 <code class="inline">sorted(tasks)</code></li>
+    <li>用 <code class="inline">contextmanager</code> 实现批量操作：<code class="inline">with mgr.batch():</code> 块内不立即保存，退出时一次性保存</li>
+    <li>（进阶）将 TaskManager 重构为支持多用户：不同用户的任务存在不同的命名空间</li>
+  </ol>
+</div>
+</div>
+
+<!-- 总结 -->
+<div class="section">
+<h2>📋 本周知识点总结</h2>
+<table>
+  <tr><th>知识点</th><th>核心要素</th><th>实际应用</th></tr>
+  <tr><td><strong>异常处理</strong></td><td>try/except/else/finally、异常链</td><td>所有需要健壮性的代码</td></tr>
+  <tr><td><strong>自定义异常</strong></td><td>继承 Exception、携带业务信息</td><td>库和大型项目</td></tr>
+  <tr><td><strong>上下文管理器</strong></td><td>__enter__/__exit__、@contextmanager</td><td>资源管理（文件/数据库/锁）</td></tr>
+  <tr><td><strong>装饰器</strong></td><td>高阶函数、@wraps、参数化装饰器</td><td>日志、缓存、权限、重试</td></tr>
+  <tr><td><strong>生成器</strong></td><td>yield、惰性计算、生成器管道</td><td>大数据处理、流式计算</td></tr>
+  <tr><td><strong>模块与包</strong></td><td>import原理、__init__.py、__main__</td><td>所有项目的代码组织</td></tr>
+  <tr><td><strong>高级OOP</strong></td><td>__slots__、dataclass、Enum、ABC</td><td>性能优化、数据建模、接口规范</td></tr>
+</table>
+
+<div class="info">
+  <strong>第10周学习路径建议：</strong><br>
+  Day1-2：深入异常处理，完成异常练习 → Day3：上下文管理器+装饰器 → Day4：生成器与迭代器 → Day5：模块化组织 → Day6-7：综合实战（任务管理系统）
+</div>
+
+<div class="nav-links">
+  <a href="python-week9.html" class="nav-btn">← 第9周：OOP基础</a>
+  <a href="index.html" class="nav-btn">🏠 返回首页</a>
+  <a href="python-week11.html" class="nav-btn">第11周：文件与数据处理 →</a>
+</div>
+</div>
+
+</div><!-- /container -->
+
+<div class="footer">
+  <p>🐍 Python学习之路 · 第10周笔记</p>
+  <p>知识分享 | 共同进步 | <a href="https://zhoutongxue89.github.io/zsfx/" style="color:var(--primary)">查看全部笔记</a></p>
+</div>
+
+</body>
+</html>
+
