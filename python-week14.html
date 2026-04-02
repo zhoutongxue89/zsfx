@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路 - 第14周：数据库操作</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #10b981;
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-hover: #1a1a2e;
+            --text-primary: #e4e4e7;
+            --text-secondary: #a1a1aa;
+            --border: #27272a;
+            --code-bg: #16161e;
+            --gradient-1: linear-gradient(135deg, #10b981 0%, #6366f1 100%);
+            --gradient-2: linear-gradient(135deg, #6366f1 0%, #f59e0b 100%);
+            --gradient-3: linear-gradient(135deg, #f59e0b 0%, #ec4899 100%);
+            --gradient-card: linear-gradient(145deg, #1a1a2e 0%, #12121a 100%);
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg-dark); color: var(--text-primary); line-height: 1.8; }
+        
+        .hero { background: var(--gradient-1); padding: 60px 20px; text-align: center; }
+        .hero h1 { font-size: 2.8em; margin-bottom: 15px; }
+        .week-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 8px 24px; border-radius: 50px; margin-bottom: 20px; }
+        
+        .progress-bar { background: var(--bg-card); padding: 15px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .progress-container { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 15px; }
+        .progress-fill { height: 6px; background: var(--gradient-1); border-radius: 3px; transition: width 0.3s; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 20px; }
+        
+        .toc { background: var(--gradient-card); border-radius: 16px; padding: 30px; margin-bottom: 40px; border: 1px solid var(--border); }
+        .toc h2 { font-size: 1.5em; margin-bottom: 20px; }
+        .toc-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+        .toc-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--bg-hover); border-radius: 10px; text-decoration: none; color: var(--text-primary); transition: all 0.3s; border: 1px solid transparent; }
+        .toc-item:hover { border-color: var(--primary); transform: translateX(5px); }
+        .toc-num { width: 32px; height: 32px; background: var(--gradient-1); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+        
+        .section { background: var(--gradient-card); border-radius: 20px; padding: 40px; margin-bottom: 40px; border: 1px solid var(--border); position: relative; overflow: hidden; }
+        .section::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-1); }
+        .section:nth-child(2)::before { background: var(--gradient-2); }
+        .section:nth-child(3)::before { background: var(--gradient-3); }
+        .section:nth-child(4)::before { background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%); }
+        .section:nth-child(5)::before { background: linear-gradient(135deg, #06b6d4 0%, #10b981 100%); }
+        
+        .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        .section-icon { width: 60px; height: 60px; background: var(--gradient-1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+        .section h2 { font-size: 1.8em; font-weight: 700; }
+        .section h3 { font-size: 1.3em; color: var(--primary); margin: 25px 0 15px 0; }
+        
+        .concept { background: var(--bg-hover); border-radius: 12px; padding: 20px; margin: 20px 0; border-left: 4px solid var(--primary); }
+        .concept-title { font-weight: 600; color: var(--primary); margin-bottom: 8px; }
+        
+        .info-box { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 16px 20px; margin: 15px 0; }
+        .info-box.warning { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+        .info-box.danger { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); }
+        .info-box-title { font-weight: 600; margin-bottom: 8px; }
+        
+        pre[class*="language-"] { background: var(--code-bg) !important; border-radius: 12px; margin: 15px 0; font-size: 14px; border: 1px solid var(--border); }
+        code[class*="language-"] { font-family: 'Fira Code', monospace !important; }
+        .code-header { display: flex; justify-content: space-between; background: var(--code-bg); padding: 10px 16px; border-radius: 12px 12px 0 0; border: 1px solid var(--border); border-bottom: none; font-size: 13px; }
+        .code-title { color: var(--text-secondary); }
+        .code-lang { background: var(--secondary); color: white; padding: 3px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+        
+        p code, li code { background: var(--code-bg); padding: 2px 8px; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 0.9em; color: var(--accent); border: 1px solid var(--border); }
+        
+        .table-wrapper { overflow-x: auto; margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--bg-hover); font-weight: 600; color: var(--primary); }
+        tr:hover td { background: var(--bg-hover); }
+        
+        .comparison-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0; }
+        .comparison-item { background: var(--bg-hover); border-radius: 12px; padding: 20px; text-align: center; border: 1px solid var(--border); transition: all 0.3s; }
+        .comparison-item:hover { border-color: var(--primary); transform: translateY(-3px); }
+        .comparison-item .icon { font-size: 2em; margin-bottom: 10px; }
+        .comparison-item .name { font-weight: 600; margin-bottom: 5px; }
+        .comparison-item .desc { font-size: 13px; color: var(--text-secondary); }
+        
+        .output-block { background: #000; border-radius: 8px; padding: 15px 20px; font-family: 'Fira Code', monospace; font-size: 13px; color: #10b981; margin: 10px 0; border: 1px solid var(--border); }
+        .output-line { margin: 3px 0; }
+        
+        .practice-card { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 16px; padding: 25px; margin: 25px 0; }
+        .practice-title { font-weight: 700; color: var(--primary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        .practice-title::before { content: '💻'; font-size: 1.2em; }
+        
+        .summary { background: var(--bg-hover); border-radius: 16px; padding: 30px; margin: 30px 0; }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .summary-item { text-align: center; padding: 15px; background: var(--bg-card); border-radius: 10px; border: 1px solid var(--border); }
+        .summary-item .emoji { font-size: 1.5em; margin-bottom: 8px; }
+        .summary-item .label { font-size: 13px; color: var(--text-secondary); }
+        
+        .nav-footer { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 30px; background: var(--bg-card); border-radius: 16px; margin-top: 40px; border: 1px solid var(--border); }
+        .nav-link { display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--bg-hover); border-radius: 10px; text-decoration: none; color: var(--text-primary); transition: all 0.3s; border: 1px solid var(--border); }
+        .nav-link:hover { border-color: var(--primary); }
+        .nav-info { text-align: center; flex: 1; }
+        .nav-info .week { font-size: 14px; color: var(--text-secondary); }
+        
+        .section-divider { height: 2px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 20px 0; }
+        
+        @media (max-width: 768px) { .hero h1 { font-size: 2em; } .section { padding: 25px; } .nav-footer { flex-direction: column; } }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: var(--bg-dark); } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="week-badge">第 14 周 · 阶段三</div>
+        <h1>数据库操作</h1>
+        <p style="opacity: 0.95; max-width: 600px; margin: 0 auto;">SQLite、MySQL、SQLAlchemy ORM、Redis基础</p>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-container">
+            <span style="font-size: 14px; color: var(--text-secondary);">学习进度</span>
+            <div style="flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+                <div class="progress-fill" style="width: 26.9%"></div>
+            </div>
+            <span style="font-size: 13px; font-weight: 600; color: var(--primary);">26.9%</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="toc">
+            <h2>章节导航</h2>
+            <div class="toc-list">
+                <a href="#sec1" class="toc-item"><span class="toc-num">1</span><span>数据库基础回顾</span></a>
+                <a href="#sec2" class="toc-item"><span class="toc-num">2</span><span>SQLite 数据库</span></a>
+                <a href="#sec3" class="toc-item"><span class="toc-num">3</span><span>Python sqlite3 模块</span></a>
+                <a href="#sec4" class="toc-item"><span class="toc-num">4</span><span>MySQL 数据库</span></a>
+                <a href="#sec5" class="toc-item"><span class="toc-num">5</span><span>SQLAlchemy ORM</span></a>
+            </div>
+        </div>
+        
+        <!-- Section 1: 数据库基础 -->
+        <div class="section" id="sec1">
+            <div class="section-header">
+                <div class="section-icon">🗄️</div>
+                <h2>数据库基础回顾</h2>
+            </div>
+            
+            <h3>1.1 关系型数据库核心概念</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item"><div class="icon">📊</div><div class="name">表（Table）</div><div class="desc">行和列组成的二维结构</div></div>
+                <div class="comparison-item"><div class="icon">📝</div><div class="name">行（Row）</div><div class="desc">一条记录</div></div>
+                <div class="comparison-item"><div class="icon">📋</div><div class="name">列（Column）</div><div class="desc">一个字段</div></div>
+                <div class="comparison-item"><div class="icon">🔑</div><div class="name">主键（PK）</div><div class="desc">唯一标识每行</div></div>
+            </div>
+            
+            <h3>1.2 SQL基础回顾</h3>
+            <div class="code-header">
+                <span class="code-title">SQL基础语法</span>
+                <span class="code-lang">SQL</span>
+            </div>
+<pre class="language-sql"><code>-- 创建表
+CREATE TABLE students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    age INTEGER,
+    score REAL DEFAULT 0
+);
+
+-- 插入数据
+INSERT INTO students (name, age, score) VALUES ('张三', 20, 85.5);
+INSERT INTO students (name, age, score) VALUES ('李四', 22, 92.0);
+
+-- 查询
+SELECT * FROM students;
+SELECT name, score FROM students WHERE score > 80 ORDER BY score DESC;
+
+-- 更新
+UPDATE students SET score = 90 WHERE name = '张三';
+
+-- 删除
+DELETE FROM students WHERE name = '李四';</code></pre>
+
+            <h3>1.3 事务ACID特性</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>特性</th><th>说明</th></tr>
+                    <tr><td><strong>原子性</strong> (Atomicity)</td><td>事务是最小执行单位，要么全部成功，要么全部失败</td></tr>
+                    <tr><td><strong>一致性</strong> (Consistency)</td><td>事务执行前后，数据库状态保持一致</td></tr>
+                    <tr><td><strong>隔离性</strong> (Isolation)</td><td>并发执行的事务互不干扰</td></tr>
+                    <tr><td><strong>持久性</strong> (Durability)</td><td>事务提交后，结果永久保存</td></tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 2: SQLite -->
+        <div class="section" id="sec2">
+            <div class="section-header">
+                <div class="section-icon">📦</div>
+                <h2>SQLite 数据库</h2>
+            </div>
+            
+            <div class="concept">
+                <div class="concept-title">💡 SQLite特点</div>
+                <p>SQLite是轻量级数据库，无需独立服务器进程，数据存储在单个文件中。适合桌面应用、移动应用、测试环境、小型网站等场景。</p>
+            </div>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item" style="border-color: #10b981;"><div class="icon">✅</div><div class="name">优点</div><div class="desc">零配置<br>单文件存储<br>跨平台<br>嵌入式友好</div></div>
+                <div class="comparison-item" style="border-color: #ef4444;"><div class="icon">❌</div><div class="name">缺点</div><div class="desc">并发能力有限<br>不适合大并发写入<br>无用户权限管理</div></div>
+            </div>
+
+            <h3>2.1 SQLite数据类型</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>SQLite类型</th><th>Python类型</th><th>说明</th></tr>
+                    <tr><td>INTEGER</td><td>int</td><td>整数</td></tr>
+                    <tr><td>REAL</td><td>float</td><td>浮点数</td></tr>
+                    <tr><td>TEXT</td><td>str</td><td>字符串</td></tr>
+                    <tr><td>BLOB</td><td>bytes</td><td>二进制数据</td></tr>
+                    <tr><td>NULL</td><td>None</td><td>空值</td></tr>
+                </table>
+            </div>
+
+            <h3>2.2 创建数据库和表</h3>
+            <div class="code-header">
+                <span class="code-title">创建SQLite数据库</span>
+                <span class="code-lang">SQL</span>
+            </div>
+<pre class="language-sql"><code>-- 创建数据库（文件不存在则自动创建）
+-- sqlite3 school.db
+
+-- 创建学生表
+CREATE TABLE students (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    age INTEGER,
+    score REAL DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 创建课程表
+CREATE TABLE courses (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    teacher TEXT
+);
+
+-- 创建成绩表（关联学生和课程）
+CREATE TABLE enrollments (
+    student_id INTEGER,
+    course_id INTEGER,
+    grade REAL,
+    PRIMARY KEY (student_id, course_id),
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    FOREIGN KEY (course_id) REFERENCES courses(id)
+);</code></pre>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 3: sqlite3模块 -->
+        <div class="section" id="sec3">
+            <div class="section-header">
+                <div class="section-icon">🐍</div>
+                <h2>Python sqlite3 模块</h2>
+            </div>
+            
+            <h3>3.1 基础CRUD操作</h3>
+            <div class="code-header">
+                <span class="code-title">sqlite3基础操作</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import sqlite3
+
+# 连接数据库（文件不存在则创建）
+conn = sqlite3.connect('school.db')
+cursor = conn.cursor()
+
+# 创建表
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS students (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        age INTEGER,
+        score REAL DEFAULT 0
+    )
+''')
+
+# 插入数据
+cursor.execute('INSERT INTO students (name, age, score) VALUES (?, ?, ?)',
+               ('张三', 20, 85.5))
+cursor.execute('INSERT INTO students (name, age, score) VALUES (?, ?, ?)',
+               ('李四', 22, 92.0))
+
+# 批量插入
+students = [('王五', 21, 78.5), ('赵六', 19, 88.0)]
+cursor.executemany('INSERT INTO students (name, age, score) VALUES (?, ?, ?)',
+                   students)
+
+# 提交事务
+conn.commit()
+
+# 查询数据
+cursor.execute('SELECT * FROM students')
+rows = cursor.fetchall()
+for row in rows:
+    print(f"ID: {row[0]}, 姓名: {row[1]}, 年龄: {row[2]}, 分数: {row[3]}")
+
+# 条件查询
+cursor.execute('SELECT * FROM students WHERE score > ? ORDER BY score DESC', (85,))
+results = cursor.fetchall()
+print(f"分数大于85的学生: {results}")
+
+# 更新数据
+cursor.execute('UPDATE students SET score = ? WHERE name = ?', (90, '张三'))
+conn.commit()
+
+# 删除数据
+cursor.execute('DELETE FROM students WHERE name = ?', ('李四',))
+conn.commit()
+
+# 关闭连接
+cursor.close()
+conn.close()</code></pre>
+
+            <div class="output-block">
+                <div class="output-line">ID: 1, 姓名: 张三, 年龄: 20, 分数: 85.5</div>
+                <div class="output-line">ID: 2, 姓名: 李四, 年龄: 22, 分数: 92.0</div>
+                <div class="output-line">ID: 3, 姓名: 王五, 年龄: 21, 分数: 78.5</div>
+                <div class="output-line">ID: 4, 姓名: 赵六, 年龄: 19, 分数: 88.0</div>
+            </div>
+
+            <h3>3.2 参数化查询防SQL注入</h3>
+            <div class="info-box danger">
+                <div class="info-box-title">⚠️ SQL注入风险</div>
+                <p><strong>绝对不要</strong>用字符串拼接构建SQL查询！</p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">安全 vs 不安全写法</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import sqlite3
+
+conn = sqlite3.connect('demo.db')
+cursor = conn.cursor()
+
+# ❌ 不安全：字符串拼接（会被SQL注入攻击！）
+user_input = "'; DROP TABLE students; --"
+query = f"SELECT * FROM students WHERE name = '{user_input}'"
+# 这会导致students表被删除！
+
+# ✅ 安全：参数化查询
+query = "SELECT * FROM students WHERE name = ?"
+cursor.execute(query, (user_input,))  # 参数自动转义
+
+# ✅ 多个参数
+query = "SELECT * FROM students WHERE age > ? AND score > ?"
+cursor.execute(query, (18, 80))
+
+conn.close()</code></pre>
+
+            <h3>3.3 事务控制</h3>
+            <div class="code-header">
+                <span class="code-title">事务管理</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import sqlite3
+
+conn = sqlite3.connect('bank.db')
+cursor = conn.cursor()
+
+try:
+    # 创建账户表
+    cursor.execute('CREATE TABLE IF NOT EXISTS accounts (id INTEGER PRIMARY KEY, name TEXT, balance REAL)')
+    cursor.execute('DELETE FROM accounts')
+    cursor.execute('INSERT INTO accounts VALUES (1, "张三", 10000)')
+    cursor.execute('INSERT INTO accounts VALUES (2, "李四", 5000)')
+    conn.commit()
+    
+    # 转账：张三转给李四2000
+    cursor.execute('UPDATE accounts SET balance = balance - 2000 WHERE name = "张三"')
+    cursor.execute('UPDATE accounts SET balance = balance + 2000 WHERE name = "李四"')
+    
+    # 检查余额（简单验证）
+    cursor.execute('SELECT balance FROM accounts WHERE name = "张三"')
+    zhang_balance = cursor.fetchone()[0]
+    if zhang_balance < 0:
+        raise ValueError("余额不足！")
+    
+    # 提交事务
+    conn.commit()
+    print("转账成功！")
+    
+except Exception as e:
+    # 回滚事务
+    conn.rollback()
+    print(f"交易失败，已回滚: {e}")
+
+finally:
+    # 显示最终余额
+    cursor.execute('SELECT name, balance FROM accounts')
+    for name, balance in cursor.fetchall():
+        print(f"{name}: {balance}元")
+    cursor.close()
+    conn.close()</code></pre>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 4: MySQL -->
+        <div class="section" id="sec4">
+            <div class="section-header">
+                <div class="section-icon">🐬</div>
+                <h2>MySQL 数据库</h2>
+            </div>
+            
+            <div class="concept">
+                <div class="concept-title">💡 MySQL特点</div>
+                <p>MySQL是最流行的开源关系型数据库，支持多用户多线程，提供完整的事务支持和丰富的存储引擎（InnoDB、MyISAM等）。适合中大型Web应用。</p>
+            </div>
+
+            <h3>4.1 安装与连接</h3>
+            <div class="info-box">
+                <div class="info-box-title">安装方式</div>
+                <p><code>pip install mysql-connector-python</code><br>
+                或<br>
+                <code>pip install pymysql</code></p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">连接MySQL</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code># 使用mysql-connector-python
+import mysql.connector
+
+conn = mysql.connector.connect(
+    host='localhost',
+    port=3306,
+    user='root',
+    password='your_password',
+    database='test_db',
+    charset='utf8mb4'  # 支持中文
+)
+
+cursor = conn.cursor()
+
+# CRUD操作（与sqlite3类似）
+cursor.execute('SELECT * FROM students')
+for row in cursor.fetchall():
+    print(row)
+
+# 关闭
+cursor.close()
+conn.close()
+
+# 使用pymysql（语法略有不同）
+import pymysql
+
+conn = pymysql.connect(
+    host='localhost',
+    port=3306,
+    user='root',
+    password='your_password',
+    database='test_db',
+    charset='utf8mb4'
+)
+
+cursor = conn.cursor()
+cursor.execute('SELECT VERSION()')
+print(f"MySQL版本: {cursor.fetchone()}")
+
+cursor.close()
+conn.close()</code></pre>
+
+            <h3>4.2 CRUD完整示例</h3>
+            <div class="code-header">
+                <span class="code-title">MySQL CRUD</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>import pymysql
+
+class MySQLDB:
+    def __init__(self, host, user, password, database):
+        self.conn = pymysql.connect(host=host, user=user, password=password, database=database, charset='utf8mb4')
+    
+    def __enter__(self):
+        self.cursor = self.conn.cursor()
+        return self
+    
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type:
+            self.conn.rollback()
+        self.cursor.close()
+        self.conn.close()
+    
+    def execute(self, sql, params=None):
+        self.cursor.execute(sql, params or ())
+        return self.cursor.fetchall()
+    
+    def commit(self):
+        self.conn.commit()
+
+# 使用with语句
+with MySQLDB('localhost', 'root', 'password', 'school') as db:
+    # 插入
+    db.execute('INSERT INTO students (name, age, score) VALUES (%s, %s, %s)', 
+               ('张三', 20, 85.5))
+    db.commit()
+    
+    # 查询
+    students = db.execute('SELECT * FROM students WHERE score > %s', (80,))
+    for s in students:
+        print(f"学生: {s[1]}, 分数: {s[3]}")
+    
+    # 更新
+    db.execute('UPDATE students SET score = %s WHERE name = %s', (90, '张三'))
+    db.commit()
+    
+    # 删除
+    db.execute('DELETE FROM students WHERE name = %s', ('李四',))
+    db.commit()</code></pre>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <!-- Section 5: SQLAlchemy -->
+        <div class="section" id="sec5">
+            <div class="section-header">
+                <div class="section-icon">🔗</div>
+                <h2>SQLAlchemy ORM</h2>
+            </div>
+            
+            <div class="concept">
+                <div class="concept-title">💡 什么是ORM</div>
+                <p>ORM（Object-Relational Mapping）将数据库表映射为Python类，行映射为对象，列映射为属性。让你可以用Python面向对象的方式操作数据库。</p>
+            </div>
+
+            <div class="comparison-grid">
+                <div class="comparison-item" style="border-color: #ef4444;"><div class="icon">📝</div><div class="name">原生SQL</div><div class="desc">直接写SQL语句<br>灵活但繁琐<br>易出错</div></div>
+                <div class="comparison-item" style="border-color: #10b981;"><div class="icon">🔗</div><div class="name">ORM</div><div class="desc">用Python操作<br>更安全易用<br>数据库无关</div></div>
+            </div>
+
+            <h3>5.1 SQLAlchemy基本用法</h3>
+            <div class="info-box">
+                <div class="info-box-title">安装</div>
+                <p><code>pip install sqlalchemy</code></p>
+            </div>
+
+            <div class="code-header">
+                <span class="code-title">SQLAlchemy基础</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code>from sqlalchemy import create_engine, Column, Integer, String, Float, ForeignKey
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+
+# 创建引擎（SQLite）
+engine = create_engine('sqlite:///school.db', echo=True)
+
+# 创建基类
+Base = declarative_base()
+
+# 定义模型
+class Student(Base):
+    __tablename__ = 'students'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    age = Column(Integer)
+    score = Column(Float, default=0)
+    
+    # 关系
+    enrollments = relationship('Enrollment', back_populates='student')
+    
+    def __repr__(self):
+        return f"<Student(id={self.id}, name='{self.name}', score={self.score})>"
+
+class Course(Base):
+    __tablename__ = 'courses'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    teacher = Column(String(50))
+    
+    def __repr__(self):
+        return f"<Course(name='{self.name}', teacher='{self.teacher}')>"
+
+class Enrollment(Base):
+    __tablename__ = 'enrollments'
+    
+    student_id = Column(Integer, ForeignKey('students.id'), primary_key=True)
+    course_id = Column(Integer, ForeignKey('courses.id'), primary_key=True)
+    grade = Column(Float)
+    
+    # 关系
+    student = relationship('Student', back_populates='enrollments')
+    course = relationship('Course')
+
+# 创建表
+Base.metadata.create_all(engine)
+
+# 创建会话
+Session = sessionmaker(bind=engine)
+session = Session()</code></pre>
+
+            <h3>5.2 CRUD操作</h3>
+            <div class="code-header">
+                <span class="code-title">ORM CRUD</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code># 创建（插入）
+student = Student(name='张三', age=20, score=85.5)
+session.add(student)
+session.commit()
+
+# 批量创建
+students = [
+    Student(name='李四', age=22, score=92.0),
+    Student(name='王五', age=21, score=78.5),
+    Student(name='赵六', age=19, score=88.0)
+]
+session.add_all(students)
+session.commit()
+
+# 查询 - 基础
+all_students = session.query(Student).all()
+print(all_students)
+
+# 条件查询
+good_students = session.query(Student).filter(Student.score > 80).all()
+print(f"高分学生: {good_students}")
+
+# 排序
+top_students = session.query(Student).order_by(Student.score.desc()).limit(3).all()
+print(f"前三名: {top_students}")
+
+# 更新
+student = session.query(Student).filter(Student.name == '张三').first()
+student.score = 90
+session.commit()
+
+# 删除
+student = session.query(Student).filter(Student.name == '王五').first()
+session.delete(student)
+session.commit()
+
+# 关闭会话
+session.close()</code></pre>
+
+            <h3>5.3 关系查询</h3>
+            <div class="code-header">
+                <span class="code-title">关联查询</span>
+                <span class="code-lang">Python</span>
+            </div>
+<pre class="language-python"><code># 添加课程
+python_course = Course(name='Python入门', teacher='张老师')
+session.add(python_course)
+session.commit()
+
+# 选课
+enrollment = Enrollment(student_id=1, course_id=1, grade=88.0)
+session.add(enrollment)
+session.commit()
+
+# 查询学生及其选课
+student = session.query(Student).filter(Student.name == '张三').first()
+print(f"学生: {student.name}")
+for e in student.enrollments:
+    print(f"  课程: {e.course.name}, 成绩: {e.grade}")
+
+# 反向查询：查询课程的所有学生
+course = session.query(Course).first()
+print(f"课程: {course.name}")
+for e in course.enrollments:
+    print(f"  学生: {e.student.name}, 成绩: {e.grade}")</code></pre>
+
+            <div class="practice-card">
+                <div class="practice-title">实战：用ORM重构通讯录</div>
+                <div class="code-header">
+                    <span class="code-title">ORM通讯录</span>
+                    <span class="code-lang">Python</span>
+                </div>
+<pre class="language-python"><code>from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import declarative_base, sessionmaker
+
+engine = create_engine('sqlite:///contacts.db')
+Base = declarative_base()
+
+class Contact(Base):
+    __tablename__ = 'contacts'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(50), nullable=False)
+    phone = Column(String(20))
+    email = Column(String(100))
+    address = Column(String(200))
+    
+    def __repr__(self):
+        return f"<Contact(name='{self.name}', phone='{self.phone}')>"
+
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+class ContactManager:
+    def __init__(self):
+        self.session = session
+    
+    def add(self, name, phone, email=None, address=None):
+        contact = Contact(name=name, phone=phone, email=email, address=address)
+        self.session.add(contact)
+        self.session.commit()
+        print(f"已添加: {contact}")
+    
+    def search(self, keyword):
+        results = self.session.query(Contact).filter(
+            Contact.name.like(f'%{keyword}%') | Contact.phone.like(f'%{keyword}%')
+        ).all()
+        return results
+    
+    def delete(self, name):
+        contact = self.session.query(Contact).filter(Contact.name == name).first()
+        if contact:
+            self.session.delete(contact)
+            self.session.commit()
+            print(f"已删除: {contact}")
+        else:
+            print(f"未找到: {name}")
+
+# 使用
+manager = ContactManager()
+manager.add('张三', '13812345678', email='zhang@example.com')
+manager.add('李四', '13999998888')
+results = manager.search('张')
+print(f"搜索结果: {results}")</code></pre>
+            </div>
+        </div>
+        
+        <!-- Summary -->
+        <div class="section">
+            <h2>📚 本周总结</h2>
+            
+            <div class="summary">
+                <h3>核心知识点回顾</h3>
+                <div class="summary-grid">
+                    <div class="summary-item"><div class="emoji">🗄️</div><div class="label">数据库基础</div></div>
+                    <div class="summary-item"><div class="emoji">📦</div><div class="label">SQLite</div></div>
+                    <div class="summary-item"><div class="emoji">🐍</div><div class="label">sqlite3</div></div>
+                    <div class="summary-item"><div class="emoji">🐬</div><div class="label">MySQL</div></div>
+                    <div class="summary-item"><div class="emoji">🔗</div><div class="label">SQLAlchemy</div></div>
+                </div>
+            </div>
+            
+            <h3>数据库对比</h3>
+            <div class="table-wrapper">
+                <table>
+                    <tr><th>数据库</th><th>特点</th><th>适用场景</th></tr>
+                    <tr><td>SQLite</td><td>零配置、单文件</td><td>嵌入式、测试、小型应用</td></tr>
+                    <tr><td>MySQL</td><td>高性能、支持多线程</td><td>Web应用、中小型系统</td></tr>
+                    <tr><td>PostgreSQL</td><td>功能丰富、扩展性强</td><td>企业级应用、数据分析</td></tr>
+                    <tr><td>Redis</td><td>内存数据库、KV存储</td><td>缓存、实时数据、会话</td></tr>
+                </table>
+            </div>
+            
+            <div class="info-box">
+                <div class="info-box-title">🎉 阶段三完成！</div>
+                <p>恭喜完成Python基础阶段！接下来进入<strong>阶段四：进阶特性与工程实践</strong>（第15-24周）。</p>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-footer">
+            <a href="python-week13.html" class="nav-link"><span>←</span><span>第13周</span></a>
+            <div class="nav-info">
+                <div class="week">第 14 周</div>
+                <div class="title">数据库操作</div>
+            </div>
+            <a href="#" class="nav-link disabled"><span>第15周</span><span>→</span></a>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+    <script>Prism.highlightAll();</script>
+</body>
+</html>
