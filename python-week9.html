@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路 - 第9周：面向对象编程OOP基础</title>
+<style>
+:root{--primary:#6c5ce7;--secondary:#a29bfe;--accent:#fd79a8;--success:#00b894;--warning:#fdcb6e;--danger:#e17055;--dark:#2d3436;--code-bg:#1e1e2e;--border:#e0e0e0}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'PingFang SC','Microsoft YaHei',sans-serif;background:#f5f6fa;color:#2d3436;line-height:1.8}
+.hero{background:linear-gradient(135deg,#6c5ce7,#a29bfe,#fd79a8);color:#fff;padding:60px 40px;text-align:center}
+.hero h1{font-size:2.8em;margin-bottom:15px;text-shadow:0 2px 10px rgba(0,0,0,.2)}
+.hero p{font-size:1.2em;opacity:.9;max-width:700px;margin:0 auto}
+.badges{margin-top:20px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);padding:5px 16px;border-radius:20px;font-size:.9em}
+.container{max-width:1000px;margin:0 auto;padding:30px 20px}
+.toc{background:#fff;border-radius:16px;padding:30px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,.08);border-left:5px solid var(--primary)}
+.toc h2{color:var(--primary);margin-bottom:15px;font-size:1.4em}
+.toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.toc a{color:var(--dark);text-decoration:none;padding:5px 8px;display:block;border-radius:6px;transition:.2s}
+.toc a:hover{color:var(--primary);background:#f0eeff;padding-left:14px}
+.section{background:#fff;border-radius:16px;padding:35px;margin-bottom:25px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.section h2{color:var(--primary);font-size:1.6em;margin-bottom:20px;padding-bottom:12px;border-bottom:2px solid var(--secondary)}
+.section h3{color:var(--dark);font-size:1.25em;margin:28px 0 12px;padding-left:12px;border-left:4px solid var(--secondary)}
+.section h4{color:#636e72;font-size:1.05em;margin:18px 0 8px;font-weight:600}
+p{margin:10px 0;line-height:1.95}
+ul,ol{padding-left:24px;margin:10px 0}
+li{margin:6px 0;line-height:1.8}
+.concept-box{background:linear-gradient(135deg,rgba(108,92,231,.06),rgba(162,155,254,.08));border:1px solid rgba(162,155,254,.45);border-radius:12px;padding:20px 24px;margin:15px 0}
+.concept-title{font-weight:700;color:var(--primary);margin-bottom:10px;font-size:1.05em}
+.tip{background:#e8f5e9;border-left:4px solid var(--success);border-radius:8px;padding:14px 18px;margin:12px 0}
+.warning{background:#fff8e1;border-left:4px solid var(--warning);border-radius:8px;padding:14px 18px;margin:12px 0}
+.danger{background:#fce4ec;border-left:4px solid var(--danger);border-radius:8px;padding:14px 18px;margin:12px 0}
+.info{background:#e3f2fd;border-left:4px solid #2196f3;border-radius:8px;padding:14px 18px;margin:12px 0}
+.tip::before{content:"💡 ";font-weight:700}
+.warning::before{content:"⚠️ ";font-weight:700}
+.danger::before{content:"🚨 ";font-weight:700}
+.info::before{content:"ℹ️ ";font-weight:700}
+pre{background:var(--code-bg);border-radius:10px;padding:22px;overflow-x:auto;margin:15px 0}
+pre code{color:#cdd6f4;font-family:'Consolas','Monaco',monospace;font-size:.88em;line-height:1.85;white-space:pre}
+.ic{background:#f0f0f0;color:#e17055;padding:2px 7px;border-radius:4px;font-family:'Consolas',monospace;font-size:.88em}
+.cm{color:#6272a4}
+.kw{color:#ff79c6}
+.st{color:#f1fa8c}
+.nm{color:#bd93f9}
+.fn{color:#50fa7b}
+.cl{color:#8be9fd}
+.dc{color:#ffb86c}
+.bi{color:#ff79c6}
+table{width:100%;border-collapse:collapse;margin:15px 0;border-radius:10px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06)}
+th{background:var(--primary);color:#fff;padding:12px 15px;text-align:left;font-weight:600}
+td{padding:11px 15px;border-bottom:1px solid var(--border)}
+tr:nth-child(even) td{background:#f8f9ff}
+tr:hover td{background:#f0eeff;transition:.2s}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:15px 0}
+.card{background:#f8f9ff;border-radius:12px;padding:20px;border:1px solid #ddd8ff}
+.card h4{color:var(--primary);margin-bottom:10px;font-size:1em}
+.analogy{background:linear-gradient(135deg,rgba(253,121,168,.06),rgba(232,67,147,.04));border:1px solid rgba(253,121,168,.3);border-radius:12px;padding:22px;margin:15px 0}
+.analogy-title{font-weight:700;color:var(--accent);margin-bottom:10px;font-size:1.05em}
+.practice{background:linear-gradient(135deg,rgba(0,184,148,.07),rgba(0,206,201,.05));border:2px solid rgba(0,184,148,.3);border-radius:14px;padding:28px;margin:22px 0}
+.practice h3{color:var(--success);margin:0 0 16px;font-size:1.2em}
+.nav-links{display:flex;justify-content:space-between;margin-top:35px;flex-wrap:wrap;gap:12px}
+.nav-btn{background:var(--primary);color:#fff;padding:12px 28px;border-radius:25px;text-decoration:none;font-weight:600;transition:.3s;display:inline-block}
+.nav-btn:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(108,92,231,.4)}
+.footer{text-align:center;padding:40px;color:#636e72;font-size:.9em}
+.oop-diagram{background:#fff;border:2px solid var(--secondary);border-radius:14px;padding:24px;margin:18px 0;text-align:center}
+.oop-diagram .class-box{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border-radius:10px;padding:16px 24px;display:inline-block;min-width:200px;margin-bottom:12px}
+.oop-diagram .obj-row{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.oop-diagram .obj-box{background:#f0eeff;border:2px solid var(--secondary);border-radius:8px;padding:12px 18px;font-size:.9em}
+.arrow{text-align:center;font-size:1.5em;color:var(--primary);margin:6px 0}
+@media(max-width:768px){.hero h1{font-size:2em}.grid-2{grid-template-columns:1fr}.toc-grid{grid-template-columns:1fr}.container{padding:15px 12px}}
+</style>
+</head>
+<body>
+<div class="hero">
+  <h1>🐍 Python学习之路</h1>
+  <p>第9周：面向对象编程（OOP）基础 —— 用类和对象建模世界</p>
+  <div class="badges">
+    <span class="badge">📅 第9周</span>
+    <span class="badge">⏱️ 建议学习：8-12小时</span>
+    <span class="badge">🎯 阶段三：面向对象</span>
+    <span class="badge">🏆 重要里程碑</span>
+  </div>
+</div>
+<div class="container">
+<div class="toc">
+  <h2>📋 本周目录</h2>
+  <div class="toc-grid">
+    <div>
+      <a href="#s1">1. 什么是面向对象编程（OOP）</a>
+      <a href="#s2">2. 类与对象：核心概念</a>
+      <a href="#s3">3. __init__ 初始化与属性</a>
+      <a href="#s4">4. 实例方法与 self 原理</a>
+      <a href="#s5">5. 类属性 vs 实例属性</a>
+    </div>
+    <div>
+      <a href="#s6">6. 封装：数据保护机制</a>
+      <a href="#s7">7. 继承：代码复用利器</a>
+      <a href="#s8">8. 多态与鸭子类型</a>
+      <a href="#s9">9. 魔术方法（特殊方法）</a>
+      <a href="#s10">10. 综合实战项目</a>
+    </div>
+  </div>
+</div>
+
+<!-- Section 1: 什么是OOP -->
+<div class="section" id="s1">
+  <h2>🌍 1. 什么是面向对象编程（OOP）</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 核心定义</div>
+    <p><strong>面向对象编程（Object-Oriented Programming，OOP）</strong>是一种以"对象"为核心的编程范式。它把现实世界中的事物抽象为代码中的"对象"，每个对象拥有自己的数据（属性）和行为（方法），通过对象之间的交互来完成程序功能。</p>
+    <p>Python 是一门支持多范式的语言，但其 OOP 支持极为完整。<strong>Python 中一切皆对象</strong>——整数、字符串、函数本身都是对象！</p>
+  </div>
+
+  <h3>📌 OOP 诞生背景：为什么需要它？</h3>
+  <p>早期编程是"面向过程"的——把程序看成一系列步骤，一步一步执行（如C语言风格）。当程序规模增大，就暴露出严重问题：</p>
+  <ul>
+    <li>数据和函数分离，逻辑难以追踪维护</li>
+    <li>全局变量泛滥，函数间耦合严重</li>
+    <li>代码复用困难，改动一处影响多处</li>
+    <li>难以对复杂的现实世界建模</li>
+  </ul>
+  <p>OOP 把相关的<strong>数据</strong>和<strong>操作数据的函数</strong>打包在一起，形成更贴近真实世界的"对象"模型，大幅降低了大型程序的复杂度。</p>
+
+  <div class="analogy">
+    <div class="analogy-title">🌰 生活类比：汽车与设计图</div>
+    <ul>
+      <li><strong>类（Class）</strong> = 汽车设计图纸 → 描述汽车<em>有什么</em>（品牌、颜色、速度）和<em>能做什么</em>（启动、加速、刹车）</li>
+      <li><strong>对象（Object）</strong> = 按图纸造出来的一辆辆具体汽车 → 每辆车颜色、里程可能不同，但结构相同</li>
+      <li><strong>实例化（Instantiation）</strong> = 按图纸造车的过程</li>
+    </ul>
+    <p>一张设计图可以造出无数辆汽车，每辆相互独立、互不影响。这正是 OOP 的魔力。</p>
+  </div>
+
+  <h3>📌 OOP 四大核心特性</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>🔒 封装（Encapsulation）</h4>
+      <p>把数据和方法打包在一起，隐藏内部细节，只暴露必要接口。使用者无需了解实现，只需使用接口。</p>
+      <p style="color:#636e72;font-size:.9em">类比：汽车方向盘——你不需要知道转向系统内部构造，转动方向盘即可。</p>
+    </div>
+    <div class="card">
+      <h4>🧬 继承（Inheritance）</h4>
+      <p>子类自动获得父类的属性和方法，实现代码复用。子类还可以扩展或覆盖父类行为。</p>
+      <p style="color:#636e72;font-size:.9em">类比：电动汽车继承了汽车的基本功能，还增加了充电等特有功能。</p>
+    </div>
+    <div class="card">
+      <h4>🎭 多态（Polymorphism）</h4>
+      <p>不同类的对象可以响应相同的方法调用，但执行各自特有的行为。"同一接口，不同实现"。</p>
+      <p style="color:#636e72;font-size:.9em">类比：speak()方法——狗叫汪汪，猫叫喵喵，接口相同，行为不同。</p>
+    </div>
+    <div class="card">
+      <h4>🎨 抽象（Abstraction）</h4>
+      <p>只暴露对象的关键信息，隐藏复杂实现。关注"是什么、能做什么"，而非"怎么实现"。</p>
+      <p style="color:#636e72;font-size:.9em">类比：ATM机——你只需要知道如何取钱，不需要了解内部电路原理。</p>
+    </div>
+  </div>
+
+  <h3>📌 面向过程 vs 面向对象</h3>
+  <table>
+    <tr><th>维度</th><th>面向过程（POP）</th><th>面向对象（OOP）</th></tr>
+    <tr><td>核心单元</td><td>函数/过程</td><td>类/对象</td></tr>
+    <tr><td>数据与行为</td><td>分离</td><td>封装在一起</td></tr>
+    <tr><td>代码复用</td><td>函数调用</td><td>继承、组合、多态</td></tr>
+    <tr><td>程序结构</td><td>顺序执行</td><td>对象交互</td></tr>
+    <tr><td>适用场景</td><td>简单、线性任务，脚本</td><td>复杂系统，大型项目</td></tr>
+    <tr><td>优点</td><td>简单直观，执行效率高</td><td>可维护性强，扩展性好</td></tr>
+    <tr><td>缺点</td><td>规模大时难以维护</td><td>学习曲线较陡</td></tr>
+  </table>
+
+  <div class="tip">
+    Python 支持多范式：你完全可以在一个项目中混用面向过程和面向对象。小脚本用函数，复杂系统用类，根据场景选择最合适的方式！
+  </div>
+</div>
+
+<!-- Section 2: 类与对象 -->
+<div class="section" id="s2">
+  <h2>🏗️ 2. 类与对象：核心概念深入</h2>
+
+  <h3>📌 定义第一个类</h3>
+  <p>用 <span class="ic">class</span> 关键字定义类，用 <span class="ic">类名()</span> 创建对象。来看一个完整示例：</p>
+<pre><code><span class="cm"># 定义"学生"类</span>
+<span class="kw">class</span> <span class="cl">Student</span>:
+    <span class="st">"""学生类 —— 这是类的文档字符串（docstring），描述类的用途"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age, score):
+        <span class="kw">self</span>.name = name      <span class="cm"># 实例属性：每个对象独立拥有</span>
+        <span class="kw">self</span>.age = age
+        <span class="kw">self</span>.score = score
+
+    <span class="kw">def</span> <span class="fn">introduce</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"大家好！我叫{self.name}，{self.age}岁，成绩{self.score}分。"</span>
+
+    <span class="kw">def</span> <span class="fn">study</span>(<span class="kw">self</span>, subject):
+        <span class="kw">return</span> <span class="st">f"{self.name} 正在学习 {subject}..."</span>
+
+    <span class="kw">def</span> <span class="fn">is_excellent</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>.score >= <span class="nm">90</span>
+
+<span class="cm"># ——— 实例化（创建对象）———</span>
+s1 = <span class="cl">Student</span>(<span class="st">"小明"</span>, <span class="nm">18</span>, <span class="nm">92</span>)
+s2 = <span class="cl">Student</span>(<span class="st">"小红"</span>, <span class="nm">17</span>, <span class="nm">98</span>)
+s3 = <span class="cl">Student</span>(<span class="st">"小刚"</span>, <span class="nm">19</span>, <span class="nm">75</span>)
+
+<span class="cm"># 访问属性</span>
+<span class="fn">print</span>(s1.name)    <span class="cm"># 小明</span>
+<span class="fn">print</span>(s2.age)     <span class="cm"># 17</span>
+
+<span class="cm"># 调用方法</span>
+<span class="fn">print</span>(s1.<span class="fn">introduce</span>())       <span class="cm"># 大家好！我叫小明，18岁，成绩92分。</span>
+<span class="fn">print</span>(s1.<span class="fn">is_excellent</span>())    <span class="cm"># True</span>
+<span class="fn">print</span>(s3.<span class="fn">is_excellent</span>())    <span class="cm"># False</span>
+
+<span class="cm"># s1和s2是完全独立的对象</span>
+<span class="fn">print</span>(s1 <span class="kw">is</span> s2)                       <span class="cm"># False</span>
+<span class="fn">print</span>(<span class="fn">type</span>(s1))                       <span class="cm"># &lt;class '__main__.Student'&gt;</span>
+<span class="fn">print</span>(<span class="fn">isinstance</span>(s1, <span class="cl">Student</span>))       <span class="cm"># True</span></code></pre>
+
+  <div class="oop-diagram">
+    <div class="class-box">📐 Student 类（设计图）<br><small>属性：name, age, score<br>方法：introduce, study, is_excellent</small></div>
+    <div class="arrow">⬇ 实例化 ⬇</div>
+    <div class="obj-row">
+      <div class="obj-box">🧑 s1 对象<br>name="小明"<br>age=18, score=92</div>
+      <div class="obj-box">👩 s2 对象<br>name="小红"<br>age=17, score=98</div>
+      <div class="obj-box">👦 s3 对象<br>name="小刚"<br>age=19, score=75</div>
+    </div>
+  </div>
+
+  <h3>📌 Python 中一切皆对象</h3>
+  <p>这是 Python 的核心哲学，理解它对学好 OOP 至关重要：</p>
+<pre><code><span class="cm"># 验证 Python 中一切皆对象</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="nm">42</span>))            <span class="cm"># &lt;class 'int'&gt;     整数是对象</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="st">"hello"</span>))      <span class="cm"># &lt;class 'str'&gt;     字符串是对象</span>
+<span class="fn">print</span>(<span class="fn">type</span>([<span class="nm">1</span>,<span class="nm">2</span>,<span class="nm">3</span>]))      <span class="cm"># &lt;class 'list'&gt;    列表是对象</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="fn">print</span>))        <span class="cm"># &lt;class 'builtin_function_or_method'&gt;</span>
+<span class="fn">print</span>(<span class="fn">type</span>(<span class="cl">Student</span>))      <span class="cm"># &lt;class 'type'&gt;    类本身也是对象！</span>
+
+<span class="cm"># 整数对象也有方法</span>
+x = <span class="nm">255</span>
+<span class="fn">print</span>(x.<span class="fn">bit_length</span>())     <span class="cm"># 8  (255二进制需要8位)</span>
+<span class="fn">print</span>((<span class="nm">-3</span>).<span class="fn">__abs__</span>())      <span class="cm"># 3  调用魔术方法</span>
+
+<span class="cm"># 字符串对象的方法</span>
+s = <span class="st">"hello world"</span>
+<span class="fn">print</span>(s.<span class="fn">upper</span>())           <span class="cm"># HELLO WORLD</span>
+<span class="fn">print</span>(s.<span class="fn">split</span>())           <span class="cm"># ['hello', 'world']</span></code></pre>
+
+  <h3>📌 对象在内存中的存储原理</h3>
+  <p>理解内存模型有助于避免很多坑：</p>
+<pre><code><span class="cm"># 变量名是对象的"引用"（指针），而非对象本身</span>
+s1 = <span class="cl">Student</span>(<span class="st">"小明"</span>, <span class="nm">18</span>, <span class="nm">92</span>)
+s4 = s1                    <span class="cm"># s4 和 s1 指向【同一个对象】！</span>
+s4.name = <span class="st">"小强"</span>           <span class="cm"># 通过s4修改，s1也变了</span>
+<span class="fn">print</span>(s1.name)             <span class="cm"># 小强（s1也变了！）</span>
+<span class="fn">print</span>(<span class="fn">id</span>(s1) == <span class="fn">id</span>(s4))   <span class="cm"># True，是同一个内存地址</span>
+
+<span class="cm"># 如何创建真正独立的副本？</span>
+<span class="kw">import</span> copy
+s5 = copy.<span class="fn">copy</span>(s1)         <span class="cm"># 浅拷贝：新对象，但嵌套对象仍共享</span>
+s6 = copy.<span class="fn">deepcopy</span>(s1)     <span class="cm"># 深拷贝：完全独立的新对象（推荐）</span>
+s6.name = <span class="st">"完全独立"</span>
+<span class="fn">print</span>(s1.name)             <span class="cm"># 小强（s6不影响s1）</span>
+
+<span class="cm"># 查看对象的属性字典</span>
+<span class="fn">print</span>(s1.__dict__)         <span class="cm"># {'name': '小强', 'age': 18, 'score': 92}</span></code></pre>
+
+  <div class="info">
+    <strong>命名规范：</strong>类名用大驼峰（PascalCase），如 <span class="ic">StudentInfo</span>、<span class="ic">BankAccount</span>。方法和属性用小写加下划线，如 <span class="ic">get_balance()</span>、<span class="ic">first_name</span>。
+  </div>
+</div>
+
+<!-- Section 3: __init__ 与属性 -->
+<div class="section" id="s3">
+  <h2>🔧 3. __init__ 初始化方法与属性详解</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 __init__ 的本质原理</div>
+    <p><span class="ic">__init__</span> 不是"构造函数"，而是"<strong>初始化方法</strong>"。Python 创建对象的完整流程是：</p>
+    <ol>
+      <li><strong>__new__ 方法</strong>：在内存中分配空间，创建空对象（通常不需要重写）</li>
+      <li><strong>__init__ 方法</strong>：对空对象进行属性初始化赋值</li>
+      <li>返回初始化完毕的对象引用</li>
+    </ol>
+    <p>每次执行 <span class="ic">Student("小明", 18, 92)</span>，Python 都在堆内存中创建一块新的区域来存储这个对象。</p>
+  </div>
+
+  <h3>📌 __init__ 参数设计最佳实践</h3>
+<pre><code><span class="kw">class</span> <span class="cl">Person</span>:
+    <span class="st">"""人员信息类"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age=<span class="nm">18</span>, city=<span class="st">"北京"</span>, hobbies=<span class="bi">None</span>):
+        <span class="cm"># ✅ 必填参数：name</span>
+        <span class="kw">if not</span> name <span class="kw">or not</span> isinstance(name, <span class="cl">str</span>):
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"姓名不能为空"</span>)
+        <span class="kw">self</span>.name = name.strip()
+
+        <span class="cm"># ✅ 带默认值的可选参数</span>
+        <span class="kw">self</span>.age = age
+        <span class="kw">self</span>.city = city
+
+        <span class="cm"># ✅ 可变对象用 None 作默认值（避免经典陷阱！）</span>
+        <span class="kw">self</span>.hobbies = hobbies <span class="kw">if</span> hobbies <span class="kw">is not None else</span> []
+
+        <span class="cm"># ✅ 内部私有属性（不在参数中暴露）</span>
+        <span class="kw">self</span>._id = <span class="fn">id</span>(<span class="kw">self</span>)        <span class="cm"># 用内存地址作唯一ID</span>
+        <span class="kw">self</span>._created = <span class="st">"2026-04-02"</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"Person(name='{self.name}', age={self.age}, city='{self.city}')"</span>
+
+<span class="cm"># 各种实例化方式</span>
+p1 = <span class="cl">Person</span>(<span class="st">"张三"</span>)                      <span class="cm"># 只传必填参数</span>
+p2 = <span class="cl">Person</span>(<span class="st">"李四"</span>, <span class="nm">25</span>, <span class="st">"上海"</span>)           <span class="cm"># 位置参数</span>
+p3 = <span class="cl">Person</span>(<span class="st">"王五"</span>, city=<span class="st">"广州"</span>, age=<span class="nm">30</span>)  <span class="cm"># 关键字参数（顺序可变）</span>
+p4 = <span class="cl">Person</span>(<span class="st">"赵六"</span>, hobbies=[<span class="st">"阅读"</span>, <span class="st">"编程"</span>])
+<span class="fn">print</span>(p1)   <span class="cm"># Person(name='张三', age=18, city='北京')</span>
+<span class="fn">print</span>(p4.hobbies)  <span class="cm"># ['阅读', '编程']</span></code></pre>
+
+  <div class="danger">
+    <strong>🚨 可变默认参数陷阱（Python常见错误）：</strong><br>
+    <strong>错误写法：</strong><span class="ic">def __init__(self, hobbies=[]):</span> ← 所有实例共享同一个列表！<br>
+    <strong>正确写法：</strong><span class="ic">def __init__(self, hobbies=None): self.hobbies = hobbies or []</span><br>
+    因为默认参数在函数定义时就被创建，所有调用都共享同一个对象，这是Python初学者最容易踩的坑之一。
+  </div>
+
+  <h3>📌 初始化时进行数据验证</h3>
+<pre><code><span class="kw">class</span> <span class="cl">BankAccount</span>:
+    <span class="st">"""银行账户类 —— 演示完善的初始化验证"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, owner, balance=<span class="nm">0.0</span>, account_type=<span class="st">"储蓄"</span>):
+        <span class="cm"># 验证账户持有人</span>
+        <span class="kw">if not isinstance</span>(owner, <span class="cl">str</span>) <span class="kw">or not</span> owner.strip():
+            <span class="kw">raise</span> <span class="cl">TypeError</span>(<span class="st">"账户持有人必须是非空字符串"</span>)
+
+        <span class="cm"># 验证初始余额</span>
+        <span class="kw">if not isinstance</span>(balance, (<span class="cl">int</span>, <span class="cl">float</span>)):
+            <span class="kw">raise</span> <span class="cl">TypeError</span>(<span class="st">"余额必须是数字"</span>)
+        <span class="kw">if</span> balance < <span class="nm">0</span>:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"初始余额不能为负数"</span>)
+
+        <span class="cm"># 验证账户类型</span>
+        valid_types = [<span class="st">"储蓄"</span>, <span class="st">"支票"</span>, <span class="st">"理财"</span>]
+        <span class="kw">if</span> account_type <span class="kw">not in</span> valid_types:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">f"账户类型必须是：{valid_types}"</span>)
+
+        <span class="kw">self</span>.owner = owner.strip()
+        <span class="kw">self</span>._balance = <span class="fn">float</span>(balance)
+        <span class="kw">self</span>.account_type = account_type
+        <span class="kw">self</span>._history = []
+
+    <span class="kw">def</span> <span class="fn">deposit</span>(<span class="kw">self</span>, amount):
+        <span class="kw">if</span> amount <= <span class="nm">0</span>:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"存款金额必须大于0"</span>)
+        <span class="kw">self</span>._balance += amount
+        <span class="kw">self</span>._history.append(<span class="st">f"存入 ¥{amount:.2f}"</span>)
+        <span class="kw">return self</span>      <span class="cm"># 返回self支持链式调用</span>
+
+    <span class="kw">def</span> <span class="fn">withdraw</span>(<span class="kw">self</span>, amount):
+        <span class="kw">if</span> amount <= <span class="nm">0</span>:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"取款金额必须大于0"</span>)
+        <span class="kw">if</span> amount > <span class="kw">self</span>._balance:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">f"余额不足，当前余额 ¥{self._balance:.2f}"</span>)
+        <span class="kw">self</span>._balance -= amount
+        <span class="kw">self</span>._history.append(<span class="st">f"取出 ¥{amount:.2f}"</span>)
+        <span class="kw">return self</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">balance</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>._balance
+
+    <span class="kw">def</span> <span class="fn">show_history</span>(<span class="kw">self</span>):
+        <span class="fn">print</span>(<span class="st">f"=== {self.owner} 的账单 ==="</span>)
+        <span class="kw">for</span> record <span class="kw">in</span> <span class="kw">self</span>._history:
+            <span class="fn">print</span>(<span class="st">f"  {record}"</span>)
+        <span class="fn">print</span>(<span class="st">f"当前余额：¥{self._balance:.2f}"</span>)
+
+<span class="cm"># 链式调用</span>
+acc = <span class="cl">BankAccount</span>(<span class="st">"周同学"</span>, <span class="nm">1000</span>)
+acc.<span class="fn">deposit</span>(<span class="nm">500</span>).<span class="fn">deposit</span>(<span class="nm">200</span>).<span class="fn">withdraw</span>(<span class="nm">300</span>)
+acc.<span class="fn">show_history</span>()
+<span class="cm"># === 周同学 的账单 ===</span>
+<span class="cm">#   存入 ¥500.00</span>
+<span class="cm">#   存入 ¥200.00</span>
+<span class="cm">#   取出 ¥300.00</span>
+<span class="cm"># 当前余额：¥1400.00</span></code></pre>
+
+  <h3>📌 @property 属性装饰器</h3>
+  <p><span class="ic">@property</span> 让方法像属性一样访问，常用于计算属性和数据保护：</p>
+<pre><code><span class="kw">class</span> <span class="cl">Circle</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, radius):
+        <span class="kw">self</span>.radius = radius   <span class="cm"># 触发 setter 验证</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">radius</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>._radius
+
+    <span class="dc">@radius.setter</span>
+    <span class="kw">def</span> <span class="fn">radius</span>(<span class="kw">self</span>, value):
+        <span class="kw">if</span> value < <span class="nm">0</span>:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"半径不能为负数"</span>)
+        <span class="kw">self</span>._radius = value
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>):             <span class="cm"># 只读计算属性</span>
+        <span class="kw">import</span> math
+        <span class="kw">return</span> math.pi * <span class="kw">self</span>._radius ** <span class="nm">2</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">circumference</span>(<span class="kw">self</span>):    <span class="cm"># 只读计算属性</span>
+        <span class="kw">import</span> math
+        <span class="kw">return</span> <span class="nm">2</span> * math.pi * <span class="kw">self</span>._radius
+
+c = <span class="cl">Circle</span>(<span class="nm">5</span>)
+<span class="fn">print</span>(c.radius)              <span class="cm"># 5  （像访问属性一样）</span>
+<span class="fn">print</span>(<span class="st">f"{c.area:.2f}"</span>)       <span class="cm"># 78.54</span>
+<span class="fn">print</span>(<span class="st">f"{c.circumference:.2f}"</span>)  <span class="cm"># 31.42</span>
+c.radius = <span class="nm">10</span>                <span class="cm"># 触发 setter，带验证</span>
+<span class="cm"># c.radius = -1             # ValueError: 半径不能为负数</span>
+<span class="cm"># c.area = 100              # AttributeError: 只读属性，不能赋值</span></code></pre>
+</div>
+
+<!-- Section 4: 实例方法与self -->
+<div class="section" id="s4">
+  <h2>⚡ 4. 实例方法与 self 深入解析</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 self 的本质</div>
+    <p><span class="ic">self</span> 是对"当前实例"的引用，相当于其他语言中的 <span class="ic">this</span>。</p>
+    <p>当你调用 <span class="ic">s1.introduce()</span> 时，Python 实际执行的是 <span class="ic">Student.introduce(s1)</span>——把实例自动作为第一个参数传入。</p>
+    <p><span class="ic">self</span> 是惯例命名（也可用其他名，但强烈建议保持 self），让方法知道"我在操作哪个对象的数据"。</p>
+  </div>
+
+  <h3>📌 三种方法类型对比</h3>
+<pre><code><span class="kw">class</span> <span class="cl">MethodDemo</span>:
+    class_counter = <span class="nm">0</span>    <span class="cm"># 类属性，所有实例共享</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, value):
+        <span class="kw">self</span>.value = value
+        <span class="cl">MethodDemo</span>.class_counter += <span class="nm">1</span>
+
+    <span class="cm"># 1. 实例方法（最常用）—— 第一参数必须是 self</span>
+    <span class="kw">def</span> <span class="fn">instance_method</span>(<span class="kw">self</span>):
+        <span class="cm"># 可以访问实例属性 和 类属性</span>
+        <span class="kw">return</span> <span class="st">f"实例方法：value={self.value}, counter={self.class_counter}"</span>
+
+    <span class="cm"># 2. 类方法 —— @classmethod，第一参数是 cls（类本身）</span>
+    <span class="dc">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">class_method</span>(<span class="cl">cls</span>):
+        <span class="cm"># 只能访问类属性，不能访问实例属性（无self）</span>
+        <span class="kw">return</span> <span class="st">f"类方法：已创建 {cls.class_counter} 个实例"</span>
+
+    <span class="cm"># 3. 静态方法 —— @staticmethod，无 self/cls</span>
+    <span class="dc">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">static_method</span>(x, y):
+        <span class="cm"># 不依赖实例或类，只是逻辑上归属于此类</span>
+        <span class="kw">return</span> x + y
+
+obj1 = <span class="cl">MethodDemo</span>(<span class="nm">10</span>)
+obj2 = <span class="cl">MethodDemo</span>(<span class="nm">20</span>)
+
+<span class="fn">print</span>(obj1.<span class="fn">instance_method</span>())   <span class="cm"># 实例方法：value=10, counter=2</span>
+<span class="fn">print</span>(<span class="cl">MethodDemo</span>.<span class="fn">class_method</span>()) <span class="cm"># 类方法：已创建 2 个实例</span>
+<span class="fn">print</span>(<span class="cl">MethodDemo</span>.<span class="fn">static_method</span>(<span class="nm">3</span>, <span class="nm">4</span>))  <span class="cm"># 7</span></code></pre>
+
+  <h3>📌 类方法实战：工厂方法模式</h3>
+  <p>类方法最常见的应用是"工厂方法"——从不同格式数据创建对象：</p>
+<pre><code><span class="kw">class</span> <span class="cl">Color</span>:
+    <span class="st">"""颜色类，支持多种格式创建"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, r, g, b):
+        <span class="kw">self</span>.r, <span class="kw">self</span>.g, <span class="kw">self</span>.b = r, g, b
+
+    <span class="dc">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">from_hex</span>(<span class="cl">cls</span>, hex_str):
+        <span class="st">"""从十六进制字符串创建，如 '#FF8800'"""</span>
+        hex_str = hex_str.lstrip(<span class="st">'#'</span>)
+        r = <span class="fn">int</span>(hex_str[<span class="nm">0</span>:<span class="nm">2</span>], <span class="nm">16</span>)
+        g = <span class="fn">int</span>(hex_str[<span class="nm">2</span>:<span class="nm">4</span>], <span class="nm">16</span>)
+        b = <span class="fn">int</span>(hex_str[<span class="nm">4</span>:<span class="nm">6</span>], <span class="nm">16</span>)
+        <span class="kw">return</span> <span class="cl">cls</span>(r, g, b)
+
+    <span class="dc">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">from_tuple</span>(<span class="cl">cls</span>, rgb_tuple):
+        <span class="st">"""从元组创建，如 (255, 136, 0)"""</span>
+        <span class="kw">return</span> <span class="cl">cls</span>(*rgb_tuple)
+
+    <span class="dc">@staticmethod</span>
+    <span class="kw">def</span> <span class="fn">is_valid_rgb</span>(r, g, b):
+        <span class="st">"""验证RGB值是否合法"""</span>
+        <span class="kw">return all</span>(<span class="nm">0</span> <= v <= <span class="nm">255</span> <span class="kw">for</span> v <span class="kw">in</span> (r, g, b))
+
+    <span class="kw">def</span> <span class="fn">to_hex</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"#{self.r:02X}{self.g:02X}{self.b:02X}"</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"Color(r={self.r}, g={self.g}, b={self.b})"</span>
+
+<span class="cm"># 三种方式创建同一颜色</span>
+c1 = <span class="cl">Color</span>(<span class="nm">255</span>, <span class="nm">136</span>, <span class="nm">0</span>)
+c2 = <span class="cl">Color</span>.<span class="fn">from_hex</span>(<span class="st">"#FF8800"</span>)
+c3 = <span class="cl">Color</span>.<span class="fn">from_tuple</span>((<span class="nm">255</span>, <span class="nm">136</span>, <span class="nm">0</span>))
+<span class="fn">print</span>(c1, c2, c3)        <span class="cm"># 三个完全一样</span>
+<span class="fn">print</span>(c1.<span class="fn">to_hex</span>())       <span class="cm"># #FF8800</span>
+<span class="fn">print</span>(<span class="cl">Color</span>.<span class="fn">is_valid_rgb</span>(<span class="nm">256</span>, <span class="nm">0</span>, <span class="nm">0</span>))  <span class="cm"># False</span></code></pre>
+
+  <table>
+    <tr><th>方法类型</th><th>装饰器</th><th>第一参数</th><th>能访问实例属性</th><th>能访问类属性</th><th>常见用途</th></tr>
+    <tr><td>实例方法</td><td>无</td><td>self</td><td>✅</td><td>✅</td><td>操作实例数据（最常用）</td></tr>
+    <tr><td>类方法</td><td>@classmethod</td><td>cls</td><td>❌</td><td>✅</td><td>工厂方法、操作类状态</td></tr>
+    <tr><td>静态方法</td><td>@staticmethod</td><td>无</td><td>❌</td><td>❌</td><td>工具函数、验证逻辑</td></tr>
+  </table>
+</div>
+
+<!-- Section 5: 类属性 vs 实例属性 -->
+<div class="section" id="s5">
+  <h2>📦 5. 类属性 vs 实例属性</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 两种属性的区别</div>
+    <ul>
+      <li><strong>类属性</strong>：定义在类体中、方法外，所有实例<strong>共享</strong>同一个值，通过 <span class="ic">类名.属性</span> 或 <span class="ic">self.属性</span> 访问</li>
+      <li><strong>实例属性</strong>：在 <span class="ic">__init__</span> 中用 <span class="ic">self.属性</span> 定义，每个实例<strong>独立</strong>拥有，互不影响</li>
+    </ul>
+  </div>
+
+<pre><code><span class="kw">class</span> <span class="cl">Employee</span>:
+    <span class="cm"># 类属性：所有员工共享</span>
+    company = <span class="st">"科技有限公司"</span>
+    employee_count = <span class="nm">0</span>
+    base_salary = <span class="nm">5000</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, department, salary_factor=<span class="nm">1.0</span>):
+        <span class="cm"># 实例属性：每位员工独立</span>
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>.department = department
+        <span class="kw">self</span>.salary_factor = salary_factor
+        <span class="kw">self</span>._salary = <span class="cl">Employee</span>.base_salary * salary_factor
+
+        <span class="cm"># 每创建一个员工，类属性计数+1</span>
+        <span class="cl">Employee</span>.employee_count += <span class="nm">1</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">salary</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>._salary
+
+    <span class="dc">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">raise_base_salary</span>(<span class="cl">cls</span>, percent):
+        <span class="st">"""全员基础工资调整（修改类属性）"""</span>
+        <span class="cl">cls</span>.base_salary *= (<span class="nm">1</span> + percent / <span class="nm">100</span>)
+        <span class="fn">print</span>(<span class="st">f"基础工资调整为 ¥{cls.base_salary:.0f}"</span>)
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self.name}({self.department}) ¥{self._salary:.0f}/月"</span>
+
+e1 = <span class="cl">Employee</span>(<span class="st">"张三"</span>, <span class="st">"技术部"</span>, <span class="nm">1.5</span>)
+e2 = <span class="cl">Employee</span>(<span class="st">"李四"</span>, <span class="st">"市场部"</span>, <span class="nm">1.2</span>)
+e3 = <span class="cl">Employee</span>(<span class="st">"王五"</span>, <span class="st">"运营部"</span>)
+
+<span class="cm"># 通过类名访问类属性</span>
+<span class="fn">print</span>(<span class="cl">Employee</span>.company)         <span class="cm"># 科技有限公司</span>
+<span class="fn">print</span>(<span class="cl">Employee</span>.employee_count)   <span class="cm"># 3</span>
+<span class="fn">print</span>(e1, e2, e3)
+
+<span class="cm"># 通过实例访问类属性（也可以）</span>
+<span class="fn">print</span>(e1.company)               <span class="cm"># 科技有限公司</span></code></pre>
+
+  <div class="warning">
+    <strong>注意：实例属性会"遮蔽"类属性</strong><br>
+    当你写 <span class="ic">self.company = "新公司"</span> 时，不是修改类属性，而是给该实例创建了一个同名的实例属性，遮蔽了类属性。其他实例的 <span class="ic">company</span> 不受影响。要修改所有实例共享的类属性，必须用 <span class="ic">Employee.company = "新公司"</span>。
+  </div>
+
+  <h3>📌 属性查找顺序（MRO）</h3>
+  <p>Python 查找属性的顺序：<strong>实例字典 → 类字典 → 父类字典（按MRO顺序）</strong></p>
+<pre><code><span class="kw">class</span> <span class="cl">A</span>:
+    x = <span class="st">"类属性"</span>
+
+a = <span class="cl">A</span>()
+<span class="fn">print</span>(a.x)           <span class="cm"># "类属性" —— 从类字典找到</span>
+
+a.x = <span class="st">"实例属性"</span>      <span class="cm"># 在实例字典中创建新属性</span>
+<span class="fn">print</span>(a.x)           <span class="cm"># "实例属性" —— 实例字典优先</span>
+<span class="fn">print</span>(<span class="cl">A</span>.x)           <span class="cm"># "类属性" —— 类属性不受影响</span>
+
+<span class="kw">del</span> a.x              <span class="cm"># 删除实例属性</span>
+<span class="fn">print</span>(a.x)           <span class="cm"># "类属性" —— 重新从类字典找</span></code></pre>
+</div>
+
+<!-- Section 6: 封装 -->
+<div class="section" id="s6">
+  <h2>🔒 6. 封装：数据保护机制</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 封装的原理与意义</div>
+    <p>封装是将数据（属性）和操作数据的方法绑定在一起，同时<strong>限制外部对内部数据的直接访问</strong>，只通过受控的接口（方法）进行交互。</p>
+    <p>好的封装让类的使用者不需要关心内部实现，类的维护者也可以随时修改内部实现而不影响外部调用。</p>
+  </div>
+
+  <h3>📌 Python 的三种访问级别</h3>
+  <table>
+    <tr><th>命名约定</th><th>访问级别</th><th>示例</th><th>说明</th></tr>
+    <tr><td><span class="ic">name</span></td><td>公开（Public）</td><td>self.name</td><td>任何地方都可访问，默认</td></tr>
+    <tr><td><span class="ic">_name</span></td><td>受保护（Protected）</td><td>self._balance</td><td>约定"内部使用"，外部仍可访问，但不推荐</td></tr>
+    <tr><td><span class="ic">__name</span></td><td>私有（Private）</td><td>self.__secret</td><td>名称改写（name mangling），外部难以直接访问</td></tr>
+  </table>
+
+<pre><code><span class="kw">class</span> <span class="cl">SecureVault</span>:
+    <span class="st">"""安全保险柜 —— 演示三种访问级别"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, owner, pin):
+        <span class="kw">self</span>.owner = owner           <span class="cm"># 公开属性</span>
+        <span class="kw">self</span>._contents = []          <span class="cm"># 受保护（约定内部使用）</span>
+        <span class="kw">self</span>.__pin = pin             <span class="cm"># 私有（Python会改写名称）</span>
+        <span class="kw">self</span>.__attempts = <span class="nm">0</span>
+
+    <span class="kw">def</span> <span class="fn">deposit</span>(<span class="kw">self</span>, item, pin):
+        <span class="kw">if not self</span>.<span class="fn">__verify_pin</span>(pin):
+            <span class="kw">return</span> <span class="st">"PIN错误，拒绝访问"</span>
+        <span class="kw">self</span>._contents.append(item)
+        <span class="kw">return</span> <span class="st">f"已存入：{item}"</span>
+
+    <span class="kw">def</span> <span class="fn">view</span>(<span class="kw">self</span>, pin):
+        <span class="kw">if not self</span>.<span class="fn">__verify_pin</span>(pin):
+            <span class="kw">return</span> <span class="st">"PIN错误，拒绝查看"</span>
+        <span class="kw">return</span> <span class="st">f"保险柜内容：{self._contents}"</span>
+
+    <span class="kw">def</span> <span class="fn">__verify_pin</span>(<span class="kw">self</span>, pin):
+        <span class="st">"""私有方法：验证PIN码"""</span>
+        <span class="kw">if self</span>.__attempts >= <span class="nm">3</span>:
+            <span class="kw">return</span> <span class="st">"账户已锁定"</span>
+        <span class="kw">if</span> pin == <span class="kw">self</span>.__pin:
+            <span class="kw">self</span>.__attempts = <span class="nm">0</span>
+            <span class="kw">return True</span>
+        <span class="kw">self</span>.__attempts += <span class="nm">1</span>
+        <span class="kw">return False</span>
+
+vault = <span class="cl">SecureVault</span>(<span class="st">"周同学"</span>, <span class="st">"1234"</span>)
+<span class="fn">print</span>(vault.<span class="fn">deposit</span>(<span class="st">"黄金"</span>, <span class="st">"1234"</span>))   <span class="cm"># 已存入：黄金</span>
+<span class="fn">print</span>(vault.<span class="fn">view</span>(<span class="st">"1234"</span>))             <span class="cm"># 保险柜内容：['黄金']</span>
+<span class="fn">print</span>(vault.<span class="fn">deposit</span>(<span class="st">"现金"</span>, <span class="st">"0000"</span>))   <span class="cm"># PIN错误，拒绝访问</span>
+
+<span class="cm"># 访问私有属性：Python会把 __pin 改写为 _SecureVault__pin</span>
+<span class="cm"># print(vault.__pin)         # AttributeError!</span>
+<span class="fn">print</span>(vault._SecureVault__pin)         <span class="cm"># "1234"（name mangling，不推荐这样用）</span></code></pre>
+
+  <h3>📌 封装实战：温度转换器</h3>
+<pre><code><span class="kw">class</span> <span class="cl">Temperature</span>:
+    <span class="st">"""温度类 —— 内部用摄氏度存储，支持多种单位"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, celsius=<span class="nm">0</span>):
+        <span class="kw">self</span>.celsius = celsius   <span class="cm"># 触发setter</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">celsius</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>._celsius
+
+    <span class="dc">@celsius.setter</span>
+    <span class="kw">def</span> <span class="fn">celsius</span>(<span class="kw">self</span>, value):
+        <span class="kw">if</span> value < <span class="nm">-273.15</span>:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"温度不能低于绝对零度 -273.15°C"</span>)
+        <span class="kw">self</span>._celsius = value
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">fahrenheit</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>._celsius * <span class="nm">9</span>/<span class="nm">5</span> + <span class="nm">32</span>
+
+    <span class="dc">@fahrenheit.setter</span>
+    <span class="kw">def</span> <span class="fn">fahrenheit</span>(<span class="kw">self</span>, value):
+        <span class="kw">self</span>.celsius = (value - <span class="nm">32</span>) * <span class="nm">5</span>/<span class="nm">9</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">kelvin</span>(<span class="kw">self</span>):
+        <span class="kw">return self</span>._celsius + <span class="nm">273.15</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self._celsius:.2f}°C / {self.fahrenheit:.2f}°F / {self.kelvin:.2f}K"</span>
+
+t = <span class="cl">Temperature</span>(<span class="nm">100</span>)
+<span class="fn">print</span>(t)                  <span class="cm"># 100.00°C / 212.00°F / 373.15K</span>
+t.fahrenheit = <span class="nm">32</span>         <span class="cm"># 通过华氏度设置</span>
+<span class="fn">print</span>(t)                  <span class="cm"># 0.00°C / 32.00°F / 273.15K</span>
+<span class="cm"># t.celsius = -300         # ValueError!</span></code></pre>
+</div>
+
+<!-- Section 7: 继承 -->
+<div class="section" id="s7">
+  <h2>🧬 7. 继承：代码复用的利器</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 继承的原理</div>
+    <p>继承允许一个类（子类/派生类）自动获得另一个类（父类/基类）的所有属性和方法，在此基础上添加新功能或修改现有功能。</p>
+    <p>继承体现了"IS-A"关系：<em>电动汽车 IS-A 汽车</em>，<em>学生 IS-A 人</em>。</p>
+    <p>Python 中所有类都隐式继承自 <span class="ic">object</span>（根类），这就是为什么所有对象都有 <span class="ic">__str__</span>、<span class="ic">__repr__</span> 等方法。</p>
+  </div>
+
+  <h3>📌 基本继承语法</h3>
+<pre><code><span class="cm"># ——— 父类 ———</span>
+<span class="kw">class</span> <span class="cl">Animal</span>:
+    <span class="st">"""动物基类"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age):
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>.age = age
+        <span class="kw">self</span>.is_alive = <span class="bi">True</span>
+
+    <span class="kw">def</span> <span class="fn">eat</span>(<span class="kw">self</span>, food):
+        <span class="kw">return</span> <span class="st">f"{self.name} 正在吃 {food}"</span>
+
+    <span class="kw">def</span> <span class="fn">sleep</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self.name} 在睡觉...zzz"</span>
+
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">"..."</span>   <span class="cm"># 默认实现，子类通常会重写</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self.__class__.__name__}(name='{self.name}', age={self.age})"</span>
+
+
+<span class="cm"># ——— 子类：继承Animal ———</span>
+<span class="kw">class</span> <span class="cl">Dog</span>(<span class="cl">Animal</span>):    <span class="cm"># 括号内是父类</span>
+    <span class="st">"""狗类，继承Animal"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age, breed):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(name, age)   <span class="cm"># super()调用父类__init__</span>
+        <span class="kw">self</span>.breed = breed             <span class="cm"># 子类新增属性</span>
+
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):                   <span class="cm"># 重写（Override）父类方法</span>
+        <span class="kw">return</span> <span class="st">f"{self.name}: 汪！汪！汪！"</span>
+
+    <span class="kw">def</span> <span class="fn">fetch</span>(<span class="kw">self</span>, item):             <span class="cm"># 子类新增方法</span>
+        <span class="kw">return</span> <span class="st">f"{self.name} 飞奔去捡{item}！"</span>
+
+
+<span class="kw">class</span> <span class="cl">Cat</span>(<span class="cl">Animal</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name, age, indoor=<span class="bi">True</span>):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(name, age)
+        <span class="kw">self</span>.indoor = indoor
+
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self.name}: 喵～"</span>
+
+    <span class="kw">def</span> <span class="fn">purr</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self.name} 咕噜咕噜..."</span>
+
+
+<span class="cm"># 创建对象</span>
+dog = <span class="cl">Dog</span>(<span class="st">"旺财"</span>, <span class="nm">3</span>, <span class="st">"拉布拉多"</span>)
+cat = <span class="cl">Cat</span>(<span class="st">"咪咪"</span>, <span class="nm">2</span>)
+
+<span class="cm"># 继承父类的方法</span>
+<span class="fn">print</span>(dog.<span class="fn">eat</span>(<span class="st">"骨头"</span>))       <span class="cm"># 旺财 正在吃 骨头（继承自Animal）</span>
+<span class="fn">print</span>(cat.<span class="fn">sleep</span>())           <span class="cm"># 咪咪 在睡觉...zzz（继承自Animal）</span>
+
+<span class="cm"># 各自重写的方法</span>
+<span class="fn">print</span>(dog.<span class="fn">speak</span>())           <span class="cm"># 旺财: 汪！汪！汪！（重写后）</span>
+<span class="fn">print</span>(cat.<span class="fn">speak</span>())           <span class="cm"># 咪咪: 喵～（重写后）</span>
+
+<span class="cm"># 子类特有方法</span>
+<span class="fn">print</span>(dog.<span class="fn">fetch</span>(<span class="st">"飞盘"</span>))      <span class="cm"># 旺财 飞奔去捡飞盘！</span>
+
+<span class="cm"># 类型检查</span>
+<span class="fn">print</span>(<span class="fn">isinstance</span>(dog, <span class="cl">Dog</span>))     <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">isinstance</span>(dog, <span class="cl">Animal</span>))  <span class="cm"># True（子类是父类的实例）</span>
+<span class="fn">print</span>(<span class="fn">issubclass</span>(<span class="cl">Dog</span>, <span class="cl">Animal</span>))  <span class="cm"># True</span></code></pre>
+
+  <h3>📌 super() 的重要性</h3>
+<pre><code><span class="kw">class</span> <span class="cl">Vehicle</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, brand, speed):
+        <span class="kw">self</span>.brand = brand
+        <span class="kw">self</span>.speed = speed
+        <span class="fn">print</span>(<span class="st">f"Vehicle.__init__ called: {brand}"</span>)
+
+    <span class="kw">def</span> <span class="fn">describe</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self.brand}，最高时速{self.speed}km/h"</span>
+
+
+<span class="kw">class</span> <span class="cl">ElectricCar</span>(<span class="cl">Vehicle</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, brand, speed, battery_kwh):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(brand, speed)  <span class="cm"># 调用父类初始化（必须！）</span>
+        <span class="kw">self</span>.battery_kwh = battery_kwh   <span class="cm"># 添加子类特有属性</span>
+        <span class="fn">print</span>(<span class="st">f"ElectricCar.__init__ called"</span>)
+
+    <span class="kw">def</span> <span class="fn">describe</span>(<span class="kw">self</span>):
+        <span class="cm"># 扩展父类方法（先调用父类，再添加新内容）</span>
+        base = <span class="fn">super</span>().<span class="fn">describe</span>()
+        <span class="kw">return</span> <span class="st">f"{base}，电池容量{self.battery_kwh}kWh"</span>
+
+    <span class="kw">def</span> <span class="fn">charge</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"{self.brand} 正在充电..."</span>
+
+ec = <span class="cl">ElectricCar</span>(<span class="st">"特斯拉"</span>, <span class="nm">250</span>, <span class="nm">100</span>)
+<span class="fn">print</span>(ec.<span class="fn">describe</span>())   <span class="cm"># 特斯拉，最高时速250km/h，电池容量100kWh</span></code></pre>
+
+  <h3>📌 多层继承（继承链）</h3>
+<pre><code><span class="kw">class</span> <span class="cl">LivingThing</span>:
+    <span class="kw">def</span> <span class="fn">breathe</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"呼吸中..."</span>
+
+<span class="kw">class</span> <span class="cl">Animal</span>(<span class="cl">LivingThing</span>):
+    <span class="kw">def</span> <span class="fn">move</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"移动中..."</span>
+
+<span class="kw">class</span> <span class="cl">Mammal</span>(<span class="cl">Animal</span>):
+    <span class="kw">def</span> <span class="fn">feed_young</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"哺乳中..."</span>
+
+<span class="kw">class</span> <span class="cl">Human</span>(<span class="cl">Mammal</span>):
+    <span class="kw">def</span> <span class="fn">think</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"思考中..."</span>
+
+h = <span class="cl">Human</span>()
+<span class="fn">print</span>(h.<span class="fn">breathe</span>())    <span class="cm"># 继承自LivingThing</span>
+<span class="fn">print</span>(h.<span class="fn">move</span>())       <span class="cm"># 继承自Animal</span>
+<span class="fn">print</span>(h.<span class="fn">feed_young</span>()) <span class="cm"># 继承自Mammal</span>
+<span class="fn">print</span>(h.<span class="fn">think</span>())      <span class="cm"># Human自己的</span>
+
+<span class="cm"># 查看继承顺序（MRO：方法解析顺序）</span>
+<span class="fn">print</span>(<span class="cl">Human</span>.__mro__)
+<span class="cm"># (&lt;class 'Human'&gt;, &lt;class 'Mammal'&gt;, &lt;class 'Animal'&gt;,</span>
+<span class="cm">#  &lt;class 'LivingThing'&gt;, &lt;class 'object'&gt;)</span></code></pre>
+
+  <div class="tip">
+    <strong>组合 vs 继承：</strong>继承表示"IS-A"关系（狗是动物），组合表示"HAS-A"关系（汽车有发动机）。当关系是"使用"而非"是"时，优先用组合而非继承，可以获得更灵活的设计。
+  </div>
+</div>
+
+<!-- Section 8: 多态 -->
+<div class="section" id="s8">
+  <h2>🎭 8. 多态与鸭子类型</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 多态的本质</div>
+    <p>多态（Polymorphism）= "多种形态"。同一个方法名，在不同的类中有不同的实现，使用时可以统一调用，不关心具体类型。</p>
+    <p>Python 的多态基于"<strong>鸭子类型（Duck Typing）</strong>"：<em>"如果它走路像鸭子，叫声像鸭子，那它就是鸭子。"</em> —— Python 不看类型，只看行为（方法）。</p>
+  </div>
+
+  <h3>📌 多态基础示例</h3>
+<pre><code><span class="kw">class</span> <span class="cl">Dog</span>:
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"汪！汪！"</span>
+    <span class="kw">def</span> <span class="fn">describe</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"我是狗"</span>
+
+<span class="kw">class</span> <span class="cl">Cat</span>:
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"喵～"</span>
+    <span class="kw">def</span> <span class="fn">describe</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"我是猫"</span>
+
+<span class="kw">class</span> <span class="cl">Duck</span>:
+    <span class="kw">def</span> <span class="fn">speak</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"嘎嘎！"</span>
+    <span class="kw">def</span> <span class="fn">describe</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"我是鸭子"</span>
+
+<span class="cm"># 多态：统一接口调用，不管具体类型</span>
+<span class="kw">def</span> <span class="fn">make_noise</span>(animal):
+    <span class="cm"># 只要对象有speak()方法，就能调用（鸭子类型）</span>
+    <span class="fn">print</span>(<span class="st">f"{animal.describe()} 说：{animal.speak()}"</span>)
+
+animals = [<span class="cl">Dog</span>(), <span class="cl">Cat</span>(), <span class="cl">Duck</span>(), <span class="cl">Dog</span>()]
+<span class="kw">for</span> animal <span class="kw">in</span> animals:
+    <span class="fn">make_noise</span>(animal)
+<span class="cm"># 我是狗 说：汪！汪！</span>
+<span class="cm"># 我是猫 说：喵～</span>
+<span class="cm"># 我是鸭子 说：嘎嘎！</span>
+<span class="cm"># 我是狗 说：汪！汪！</span></code></pre>
+
+  <h3>📌 多态与抽象基类（ABC）</h3>
+<pre><code><span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="kw">class</span> <span class="cl">Shape</span>(<span class="cl">ABC</span>):
+    <span class="st">"""抽象基类：不能直接实例化，规定了子类必须实现的接口"""</span>
+
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>):
+        <span class="st">"""子类必须实现 area() 方法"""</span>
+        <span class="kw">pass</span>
+
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>):
+        <span class="st">"""子类必须实现 perimeter() 方法"""</span>
+        <span class="kw">pass</span>
+
+    <span class="kw">def</span> <span class="fn">describe</span>(<span class="kw">self</span>):
+        <span class="cm"># 非抽象方法可以有默认实现</span>
+        <span class="kw">return</span> <span class="st">f"{self.__class__.__name__}: 面积={self.area():.2f}, 周长={self.perimeter():.2f}"</span>
+
+<span class="kw">import</span> math
+
+<span class="kw">class</span> <span class="cl">Circle</span>(<span class="cl">Shape</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, radius): <span class="kw">self</span>.radius = radius
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return</span> math.pi * <span class="kw">self</span>.radius ** <span class="nm">2</span>
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="nm">2</span> * math.pi * <span class="kw">self</span>.radius
+
+<span class="kw">class</span> <span class="cl">Rectangle</span>(<span class="cl">Shape</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, w, h): <span class="kw">self</span>.w, <span class="kw">self</span>.h = w, h
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>): <span class="kw">return self</span>.w * <span class="kw">self</span>.h
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="nm">2</span> * (<span class="kw">self</span>.w + <span class="kw">self</span>.h)
+
+<span class="kw">class</span> <span class="cl">Triangle</span>(<span class="cl">Shape</span>):
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, a, b, c): <span class="kw">self</span>.a, <span class="kw">self</span>.b, <span class="kw">self</span>.c = a, b, c
+    <span class="kw">def</span> <span class="fn">area</span>(<span class="kw">self</span>):
+        s = (<span class="kw">self</span>.a + <span class="kw">self</span>.b + <span class="kw">self</span>.c) / <span class="nm">2</span>
+        <span class="kw">return</span> math.<span class="fn">sqrt</span>(s*(s-<span class="kw">self</span>.a)*(s-<span class="kw">self</span>.b)*(s-<span class="kw">self</span>.c))
+    <span class="kw">def</span> <span class="fn">perimeter</span>(<span class="kw">self</span>): <span class="kw">return self</span>.a + <span class="kw">self</span>.b + <span class="kw">self</span>.c
+
+<span class="cm"># 多态的威力：统一处理不同类型的形状</span>
+shapes = [<span class="cl">Circle</span>(<span class="nm">5</span>), <span class="cl">Rectangle</span>(<span class="nm">4</span>, <span class="nm">6</span>), <span class="cl">Triangle</span>(<span class="nm">3</span>, <span class="nm">4</span>, <span class="nm">5</span>)]
+<span class="kw">for</span> shape <span class="kw">in</span> shapes:
+    <span class="fn">print</span>(shape.<span class="fn">describe</span>())
+<span class="cm"># Circle: 面积=78.54, 周长=31.42</span>
+<span class="cm"># Rectangle: 面积=24.00, 周长=20.00</span>
+<span class="cm"># Triangle: 面积=6.00, 周长=12.00</span>
+
+<span class="cm"># 计算总面积（不关心具体类型！）</span>
+total_area = <span class="fn">sum</span>(shape.<span class="fn">area</span>() <span class="kw">for</span> shape <span class="kw">in</span> shapes)
+<span class="fn">print</span>(<span class="st">f"总面积：{total_area:.2f}"</span>)
+
+<span class="cm"># 不能实例化抽象类</span>
+<span class="cm"># Shape()  # TypeError: Can't instantiate abstract class Shape</span></code></pre>
+
+  <div class="tip">
+    <strong>鸭子类型的优势：</strong>Python 不强制要求继承关系。只要一个对象有 <span class="ic">area()</span> 和 <span class="ic">perimeter()</span> 方法，就可以当作 Shape 使用，无需显式声明继承。这让代码更加灵活。
+  </div>
+</div>
+
+<!-- Section 9: 魔术方法 -->
+<div class="section" id="s9">
+  <h2>✨ 9. 魔术方法（特殊方法/Dunder Methods）</h2>
+
+  <div class="concept-box">
+    <div class="concept-title">🔑 什么是魔术方法</div>
+    <p>魔术方法（Magic Methods）是以双下划线开头和结尾的特殊方法，如 <span class="ic">__init__</span>、<span class="ic">__str__</span>、<span class="ic">__add__</span>。</p>
+    <p>Python 在特定场景下会自动调用这些方法，让你的自定义类能够支持内置操作符、函数，实现"运算符重载"。</p>
+    <p>通过实现魔术方法，你的类可以像内置类型一样自然使用，这是 Python OOP 的精髓之一。</p>
+  </div>
+
+  <h3>📌 常用魔术方法分类</h3>
+  <table>
+    <tr><th>分类</th><th>方法</th><th>触发时机</th></tr>
+    <tr><td>字符串表示</td><td>__str__</td><td>str(obj)、print(obj)</td></tr>
+    <tr><td>字符串表示</td><td>__repr__</td><td>repr(obj)、在交互式终端显示</td></tr>
+    <tr><td>比较运算</td><td>__eq__, __lt__, __gt__, __le__, __ge__</td><td>==, &lt;, &gt;, &lt;=, &gt;=</td></tr>
+    <tr><td>算术运算</td><td>__add__, __sub__, __mul__, __truediv__</td><td>+, -, *, /</td></tr>
+    <tr><td>容器行为</td><td>__len__, __getitem__, __setitem__</td><td>len(), [], []=</td></tr>
+    <tr><td>迭代</td><td>__iter__, __next__</td><td>for 循环、iter()</td></tr>
+    <tr><td>上下文管理</td><td>__enter__, __exit__</td><td>with 语句</td></tr>
+    <tr><td>布尔值</td><td>__bool__</td><td>if obj, bool(obj)</td></tr>
+    <tr><td>调用</td><td>__call__</td><td>obj()</td></tr>
+    <tr><td>对象删除</td><td>__del__</td><td>对象被垃圾回收时</td></tr>
+  </table>
+
+  <h3>📌 字符串表示：__str__ vs __repr__</h3>
+<pre><code><span class="kw">class</span> <span class="cl">Point</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x
+        <span class="kw">self</span>.y = y
+
+    <span class="kw">def</span> <span class="fn">__str__</span>(<span class="kw">self</span>):
+        <span class="st">"""用户友好的字符串，给普通用户看"""</span>
+        <span class="kw">return</span> <span class="st">f"({self.x}, {self.y})"</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="st">"""开发者字符串，要能重新创建对象"""</span>
+        <span class="kw">return</span> <span class="st">f"Point(x={self.x}, y={self.y})"</span>
+
+p = <span class="cl">Point</span>(<span class="nm">3</span>, <span class="nm">4</span>)
+<span class="fn">print</span>(p)        <span class="cm"># (3, 4)        —— 调用 __str__</span>
+<span class="fn">print</span>(<span class="fn">str</span>(p))   <span class="cm"># (3, 4)        —— 调用 __str__</span>
+<span class="fn">print</span>(<span class="fn">repr</span>(p))  <span class="cm"># Point(x=3, y=4) —— 调用 __repr__</span>
+<span class="cm"># 若没有 __str__，print() 会退而求其次使用 __repr__</span></code></pre>
+
+  <h3>📌 运算符重载：让类支持 + - * == 等操作</h3>
+<pre><code><span class="kw">class</span> <span class="cl">Vector</span>:
+    <span class="st">"""二维向量类 —— 演示运算符重载"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, x, y):
+        <span class="kw">self</span>.x = x
+        <span class="kw">self</span>.y = y
+
+    <span class="kw">def</span> <span class="fn">__add__</span>(<span class="kw">self</span>, other):
+        <span class="st">"""v1 + v2"""</span>
+        <span class="kw">return</span> <span class="cl">Vector</span>(<span class="kw">self</span>.x + other.x, <span class="kw">self</span>.y + other.y)
+
+    <span class="kw">def</span> <span class="fn">__sub__</span>(<span class="kw">self</span>, other):
+        <span class="st">"""v1 - v2"""</span>
+        <span class="kw">return</span> <span class="cl">Vector</span>(<span class="kw">self</span>.x - other.x, <span class="kw">self</span>.y - other.y)
+
+    <span class="kw">def</span> <span class="fn">__mul__</span>(<span class="kw">self</span>, scalar):
+        <span class="st">"""v * 数字（标量乘法）"""</span>
+        <span class="kw">return</span> <span class="cl">Vector</span>(<span class="kw">self</span>.x * scalar, <span class="kw">self</span>.y * scalar)
+
+    <span class="kw">def</span> <span class="fn">__rmul__</span>(<span class="kw">self</span>, scalar):
+        <span class="st">"""数字 * v（反向乘法，如 3 * v）"""</span>
+        <span class="kw">return self</span>.<span class="fn">__mul__</span>(scalar)
+
+    <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, other):
+        <span class="st">"""v1 == v2"""</span>
+        <span class="kw">return</span> isinstance(other, <span class="cl">Vector</span>) <span class="kw">and</span> <span class="kw">self</span>.x == other.x <span class="kw">and</span> <span class="kw">self</span>.y == other.y
+
+    <span class="kw">def</span> <span class="fn">__abs__</span>(<span class="kw">self</span>):
+        <span class="st">"""abs(v)：向量模长"""</span>
+        <span class="kw">import</span> math
+        <span class="kw">return</span> math.<span class="fn">sqrt</span>(<span class="kw">self</span>.x**<span class="nm">2</span> + <span class="kw">self</span>.y**<span class="nm">2</span>)
+
+    <span class="kw">def</span> <span class="fn">__bool__</span>(<span class="kw">self</span>):
+        <span class="st">"""非零向量为True"""</span>
+        <span class="kw">return</span> <span class="kw">self</span>.x != <span class="nm">0</span> <span class="kw">or self</span>.y != <span class="nm">0</span>
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"Vector({self.x}, {self.y})"</span>
+
+v1 = <span class="cl">Vector</span>(<span class="nm">1</span>, <span class="nm">2</span>)
+v2 = <span class="cl">Vector</span>(<span class="nm">3</span>, <span class="nm">4</span>)
+
+<span class="fn">print</span>(v1 + v2)     <span class="cm"># Vector(4, 6)</span>
+<span class="fn">print</span>(v2 - v1)     <span class="cm"># Vector(2, 2)</span>
+<span class="fn">print</span>(v1 * <span class="nm">3</span>)      <span class="cm"># Vector(3, 6)</span>
+<span class="fn">print</span>(<span class="nm">2</span> * v2)      <span class="cm"># Vector(6, 8)</span>
+<span class="fn">print</span>(<span class="fn">abs</span>(v2))     <span class="cm"># 5.0  (3-4-5三角形)</span>
+<span class="fn">print</span>(v1 == <span class="cl">Vector</span>(<span class="nm">1</span>, <span class="nm">2</span>))  <span class="cm"># True</span>
+<span class="fn">print</span>(<span class="fn">bool</span>(<span class="cl">Vector</span>(<span class="nm">0</span>, <span class="nm">0</span>)))   <span class="cm"># False</span></code></pre>
+
+  <h3>📌 上下文管理器：__enter__ 和 __exit__</h3>
+<pre><code><span class="kw">class</span> <span class="cl">DatabaseConnection</span>:
+    <span class="st">"""数据库连接 —— 演示上下文管理器"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, db_name):
+        <span class="kw">self</span>.db_name = db_name
+        <span class="kw">self</span>.connection = <span class="bi">None</span>
+
+    <span class="kw">def</span> <span class="fn">__enter__</span>(<span class="kw">self</span>):
+        <span class="st">"""with块开始时调用，返回值赋给 as 后的变量"""</span>
+        <span class="fn">print</span>(<span class="st">f"连接数据库：{self.db_name}"</span>)
+        <span class="kw">self</span>.connection = <span class="st">f"Connection({self.db_name})"</span>
+        <span class="kw">return self</span>  <span class="cm"># 返回self，with ... as db 的db就是self</span>
+
+    <span class="kw">def</span> <span class="fn">__exit__</span>(<span class="kw">self</span>, exc_type, exc_val, exc_tb):
+        <span class="st">"""with块结束时调用（无论正常还是异常）"""</span>
+        <span class="fn">print</span>(<span class="st">f"关闭数据库连接：{self.db_name}"</span>)
+        <span class="kw">self</span>.connection = <span class="bi">None</span>
+        <span class="kw">if</span> exc_type <span class="kw">is not None</span>:
+            <span class="fn">print</span>(<span class="st">f"捕获到异常：{exc_type.__name__}: {exc_val}"</span>)
+            <span class="kw">return True</span>  <span class="cm"># 返回True表示异常已处理，不继续传播</span>
+
+    <span class="kw">def</span> <span class="fn">query</span>(<span class="kw">self</span>, sql):
+        <span class="kw">if not self</span>.connection:
+            <span class="kw">raise</span> <span class="cl">RuntimeError</span>(<span class="st">"未连接数据库"</span>)
+        <span class="kw">return</span> <span class="st">f"执行查询：{sql}"</span>
+
+<span class="cm"># with 语句自动管理连接的开启和关闭</span>
+<span class="kw">with</span> <span class="cl">DatabaseConnection</span>(<span class="st">"mydb"</span>) <span class="kw">as</span> db:
+    <span class="fn">print</span>(db.<span class="fn">query</span>(<span class="st">"SELECT * FROM users"</span>))
+<span class="cm"># 输出：</span>
+<span class="cm"># 连接数据库：mydb</span>
+<span class="cm"># 执行查询：SELECT * FROM users</span>
+<span class="cm"># 关闭数据库连接：mydb</span></code></pre>
+
+  <h3>📌 可迭代对象：__iter__ 和 __next__</h3>
+<pre><code><span class="kw">class</span> <span class="cl">Countdown</span>:
+    <span class="st">"""倒计时迭代器"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, start):
+        <span class="kw">self</span>.start = start
+
+    <span class="kw">def</span> <span class="fn">__iter__</span>(<span class="kw">self</span>):
+        <span class="st">"""返回迭代器对象（这里self本身就是迭代器）"""</span>
+        <span class="kw">self</span>.current = <span class="kw">self</span>.start
+        <span class="kw">return self</span>
+
+    <span class="kw">def</span> <span class="fn">__next__</span>(<span class="kw">self</span>):
+        <span class="st">"""返回下一个值，没有更多值时抛出StopIteration"""</span>
+        <span class="kw">if self</span>.current < <span class="nm">0</span>:
+            <span class="kw">raise</span> <span class="cl">StopIteration</span>
+        value = <span class="kw">self</span>.current
+        <span class="kw">self</span>.current -= <span class="nm">1</span>
+        <span class="kw">return</span> value
+
+<span class="kw">for</span> n <span class="kw">in</span> <span class="cl">Countdown</span>(<span class="nm">5</span>):
+    <span class="fn">print</span>(n, end=<span class="st">" "</span>)   <span class="cm"># 5 4 3 2 1 0</span>
+
+<span class="cm"># 也可以直接转list</span>
+<span class="fn">print</span>(<span class="fn">list</span>(<span class="cl">Countdown</span>(<span class="nm">3</span>)))  <span class="cm"># [3, 2, 1, 0]</span></code></pre>
+</div>
+
+<!-- Section 10: 综合实战 -->
+<div class="section" id="s10">
+  <h2>🚀 10. 综合实战项目：图书馆管理系统</h2>
+
+  <p>综合运用本周所学的所有OOP知识，构建一个完整的图书馆管理系统，涵盖：封装、继承、多态、魔术方法、@property、类方法等。</p>
+
+  <h3>📌 需求分析</h3>
+  <ul>
+    <li>图书有两种类型：普通书籍（Book）和电子书（EBook）</li>
+    <li>图书馆（Library）可以添加、删除、查找书籍</li>
+    <li>会员（Member）可以借书、还书，有借阅上限</li>
+    <li>支持按名称、作者、类别搜索</li>
+    <li>统计借阅量排行</li>
+  </ul>
+
+<pre><code><span class="kw">from</span> datetime <span class="kw">import</span> datetime, timedelta
+<span class="kw">from</span> abc <span class="kw">import</span> ABC, abstractmethod
+
+<span class="cm"># ============================================================</span>
+<span class="cm"># 第一部分：书籍类（封装 + 继承 + 多态）</span>
+<span class="cm"># ============================================================</span>
+
+<span class="kw">class</span> <span class="cl">BaseBook</span>(<span class="cl">ABC</span>):
+    <span class="st">"""书籍抽象基类"""</span>
+    _total_books = <span class="nm">0</span>   <span class="cm"># 类属性：统计总书目数</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, title, author, isbn, category):
+        <span class="kw">if not all</span>([title, author, isbn]):
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">"书名、作者、ISBN不能为空"</span>)
+        <span class="kw">self</span>._title = title
+        <span class="kw">self</span>._author = author
+        <span class="kw">self</span>._isbn = isbn
+        <span class="kw">self</span>.category = category
+        <span class="kw">self</span>._borrow_count = <span class="nm">0</span>
+        <span class="kw">self</span>._available = <span class="bi">True</span>
+        <span class="cl">BaseBook</span>._total_books += <span class="nm">1</span>
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">title</span>(<span class="kw">self</span>): <span class="kw">return self</span>._title
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">author</span>(<span class="kw">self</span>): <span class="kw">return self</span>._author
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">isbn</span>(<span class="kw">self</span>): <span class="kw">return self</span>._isbn
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">available</span>(<span class="kw">self</span>): <span class="kw">return self</span>._available
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">borrow_count</span>(<span class="kw">self</span>): <span class="kw">return self</span>._borrow_count
+
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">get_type</span>(<span class="kw">self</span>):
+        <span class="st">"""子类必须实现：返回书籍类型字符串"""</span>
+        <span class="kw">pass</span>
+
+    <span class="dc">@abstractmethod</span>
+    <span class="kw">def</span> <span class="fn">get_borrow_days</span>(<span class="kw">self</span>):
+        <span class="st">"""子类必须实现：返回可借天数"""</span>
+        <span class="kw">pass</span>
+
+    <span class="kw">def</span> <span class="fn">borrow</span>(<span class="kw">self</span>):
+        <span class="kw">if not self</span>._available:
+            <span class="kw">raise</span> <span class="cl">RuntimeError</span>(<span class="st">f"《{self._title}》已被借出"</span>)
+        <span class="kw">self</span>._available = <span class="bi">False</span>
+        <span class="kw">self</span>._borrow_count += <span class="nm">1</span>
+        due = datetime.<span class="fn">now</span>() + timedelta(days=<span class="kw">self</span>.<span class="fn">get_borrow_days</span>())
+        <span class="kw">return</span> due
+
+    <span class="kw">def</span> <span class="fn">return_book</span>(<span class="kw">self</span>):
+        <span class="kw">if self</span>._available:
+            <span class="kw">raise</span> <span class="cl">RuntimeError</span>(<span class="st">f"《{self._title}》未被借出"</span>)
+        <span class="kw">self</span>._available = <span class="bi">True</span>
+
+    <span class="dc">@classmethod</span>
+    <span class="kw">def</span> <span class="fn">get_total_books</span>(<span class="cl">cls</span>):
+        <span class="kw">return</span> <span class="cl">cls</span>._total_books
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        status = <span class="st">"可借"</span> <span class="kw">if self</span>._available <span class="kw">else</span> <span class="st">"已借出"</span>
+        <span class="kw">return</span> <span class="st">f"[{self.get_type()}] 《{self._title}》 - {self._author} [{status}]"</span>
+
+    <span class="kw">def</span> <span class="fn">__eq__</span>(<span class="kw">self</span>, other):
+        <span class="kw">return isinstance</span>(other, <span class="cl">BaseBook</span>) <span class="kw">and self</span>._isbn == other._isbn
+
+    <span class="kw">def</span> <span class="fn">__hash__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="fn">hash</span>(<span class="kw">self</span>._isbn)
+
+
+<span class="kw">class</span> <span class="cl">Book</span>(<span class="cl">BaseBook</span>):
+    <span class="st">"""纸质书"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, title, author, isbn, category, pages):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(title, author, isbn, category)
+        <span class="kw">self</span>.pages = pages
+
+    <span class="kw">def</span> <span class="fn">get_type</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"纸质书"</span>
+    <span class="kw">def</span> <span class="fn">get_borrow_days</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="nm">30</span>
+
+
+<span class="kw">class</span> <span class="cl">EBook</span>(<span class="cl">BaseBook</span>):
+    <span class="st">"""电子书"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, title, author, isbn, category, file_size_mb):
+        <span class="fn">super</span>().<span class="fn">__init__</span>(title, author, isbn, category)
+        <span class="kw">self</span>.file_size_mb = file_size_mb
+
+    <span class="kw">def</span> <span class="fn">get_type</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="st">"电子书"</span>
+    <span class="kw">def</span> <span class="fn">get_borrow_days</span>(<span class="kw">self</span>): <span class="kw">return</span> <span class="nm">14</span>  <span class="cm"># 电子书借阅期短</span>
+
+
+<span class="cm"># ============================================================</span>
+<span class="cm"># 第二部分：会员类</span>
+<span class="cm"># ============================================================</span>
+
+<span class="kw">class</span> <span class="cl">Member</span>:
+    <span class="st">"""图书馆会员"""</span>
+    MAX_BORROW = <span class="nm">5</span>   <span class="cm"># 最多同时借5本</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, member_id, name):
+        <span class="kw">self</span>.member_id = member_id
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>._borrowed = {}   <span class="cm"># {book: due_date}</span>
+        <span class="kw">self</span>._history = []    <span class="cm"># 借阅历史</span>
+
+    <span class="kw">def</span> <span class="fn">borrow_book</span>(<span class="kw">self</span>, book):
+        <span class="kw">if len</span>(<span class="kw">self</span>._borrowed) >= <span class="kw">self</span>.MAX_BORROW:
+            <span class="kw">raise</span> <span class="cl">RuntimeError</span>(<span class="st">f"{self.name} 已达到最大借阅数 {self.MAX_BORROW} 本"</span>)
+        due = book.<span class="fn">borrow</span>()
+        <span class="kw">self</span>._borrowed[book] = due
+        <span class="kw">self</span>._history.append((<span class="st">"借出"</span>, book.title, datetime.<span class="fn">now</span>()))
+        <span class="kw">return</span> <span class="st">f"{self.name} 借出《{book.title}》，应还日期：{due.strftime('%Y-%m-%d')}"</span>
+
+    <span class="kw">def</span> <span class="fn">return_book</span>(<span class="kw">self</span>, book):
+        <span class="kw">if</span> book <span class="kw">not in self</span>._borrowed:
+            <span class="kw">raise</span> <span class="cl">RuntimeError</span>(<span class="st">f"{self.name} 没有借阅《{book.title}》"</span>)
+        due = <span class="kw">self</span>._borrowed.<span class="fn">pop</span>(book)
+        book.<span class="fn">return_book</span>()
+        <span class="kw">self</span>._history.append((<span class="st">"归还"</span>, book.title, datetime.<span class="fn">now</span>()))
+        overdue = (datetime.<span class="fn">now</span>() - due).days
+        msg = <span class="st">f"{self.name} 归还《{book.title}》"</span>
+        <span class="kw">if</span> overdue > <span class="nm">0</span>:
+            msg += <span class="st">f" ⚠️ 超期 {overdue} 天，罚款 ¥{overdue * 0.5:.1f}"</span>
+        <span class="kw">return</span> msg
+
+    <span class="dc">@property</span>
+    <span class="kw">def</span> <span class="fn">borrowed_count</span>(<span class="kw">self</span>): <span class="kw">return len</span>(<span class="kw">self</span>._borrowed)
+
+    <span class="kw">def</span> <span class="fn">show_borrowed</span>(<span class="kw">self</span>):
+        <span class="kw">if not self</span>._borrowed:
+            <span class="fn">print</span>(<span class="st">f"{self.name} 当前没有借阅书籍"</span>)
+            <span class="kw">return</span>
+        <span class="fn">print</span>(<span class="st">f"\n{self.name} 当前借阅（{len(self._borrowed)}/{self.MAX_BORROW}）："</span>)
+        <span class="kw">for</span> book, due <span class="kw">in</span> <span class="kw">self</span>._borrowed.<span class="fn">items</span>():
+            <span class="fn">print</span>(<span class="st">f"  《{book.title}》 应还：{due.strftime('%Y-%m-%d')}"</span>)
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"Member({self.member_id}, '{self.name}', 已借{self.borrowed_count}本)"</span>
+
+
+<span class="cm"># ============================================================</span>
+<span class="cm"># 第三部分：图书馆类（主管理类）</span>
+<span class="cm"># ============================================================</span>
+
+<span class="kw">class</span> <span class="cl">Library</span>:
+    <span class="st">"""图书馆管理类"""</span>
+
+    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="kw">self</span>, name):
+        <span class="kw">self</span>.name = name
+        <span class="kw">self</span>._books = {}    <span class="cm"># {isbn: book}</span>
+        <span class="kw">self</span>._members = {}  <span class="cm"># {member_id: member}</span>
+
+    <span class="kw">def</span> <span class="fn">add_book</span>(<span class="kw">self</span>, book):
+        <span class="kw">if</span> book.isbn <span class="kw">in self</span>._books:
+            <span class="kw">raise</span> <span class="cl">ValueError</span>(<span class="st">f"ISBN {book.isbn} 已存在"</span>)
+        <span class="kw">self</span>._books[book.isbn] = book
+        <span class="kw">return self</span>   <span class="cm"># 支持链式调用</span>
+
+    <span class="kw">def</span> <span class="fn">add_member</span>(<span class="kw">self</span>, member):
+        <span class="kw">self</span>._members[member.member_id] = member
+        <span class="kw">return self</span>
+
+    <span class="kw">def</span> <span class="fn">search</span>(<span class="kw">self</span>, keyword, field=<span class="st">"title"</span>):
+        <span class="st">"""按 title/author/category 搜索"""</span>
+        keyword = keyword.lower()
+        results = []
+        <span class="kw">for</span> book <span class="kw">in</span> <span class="kw">self</span>._books.<span class="fn">values</span>():
+            target = <span class="fn">getattr</span>(book, field, <span class="st">""</span>).lower()
+            <span class="kw">if</span> keyword <span class="kw">in</span> target:
+                results.<span class="fn">append</span>(book)
+        <span class="kw">return</span> results
+
+    <span class="kw">def</span> <span class="fn">top_borrowed</span>(<span class="kw">self</span>, n=<span class="nm">5</span>):
+        <span class="st">"""借阅量排行榜 Top N"""</span>
+        <span class="kw">return</span> <span class="fn">sorted</span>(<span class="kw">self</span>._books.<span class="fn">values</span>(),
+                       key=<span class="kw">lambda</span> b: b.borrow_count, reverse=<span class="bi">True</span>)[:<span class="nm">n</span>]
+
+    <span class="kw">def</span> <span class="fn">stats</span>(<span class="kw">self</span>):
+        <span class="st">"""统计信息"""</span>
+        total = <span class="fn">len</span>(<span class="kw">self</span>._books)
+        available = <span class="fn">sum</span>(<span class="nm">1</span> <span class="kw">for</span> b <span class="kw">in</span> <span class="kw">self</span>._books.<span class="fn">values</span>() <span class="kw">if</span> b.available)
+        <span class="fn">print</span>(<span class="st">f"\n=== {self.name} 统计 ==="</span>)
+        <span class="fn">print</span>(<span class="st">f"  总藏书：{total} 本"</span>)
+        <span class="fn">print</span>(<span class="st">f"  可借阅：{available} 本"</span>)
+        <span class="fn">print</span>(<span class="st">f"  借出中：{total - available} 本"</span>)
+        <span class="fn">print</span>(<span class="st">f"  会员数：{len(self._members)} 人"</span>)
+
+    <span class="kw">def</span> <span class="fn">__len__</span>(<span class="kw">self</span>):
+        <span class="kw">return len</span>(<span class="kw">self</span>._books)
+
+    <span class="kw">def</span> <span class="fn">__contains__</span>(<span class="kw">self</span>, isbn):
+        <span class="kw">return</span> isbn <span class="kw">in self</span>._books
+
+    <span class="kw">def</span> <span class="fn">__repr__</span>(<span class="kw">self</span>):
+        <span class="kw">return</span> <span class="st">f"Library('{self.name}', {len(self._books)}本)"</span>
+
+
+<span class="cm"># ============================================================</span>
+<span class="cm"># 运行演示</span>
+<span class="cm"># ============================================================</span>
+
+<span class="cm"># 创建图书馆</span>
+lib = <span class="cl">Library</span>(<span class="st">"Python学习图书馆"</span>)
+
+<span class="cm"># 添加书籍（链式调用）</span>
+lib.<span class="fn">add_book</span>(<span class="cl">Book</span>(<span class="st">"Python编程：从入门到实践"</span>, <span class="st">"Eric Matthes"</span>, <span class="st">"978-1"</span>, <span class="st">"编程"</span>, <span class="nm">560</span>)) \
+   .<span class="fn">add_book</span>(<span class="cl">Book</span>(<span class="st">"流畅的Python"</span>, <span class="st">"Luciano Ramalho"</span>, <span class="st">"978-2"</span>, <span class="st">"编程"</span>, <span class="nm">790</span>)) \
+   .<span class="fn">add_book</span>(<span class="cl">EBook</span>(<span class="st">"Python数据分析"</span>, <span class="st">"Wes McKinney"</span>, <span class="st">"978-3"</span>, <span class="st">"数据科学"</span>, <span class="nm">15.2</span>)) \
+   .<span class="fn">add_book</span>(<span class="cl">Book</span>(<span class="st">"算法导论"</span>, <span class="st">"CLRS"</span>, <span class="st">"978-4"</span>, <span class="st">"算法"</span>, <span class="nm">1312</span>)) \
+   .<span class="fn">add_book</span>(<span class="cl">EBook</span>(<span class="st">"深度学习"</span>, <span class="st">"Goodfellow"</span>, <span class="st">"978-5"</span>, <span class="st">"AI"</span>, <span class="nm">32.5</span>))
+
+<span class="cm"># 注册会员</span>
+lib.<span class="fn">add_member</span>(<span class="cl">Member</span>(<span class="st">"M001"</span>, <span class="st">"周同学"</span>))
+lib.<span class="fn">add_member</span>(<span class="cl">Member</span>(<span class="st">"M002"</span>, <span class="st">"李同学"</span>))
+
+<span class="cm"># 借书操作</span>
+zhou = lib._members[<span class="st">"M001"</span>]
+book1 = lib._books[<span class="st">"978-1"</span>]
+book3 = lib._books[<span class="st">"978-3"</span>]
+<span class="fn">print</span>(zhou.<span class="fn">borrow_book</span>(book1))
+<span class="fn">print</span>(zhou.<span class="fn">borrow_book</span>(book3))
+zhou.<span class="fn">show_borrowed</span>()
+
+<span class="cm"># 搜索</span>
+<span class="fn">print</span>(<span class="st">"\n搜索'Python'："</span>)
+<span class="kw">for</span> b <span class="kw">in</span> lib.<span class="fn">search</span>(<span class="st">"python"</span>):
+    <span class="fn">print</span>(<span class="st">f"  {b}"</span>)
+
+<span class="cm"># 统计</span>
+lib.<span class="fn">stats</span>()
+<span class="fn">print</span>(<span class="st">f"\n图书馆共 {len(lib)} 本书"</span>)        <span class="cm"># __len__</span>
+<span class="fn">print</span>(<span class="st">"978-1"</span> <span class="kw">in</span> lib)                     <span class="cm"># __contains__ → True</span>
+<span class="fn">print</span>(<span class="st">f"总书目数：{BaseBook.get_total_books()}"</span>)  <span class="cm"># 类方法</span></code></pre>
+
+  <div class="practice">
+    <h3>🎯 本周练习任务</h3>
+    <p><strong>基础练习：</strong></p>
+    <ol>
+      <li>创建一个 <span class="ic">Rectangle</span> 类，包含 width、height 属性，实现 area()、perimeter()、__repr__、__eq__（面积相等则认为相等）</li>
+      <li>创建一个 <span class="ic">Stack</span> 类（栈结构），实现 push()、pop()、peek()、__len__、__bool__（空栈为False）</li>
+      <li>创建 <span class="ic">Animal</span> 父类和至少3个子类，每个子类有独特的属性和重写 speak() 方法</li>
+    </ol>
+    <p><strong>进阶练习：</strong></p>
+    <ol>
+      <li>实现一个 <span class="ic">Fraction</span>（分数）类，支持 +、-、*、/、==、&lt;、&gt; 运算符，以及约分功能</li>
+      <li>为图书馆系统添加：逾期罚款计算、VIP会员（借阅上限10本）、图书预约功能</li>
+    </ol>
+    <p><strong>挑战练习：</strong></p>
+    <ol>
+      <li>实现一个简单的 <span class="ic">ORM</span> 风格的数据模型：<span class="ic">Model</span> 基类支持 save()、find()、all()，<span class="ic">User</span> 和 <span class="ic">Product</span> 继承它</li>
+    </ol>
+  </div>
+</div>
+
+<!-- 页脚和关闭标签 -->
+<div class="section" style="background:linear-gradient(135deg,rgba(108,92,231,.07),rgba(253,121,168,.05))">
+  <h2>📚 本周学习总结</h2>
+  <div class="grid-2">
+    <div>
+      <h3 style="margin-top:0">✅ 本周掌握的核心技能</h3>
+      <ul>
+        <li>理解 OOP 的四大特性：封装、继承、多态、抽象</li>
+        <li>用 class 定义类，__init__ 初始化对象</li>
+        <li>掌握 self 的本质和三种方法类型</li>
+        <li>区分类属性和实例属性，了解属性查找顺序</li>
+        <li>用 _ 和 __ 实现不同级别的封装</li>
+        <li>用 super() 实现继承和方法扩展</li>
+        <li>用多态和鸭子类型编写灵活的代码</li>
+        <li>掌握常用魔术方法，实现运算符重载</li>
+        <li>实现上下文管理器和可迭代对象</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-top:0">🔮 下周预告</h3>
+      <p><strong>第10周：面向对象进阶</strong></p>
+      <ul>
+        <li>多重继承与 MRO（C3线性化算法）</li>
+        <li>Mixin 设计模式</li>
+        <li>__slots__ 优化内存</li>
+        <li>元类（Metaclass）初探</li>
+        <li>dataclass 装饰器</li>
+        <li>组合模式 vs 继承</li>
+        <li>设计原则：SOLID 原则</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>📖 推荐学习资源</h3>
+  <table>
+    <tr><th>资源</th><th>类型</th><th>推荐理由</th></tr>
+    <tr><td>Python官方文档 - 类</td><td>官方文档</td><td>最权威，必读</td></tr>
+    <tr><td>《Python编程：从入门到实践》第9章</td><td>书籍</td><td>适合入门，案例丰富</td></tr>
+    <tr><td>《流畅的Python》第1-2章</td><td>书籍</td><td>深入理解Python对象模型</td></tr>
+    <tr><td>Real Python - OOP tutorials</td><td>网站</td><td>实战导向，质量高</td></tr>
+    <tr><td>Python Tutor (pythontutor.com)</td><td>工具</td><td>可视化对象在内存中的状态</td></tr>
+  </table>
+
+  <div class="nav-links">
+    <a href="python-week8.html" class="nav-btn">← 第8周：字符串进阶与文件操作</a>
+    <a href="index.html" class="nav-btn">🏠 返回首页</a>
+    <a href="python-week10.html" class="nav-btn">第10周：OOP进阶 →</a>
+  </div>
+</div>
+
+</div><!-- end container -->
+<div class="footer">
+  <p>🐍 Python 52周学习计划 · 第9周</p>
+  <p style="margin-top:8px">知识分享平台 · <a href="https://zhoutongxue89.github.io/zsfx/" style="color:var(--primary)">zhoutongxue89.github.io/zsfx</a></p>
+</div>
+</body>
+</html>
+
