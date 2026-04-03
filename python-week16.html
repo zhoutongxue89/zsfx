@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路·第16周 - 多进程编程</title>
+    <style>
+        :root {
+            --primary: #306998;
+            --secondary: #FFD43B;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333;
+            --text-light: #666;
+            --border: #e1e4e8;
+            --tip-bg: #e7f5ff;
+            --tip-border: #1971c2;
+            --warning-bg: #fff3bf;
+            --warning-border: #f08c00;
+            --success-bg: #d3f9d8;
+            --success-border: #2f9e44;
+            --code-bg: #f6f8fa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.8; background: var(--bg); color: var(--text); }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .nav { background: var(--primary); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav a { color: white; text-decoration: none; font-size: 14px; }
+        .nav a:hover { text-decoration: underline; }
+        .breadcrumb { color: rgba(255,255,255,0.8); font-size: 13px; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, #1e5799 100%); color: white; padding: 50px 40px; text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .header .subtitle { font-size: 1.3em; opacity: 0.9; margin-bottom: 20px; }
+        .header-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; font-size: 14px; }
+        .header-meta span { background: rgba(255,255,255,0.15); padding: 6px 16px; border-radius: 20px; }
+        .toc { background: var(--card-bg); border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .toc h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.5em; display: flex; align-items: center; gap: 10px; }
+        .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        .toc-item { display: flex; align-items: center; padding: 10px 15px; background: var(--bg); border-radius: 8px; text-decoration: none; color: var(--text); transition: all 0.2s; border-left: 3px solid var(--primary); }
+        .toc-item:hover { background: var(--primary); color: white; transform: translateX(5px); }
+        .toc-item .num { font-weight: bold; margin-right: 10px; color: var(--primary); }
+        .toc-item:hover .num { color: white; }
+        .content { background: var(--card-bg); border-radius: 12px; padding: 40px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 { color: var(--primary); font-size: 1.8em; margin: 40px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+        h2:first-of-type { margin-top: 0; }
+        h3 { color: #2c3e50; font-size: 1.4em; margin: 30px 0 15px; }
+        h4 { color: #34495e; font-size: 1.2em; margin: 25px 0 10px; }
+        p { margin: 15px 0; line-height: 1.9; }
+        .tip, .warning, .success, .key-point { padding: 18px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+        .tip { background: var(--tip-bg); border-color: var(--tip-border); }
+        .warning { background: var(--warning-bg); border-color: var(--warning-border); }
+        .success { background: var(--success-bg); border-color: var(--success-border); }
+        .key-point { background: linear-gradient(135deg, #e8f4f8 0%, #d4e6ed 100%); border-color: #3498db; }
+        .tip strong, .warning strong, .success strong, .key-point strong { display: block; margin-bottom: 8px; }
+        code { background: var(--code-bg); padding: 2px 8px; border-radius: 4px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9em; color: #e74c3c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 14px; line-height: 1.6; }
+        pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+        .keyword { color: #569cd6; font-weight: bold; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .number { color: #b5cea8; }
+        .class-name { color: #4ec9b0; }
+        ul, ol { margin: 15px 0 15px 25px; }
+        li { margin: 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid var(--border); }
+        th { background: var(--primary); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg); }
+        .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+        .compare-card { background: var(--bg); border-radius: 12px; padding: 25px; border-top: 4px solid var(--primary); }
+        .compare-card h4 { margin-top: 0; color: var(--primary); }
+        .bottom-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; transition: all 0.2s; }
+        .nav-btn:hover { background: #245a8a; transform: translateY(-2px); }
+        footer { text-align: center; padding: 30px; color: var(--text-light); font-size: 14px; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">🏠 首页</a>
+        <span class="breadcrumb">Python学习之路 &gt; 第16周</span>
+    </nav>
+    
+    <header class="header">
+        <h1>🐍 Python 学习之路 · 第16周</h1>
+        <p class="subtitle">多进程编程 —— 突破GIL限制，充分利用多核CPU</p>
+        <div class="header-meta">
+            <span>📅 第16周 / 共52周</span>
+            <span>⏱️ 建议学习 8-10 小时</span>
+            <span>🎯 难度 ★★★★☆</span>
+            <span>📌 阶段四：进阶特性</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="toc">
+            <h2>📋 本周学习目录</h2>
+            <div class="toc-list">
+                <a href="#s1" class="toc-item"><span class="num">1</span>进程 vs 线程</a>
+                <a href="#s2" class="toc-item"><span class="num">2</span>multiprocessing模块</a>
+                <a href="#s3" class="toc-item"><span class="num">3</span>进程创建与启动</a>
+                <a href="#s4" class="toc-item"><span class="num">4</span>进程间通信</a>
+                <a href="#s5" class="toc-item"><span class="num">5</span>进程池Pool</a>
+                <a href="#s6" class="toc-item"><span class="num">6</span>共享内存与锁</a>
+                <a href="#s7" class="toc-item"><span class="num">7</span>进程 vs 线程选择</a>
+                <a href="#s8" class="toc-item"><span class="num">8</span>实战：并行计算</a>
+                <a href="#s9" class="toc-item"><span class="num">9</span>综合项目：多进程爬虫</a>
+                <a href="#s10" class="toc-item"><span class="num">10</span>本周总结</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2 id="s1">1️⃣ 进程 vs 线程</h2>
+            
+            <div class="key-point">
+                <strong>🔑 核心概念</strong>
+                <ul>
+                    <li><strong>进程（Process）</strong>：操作系统分配的独立资源单位，拥有独立的内存空间</li>
+                    <li><strong>线程（Thread）</strong>：进程内的执行单元，共享进程资源</li>
+                </ul>
+            </div>
+            
+            <div class="compare-grid">
+                <div class="compare-card">
+                    <h4>🧵 线程</h4>
+                    <ul>
+                        <li>轻量级，创建销毁开销小</li>
+                        <li>共享进程内存空间</li>
+                        <li>受GIL限制（Python）</li>
+                        <li>一个线程崩溃可能影响整个进程</li>
+                        <li>适合I/O密集型任务</li>
+                    </ul>
+                </div>
+                <div class="compare-card">
+                    <h4>⚙️ 进程</h4>
+                    <ul>
+                        <li>重量级，独立内存空间</li>
+                        <li>进程间数据隔离</li>
+                        <li>绕过GIL，真正并行</li>
+                        <li>进程相互独立，更安全</li>
+                        <li>适合CPU密集型任务</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="diagram">
+                <pre><code>┌─────────────────────────────────────────────────────┐
+│                   进程1 (Python进程)                    │
+│  ┌─────────────────────────────────────────────────┐  │
+│  │                  内存空间                         │  │
+│  │  代码区 │ 数据区 │ 堆 │ 栈                        │  │
+│  │                                                 │  │
+│  │  ┌────┐ ┌────┐ ┌────┐                          │  │
+│  │  │线程1│ │线程2│ │线程3│ ← 共享进程资源，GIL锁   │  │
+│  │  └────┘ └────┘ └────┘                          │  │
+│  └─────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────┐
+│                   进程1                              │
+│  独立内存空间     代码 │ 数据 │ 堆 │ 栈              │
+│  ┌────┐                                          │
+│  │线程1│ ← 独立GIL，无GIL竞争                     │
+│  └────┘                                          │
+└─────────────────────────────────────────────────────┘
+                           ↕ fork()
+┌─────────────────────────────────────────────────────┐
+│                   进程2                              │
+│  独立内存空间     代码 │ 数据 │ 堆 │ 栈              │
+│  ┌────┐                                          │
+│  │线程1│ ← 独立GIL，无GIL竞争                     │
+│  └────┘                                          │
+└─────────────────────────────────────────────────────┘</code></pre>
+            </div>
+            
+            <h2 id="s2">2️⃣ multiprocessing模块</h2>
+            
+            <p><code>multiprocessing</code>是Python标准库中用于多进程编程的核心模块，提供了与<code>threading</code>类似的API。</p>
+            
+            <h3>📌 为什么需要multiprocessing？</h3>
+            
+            <pre><code>import threading
+import time
+
+def cpu_task():
+    """CPU密集型任务"""
+    total = 0
+    for i in range(50_000_000):
+        total += i ** 0.5
+    return total
+
+# 多线程 - 受GIL限制
+start = time.time()
+threads = [threading.Thread(target=cpu_task) for _ in range(4)]
+for t in threads: t.start()
+for t in threads: t.join()
+print(f"多线程: {time.time() - start:.2f}s")  # 约8秒
+
+# 使用multiprocessing
+import multiprocessing
+
+def cpu_task_mp():
+    total = 0
+    for i in range(50_000_000):
+        total += i ** 0.5
+    return total
+
+start = time.time()
+processes = [multiprocessing.Process(target=cpu_task_mp) for _ in range(4)]
+for p in processes: p.start()
+for p in processes: p.join()
+print(f"多进程: {time.time() - start:.2f}s")  # 约2秒（4核并行）</code></pre>
+            
+            <div class="success">
+                <strong>✅ GIL与多进程</strong>
+                <p>每个Python进程有独立的Python解释器和独立的GIL，真正实现并行计算！</p>
+            </div>
+            
+            <h2 id="s3">3️⃣ 进程创建与启动</h2>
+            
+            <h3>📌 方法一：直接创建</h3>
+            
+            <pre><code>import multiprocessing
+import time
+
+def worker(name):
+    print(f"进程 {name} 开始")
+    time.sleep(2)
+    print(f"进程 {name} 完成")
+
+if __name__ == "__main__":
+    # 创建进程
+    p = multiprocessing.Process(target=worker, args=("Worker-1",))
+    
+    # 启动进程
+    p.start()
+    
+    # 等待进程结束
+    p.join()
+    
+    print("主进程结束")</code></pre>
+            
+            <h3>📌 方法二：继承Process类</h3>
+            
+            <pre><code>import multiprocessing
+import time
+
+class MyProcess(multiprocessing.Process):
+    def __init__(self, name, seconds):
+        super().__init__()
+        self.name = name
+        self.seconds = seconds
+    
+    def run(self):
+        print(f"进程 {self.name} 开始")
+        time.sleep(self.seconds)
+        print(f"进程 {self.name} 完成")
+        return self.name
+
+if __name__ == "__main__":
+    processes = []
+    for i in range(3):
+        p = MyProcess(f"Worker-{i}", 2-i)
+        processes.append(p)
+        p.start()
+    
+    # 等待所有进程
+    for p in processes:
+        p.join()
+    
+    print("全部完成")</code></pre>
+            
+            <h3>📌 方法三：使用上下文</h3>
+            
+            <pre><code>import multiprocessing as mp
+
+# Windows上推荐使用spawn方式（更安全）
+if __name__ == "__main__":
+    ctx = mp.get_context('spawn')  # 或 'fork' (Unix), 'forkserver'
+    
+    def worker(q):
+        q.put("Hello from child")
+    
+    queue = ctx.Queue()
+    p = ctx.Process(target=worker, args=(queue,))
+    p.start()
+    print(queue.get())  # Hello from child
+    p.join()</code></pre>
+            
+            <div class="warning">
+                <strong>⚠️ Windows注意事项</strong>
+                <p>Windows没有fork系统调用，必须使用spawn或forkserver方式，且所有代码必须放在<code>if __name__ == "__main__":</code>下！</p>
+            </div>
+            
+            <h2 id="s4">4️⃣ 进程间通信</h2>
+            
+            <div class="key-point">
+                <strong>🔑 进程间通信（IPC）</strong>
+                <p>进程拥有独立内存空间，不能直接共享变量，需要通过IPC机制通信。</p>
+            </div>
+            
+            <h3>📌 Queue队列</h3>
+            
+            <pre><code>import multiprocessing as mp
+
+def producer(q):
+    for i in range(5):
+        q.put(i)
+    q.put(None)  # 发送结束信号
+
+def consumer(q):
+    while True:
+        item = q.get()
+        if item is None:
+            break
+        print(f"消费: {item}")
+
+if __name__ == "__main__":
+    queue = mp.Queue()
+    
+    p1 = mp.Process(target=producer, args=(queue,))
+    p2 = mp.Process(target=consumer, args=(queue,))
+    
+    p1.start()
+    p2.start()
+    
+    p1.join()
+    p2.join()
+    
+    print("完成")</code></pre>
+            
+            <h3>📌 Pipe管道</h3>
+            
+            <pre><code>import multiprocessing as mp
+
+def sender(conn):
+    conn.send("Hello from sender")
+    conn.send([1, 2, 3])
+    conn.close()
+
+def receiver(conn):
+    msg1 = conn.recv()
+    msg2 = conn.recv()
+    print(f"收到: {msg1}")
+    print(f"收到: {msg2}")
+    conn.close()
+
+if __name__ == "__main__":
+    # 创建管道，返回(conn1, conn2)
+    parent_conn, child_conn = mp.Pipe()
+    
+    p1 = mp.Process(target=sender, args=(child_conn,))
+    p2 = mp.Process(target=receiver, args=(parent_conn,))
+    
+    p1.start()
+    p2.start()
+    
+    p1.join()
+    p2.join()</code></pre>
+            
+            <div class="tip">
+                <strong>💡 Queue vs Pipe</strong>
+                <ul>
+                    <li><strong>Queue</strong>：适合多生产者多消费者，支持多进程</li>
+                    <li><strong>Pipe</strong>：适合一对一通信，速度更快</li>
+                </ul>
+            </div>
+            
+            <h3>📌 Manager共享数据</h3>
+            
+            <pre><code>import multiprocessing as mp
+
+def worker(shared_dict, shared_list):
+    # 通过Manager共享字典和列表
+    shared_dict['count'] = shared_dict.get('count', 0) + 1
+    shared_list.append(shared_dict['count'])
+
+if __name__ == "__main__":
+    with mp.Manager() as manager:
+        shared_dict = manager.dict()
+        shared_list = manager.list()
+        
+        processes = []
+        for i in range(5):
+            p = mp.Process(target=worker, args=(shared_dict, shared_list))
+            processes.append(p)
+            p.start()
+        
+        for p in processes:
+            p.join()
+        
+        print(f"共享字典: {dict(shared_dict)}")
+        print(f"共享列表: {list(shared_list)}")</code></pre>
+            
+            <h2 id="s5">5️⃣ 进程池Pool</h2>
+            
+            <div class="key-point">
+                <strong>🔑 为什么需要进程池？</strong>
+                <p>进程创建销毁开销大，进程池复用进程，高效管理并发数量。</p>
+            </div>
+            
+            <h3>📌 Pool基本用法</h3>
+            
+            <pre><code>import multiprocessing as mp
+import time
+
+def cpu_task(n):
+    """模拟CPU密集型任务"""
+    return sum(i ** 2 for i in range(n))
+
+if __name__ == "__main__":
+    # 创建进程池（默认使用所有CPU核心）
+    with mp.Pool(processes=4) as pool:
+        # 方法1: map - 按顺序返回结果
+        results = pool.map(cpu_task, [1000000, 2000000, 3000000, 4000000])
+        print(f"map结果: {results}")
+        
+        # 方法2: apply_async - 异步提交单个任务
+        result = pool.apply_async(cpu_task, (5000000,))
+        print(f"异步结果: {result.get()}")  # 等待结果
+        
+        # 方法3: apply_async + 回调
+        def callback(result):
+            print(f"任务完成，结果: {result}")
+        
+        pool.apply_async(cpu_task, (1000000,), callback=callback)
+        
+        # 方法4: starmap - 多参数
+        data = [(1, 2), (3, 4), (5, 6)]
+        results = pool.starmap(lambda x, y: x + y, data)
+        print(f"starmap结果: {results}")</code></pre>
+            
+            <h3>📌 imap与imap_unordered</h3>
+            
+            <pre><code>import multiprocessing as mp
+import time
+
+def task(n):
+    time.sleep(0.5)
+    return n * n
+
+if __name__ == "__main__":
+    with mp.Pool(4) as pool:
+        # imap - 按顺序返回（generator）
+        print("imap（按顺序）:")
+        for result in pool.imap(task, range(8)):
+            print(f"  结果: {result}")
+        
+        # imap_unordered - 谁先完成谁先返回
+        print("\nimap_unordered（按完成顺序）:")
+        for result in pool.imap_unordered(task, range(8)):
+            print(f"  结果: {result}")</code></pre>
+            
+            <h3>📌 进程池大小选择</h3>
+            
+            <pre><code>import multiprocessing as mp
+import os
+
+# 获取CPU核心数
+print(f"CPU核心数: {mp.cpu_count()}")
+
+# 推荐配置
+CPU_COUNT = mp.cpu_count()
+
+# I/O密集型：可以多一些
+IO_POOL_SIZE = CPU_COUNT * 2
+
+# CPU密集型：等于或略多于核心数
+CPU_POOL_SIZE = CPU_COUNT
+
+# 内存密集型：需要考虑内存限制
+# MEMORY_POOL_SIZE = available_memory // memory_per_process</code></pre>
+            
+            <h2 id="s6">6️⃣ 共享内存与锁</h2>
+            
+            <h3>📌 Value与Array</h3>
+            
+            <pre><code>import multiprocessing as mp
+
+def worker(shared_counter, shared_array, lock):
+    """使用共享内存"""
+    with lock:
+        shared_counter.value += 1
+        shared_array[shared_counter.value % len(shared_array)] = shared_counter.value
+
+if __name__ == "__main__":
+    # 创建共享内存
+    counter = mp.Value('i', 0)  # 有符号整数
+    array = mp.Array('i', range(5))  # 整数数组
+    lock = mp.Lock()  # 进程锁
+    
+    print(f"初始: counter={counter.value}, array={list(array)}")
+    
+    processes = []
+    for i in range(4):
+        p = mp.Process(target=worker, args=(counter, array, lock))
+        processes.append(p)
+        p.start()
+    
+    for p in processes:
+        p.join()
+    
+    print(f"最终: counter={counter.value}, array={list(array)}")</code></pre>
+            
+            <div class="tip">
+                <strong>💡 类型代码</strong>
+                <ul>
+                    <li><code>'i'</code>：有符号整数</li>
+                    <li><code>'I'</code>：无符号整数</li>
+                    <li><code>'d'</code>：双精度浮点数</li>
+                    <li><code>'c'</code>：字符（bytes）</li>
+                </ul>
+            </div>
+            
+            <h3>📌 进程间同步</h3>
+            
+            <pre><code>import multiprocessing as mp
+import time
+
+def producer(queue, event):
+    for i in range(5):
+        queue.put(i)
+        print(f"生产: {i}")
+    event.set()  # 发送完成信号
+
+def consumer(queue, event):
+    event.wait()  # 等待完成信号
+    while not queue.empty():
+        item = queue.get()
+        print(f"消费: {item}")
+
+if __name__ == "__main__":
+    queue = mp.Queue()
+    event = mp.Event()
+    
+    p1 = mp.Process(target=producer, args=(queue, event))
+    p2 = mp.Process(target=consumer, args=(queue, event))
+    
+    p1.start()
+    p2.start()
+    
+    p1.join()
+    p2.join()</code></pre>
+            
+            <h2 id="s7">7️⃣ 进程 vs 线程选择</h2>
+            
+            <table>
+                <tr>
+                    <th>场景</th>
+                    <th>推荐</th>
+                    <th>原因</th>
+                </tr>
+                <tr>
+                    <td>Web服务器</td>
+                    <td>多进程（nginx/uwsgi）</td>
+                    <td>隔离性好，一个进程崩溃不影响其他</td>
+                </tr>
+                <tr>
+                    <td>网络爬虫</td>
+                    <td>多线程（I/O等待长）</td>
+                    <td>GIL在等待时可释放，开销小</td>
+                </tr>
+                <tr>
+                    <td>图像处理</td>
+                    <td>多进程</td>
+                    <td>CPU密集，绕过GIL</td>
+                </tr>
+                <tr>
+                    <td>科学计算</td>
+                    <td>多进程 / numpy向量化</td>
+                    <td>numpy底层已优化</td>
+                </tr>
+                <tr>
+                    <td>数据库操作</td>
+                    <td>多线程 + 连接池</td>
+                    <td>主要是I/O等待</td>
+                </tr>
+                <tr>
+                    <td>机器学习</td>
+                    <td>多进程 / GPU</td>
+                    <td>训练是CPU/GPU密集型</td>
+                </tr>
+            </table>
+            
+            <h3>📌 混合使用（进程+线程）</h3>
+            
+            <pre><code>import multiprocessing as mp
+import threading
+import queue
+
+def parallel_processing(data):
+    """
+    多进程处理数据 + 每进程内多线程处理I/O
+    适合：CPU计算 + I/O操作混合场景
+    """
+    def process_chunk(chunk_id, data_chunk, result_queue):
+        """处理单个数据块（进程函数）"""
+        local_results = []
+        
+        def fetch_external(item):
+            # 每个进程内可以用多线程做I/O
+            import time
+            time.sleep(0.1)  # 模拟网络请求
+            return f"processed-{item}"
+        
+        # 使用线程池处理I/O
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=4) as executor:
+            futures = [executor.submit(fetch_external, item) for item in data_chunk]
+            for future in futures:
+                local_results.append(future.result())
+        
+        result_queue.put((chunk_id, local_results))
+    
+    # 分片数据
+    chunk_size = len(data) // 4
+    chunks = [data[i:i+chunk_size] for i in range(0, len(data), chunk_size)]
+    
+    result_queue = mp.Queue()
+    processes = []
+    
+    for i, chunk in enumerate(chunks):
+        p = mp.Process(target=process_chunk, args=(i, chunk, result_queue))
+        processes.append(p)
+        p.start()
+    
+    # 收集结果
+    results = []
+    for _ in range(len(chunks)):
+        chunk_id, chunk_results = result_queue.get()
+        results.append((chunk_id, chunk_results))
+    
+    for p in processes:
+        p.join()
+    
+    # 按顺序整理结果
+    results.sort(key=lambda x: x[0])
+    return results
+
+if __name__ == "__main__":
+    data = list(range(20))
+    results = parallel_processing(data)
+    print(f"处理完成，共 {len(results)} 个数据块")</code></pre>
+            
+            <h2 id="s8">8️⃣ 实战：并行计算</h2>
+            
+            <div class="key-point">
+                <strong>🔑 项目目标</strong>
+                <p>使用多进程并行计算素数，演示如何加速CPU密集型任务。</p>
+            </div>
+            
+            <pre><code>import multiprocessing as mp
+import time
+import math
+
+def is_prime(n):
+    """判断是否为素数"""
+    if n < 2:
+        return False
+    if n == 2:
+        return True
+    if n % 2 == 0:
+        return False
+    for i in range(3, int(math.sqrt(n)) + 1, 2):
+        if n % i == 0:
+            return False
+    return True
+
+def find_primes_in_range(start, end):
+    """在指定范围内找素数"""
+    primes = []
+    for n in range(start, end):
+        if is_prime(n):
+            primes.append(n)
+    return primes
+
+def parallel_prime_finder(limit, num_processes=None):
+    """并行找素数"""
+    if num_processes is None:
+        num_processes = mp.cpu_count()
+    
+    # 生成分段
+    chunk_size = limit // num_processes
+    ranges = [(i * chunk_size, (i + 1) * chunk_size) for i in range(num_processes)]
+    ranges[-1] = (ranges[-1][0], limit + 1)  # 确保包含最后一位
+    
+    # 并行处理
+    with mp.Pool(processes=num_processes) as pool:
+        results = pool.starmap(find_primes_in_range, ranges)
+    
+    # 合并结果
+    all_primes = []
+    for primes in results:
+        all_primes.extend(primes)
+    
+    return sorted(all_primes)
+
+if __name__ == "__main__":
+    LIMIT = 2_000_000
+    
+    # 单进程
+    start = time.time()
+    primes_single = find_primes_in_range(2, LIMIT)
+    single_time = time.time() - start
+    print(f"单进程: 找到 {len(primes_single)} 个素数，耗时 {single_time:.2f}s")
+    
+    # 多进程
+    start = time.time()
+    primes_parallel = parallel_prime_finder(LIMIT)
+    parallel_time = time.time() - start
+    print(f"多进程: 找到 {len(primes_parallel)} 个素数，耗时 {parallel_time:.2f}s")
+    
+    # 加速比
+    print(f"加速比: {single_time / parallel_time:.2f}x")</code></pre>
+            
+            <h2 id="s9">9️⃣ 综合项目：多进程爬虫</h2>
+            
+            <pre><code>import multiprocessing as mp
+import time
+import os
+from urllib.request import urlopen
+from urllib.error import URLError
+import hashlib
+
+class MultiProcessCrawler:
+    def __init__(self, max_workers=4):
+        self.max_workers = max_workers
+    
+    def fetch_url(self, url):
+        """获取单个URL内容"""
+        try:
+            with urlopen(url, timeout=10) as response:
+                content = response.read()
+                return {
+                    "status": "success",
+                    "url": url,
+                    "content": content,
+                    "size": len(content)
+                }
+        except Exception as e:
+            return {
+                "status": "error",
+                "url": url,
+                "error": str(e)
+            }
+    
+    def process_url(self, args):
+        """处理单个URL（进程函数）"""
+        url, output_dir = args
+        
+        result = self.fetch_url(url)
+        
+        if result["status"] == "success":
+            # 生成文件名
+            filename = hashlib.md5(url.encode()).hexdigest() + ".html"
+            filepath = os.path.join(output_dir, filename)
+            
+            with open(filepath, 'wb') as f:
+                f.write(result["content"])
+            
+            result["saved_as"] = filepath
+        
+        return result
+    
+    def crawl(self, urls, output_dir="output"):
+        """并发爬取所有URL"""
+        os.makedirs(output_dir, exist_ok=True)
+        
+        tasks = [(url, output_dir) for url in urls]
+        
+        results = []
+        with mp.Pool(processes=self.max_workers) as pool:
+            for result in pool.imap_unordered(self.process_url, tasks):
+                results.append(result)
+                if result["status"] == "success":
+                    print(f"✓ {result['url']} -> {result.get('saved_as', 'N/A')}")
+                else:
+                    print(f"✗ {result['url']} - {result['error']}")
+        
+        return results
+
+if __name__ == "__main__":
+    # 示例URL
+    urls = [
+        "https://example.com",
+        "https://httpbin.org/html",
+        "https://httpbin.org/delay/1",
+    ]
+    
+    crawler = MultiProcessCrawler(max_workers=3)
+    results = crawler.crawl(urls, output_dir="crawled_pages")
+    
+    # 统计
+    success = sum(1 for r in results if r["status"] == "success")
+    print(f"\n爬取完成: 成功 {success}/{len(results)}")</code></pre>
+            
+            <h2 id="s10">🔟 本周总结</h2>
+            
+            <div class="success">
+                <strong>✅ 核心要点回顾</strong>
+            </div>
+            
+            <table>
+                <tr>
+                    <th>知识点</th>
+                    <th>关键内容</th>
+                </tr>
+                <tr>
+                    <td>进程 vs 线程</td>
+                    <td>进程独立内存空间，线程共享资源；进程绕过GIL</td>
+                </tr>
+                <tr>
+                    <td>multiprocessing</td>
+                    <td>Process、Pool、Queue、Pipe、Manager等核心类</td>
+                </tr>
+                <tr>
+                    <td>进程通信</td>
+                    <td>Queue（多对多）、Pipe（一对一）、Manager（共享对象）</td>
+                </tr>
+                <tr>
+                    <td>进程池</td>
+                    <td>Pool.map/imap/starmap，复用进程避免开销</td>
+                </tr>
+                <tr>
+                    <td>共享内存</td>
+                    <td>Value、Array、Lock，用于高性能场景</td>
+                </tr>
+                <tr>
+                    <td>选择策略</td>
+                    <td>CPU密集用进程，I/O密集用线程</td>
+                </tr>
+            </table>
+            
+            <h3>📌 下周预告</h3>
+            <p>第17周我们将学习<strong>异步编程asyncio</strong>，探索更轻量的并发方案！</p>
+            
+            <div class="bottom-nav">
+                <a href="python-week15.html" class="nav-btn">← 第15周：多线程</a>
+                <a href="python-week17.html" class="nav-btn">第17周：异步编程 →</a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Python学习之路 · 第16周 · 多进程编程</p>
+            <p>突破GIL限制，充分利用多核CPU！</p>
+        </footer>
+    </div>
+</body>
+</html>
