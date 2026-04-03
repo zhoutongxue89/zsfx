@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路·第15周 - 并发编程：多线程基础</title>
+    <style>
+        :root {
+            --primary: #306998;
+            --secondary: #FFD43B;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333;
+            --text-light: #666;
+            --border: #e1e4e8;
+            --tip-bg: #e7f5ff;
+            --tip-border: #1971c2;
+            --warning-bg: #fff3bf;
+            --warning-border: #f08c00;
+            --success-bg: #d3f9d8;
+            --success-border: #2f9e44;
+            --code-bg: #f6f8fa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            line-height: 1.8;
+            background: var(--bg);
+            color: var(--text);
+        }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        
+        /* 头部导航 */
+        .nav {
+            background: var(--primary);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .nav a:hover { text-decoration: underline; }
+        .breadcrumb { color: rgba(255,255,255,0.8); font-size: 13px; }
+        
+        /* 头部信息 */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e5799 100%);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header .subtitle {
+            font-size: 1.3em;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        .header-meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            font-size: 14px;
+        }
+        .header-meta span {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 16px;
+            border-radius: 20px;
+        }
+        
+        /* 目录 */
+        .toc {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .toc h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toc-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .toc-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: var(--bg);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+            border-left: 3px solid var(--primary);
+        }
+        .toc-item:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateX(5px);
+        }
+        .toc-item .num {
+            font-weight: bold;
+            margin-right: 10px;
+            color: var(--primary);
+        }
+        .toc-item:hover .num { color: white; }
+        
+        /* 内容区域 */
+        .content { background: var(--card-bg); border-radius: 12px; padding: 40px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 {
+            color: var(--primary);
+            font-size: 1.8em;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border);
+        }
+        h2:first-of-type { margin-top: 0; }
+        h3 { color: #2c3e50; font-size: 1.4em; margin: 30px 0 15px; }
+        h4 { color: #34495e; font-size: 1.2em; margin: 25px 0 10px; }
+        p { margin: 15px 0; line-height: 1.9; }
+        
+        /* 提示框 */
+        .tip, .warning, .success, .key-point {
+            padding: 18px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid;
+        }
+        .tip {
+            background: var(--tip-bg);
+            border-color: var(--tip-border);
+        }
+        .warning {
+            background: var(--warning-bg);
+            border-color: var(--warning-border);
+        }
+        .success {
+            background: var(--success-bg);
+            border-color: var(--success-border);
+        }
+        .key-point {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e6ed 100%);
+            border-color: #3498db;
+        }
+        .tip strong, .warning strong, .success strong, .key-point strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        /* 代码 */
+        code {
+            background: var(--code-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+        pre {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+        }
+        
+        /* 关键字高亮 */
+        .keyword { color: #569cd6; font-weight: bold; }
+        .string { color: #ce9178; }
+        .function { color: #dcdcaa; }
+        .comment { color: #6a9955; }
+        .number { color: #b5cea8; }
+        .class-name { color: #4ec9b0; }
+        .decorator { color: #d7ba7d; }
+        
+        /* 列表 */
+        ul, ol { margin: 15px 0 15px 25px; }
+        li { margin: 8px 0; }
+        
+        /* 表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        tr:nth-child(even) { background: var(--bg); }
+        
+        /* 图片 */
+        .diagram {
+            background: var(--bg);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        /* 对比卡片 */
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .compare-card {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 25px;
+            border-top: 4px solid var(--primary);
+        }
+        .compare-card h4 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+        
+        /* 步骤 */
+        .steps {
+            counter-reset: step;
+        }
+        .step {
+            position: relative;
+            padding-left: 50px;
+            margin: 25px 0;
+        }
+        .step::before {
+            counter-increment: step;
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        /* 底部导航 */
+        .bottom-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 2px solid var(--border);
+        }
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: #245a8a;
+            transform: translateY(-2px);
+        }
+        
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-light);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">🏠 首页</a>
+        <span class="breadcrumb">Python学习之路 &gt; 第15周</span>
+    </nav>
+    
+    <header class="header">
+        <h1>🐍 Python 学习之路 · 第15周</h1>
+        <p class="subtitle">并发编程：多线程基础 —— 让程序同时执行多个任务</p>
+        <div class="header-meta">
+            <span>📅 第15周 / 共52周</span>
+            <span>⏱️ 建议学习 8-10 小时</span>
+            <span>🎯 难度 ★★★★☆</span>
+            <span>📌 阶段四：进阶特性</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="toc">
+            <h2>📋 本周学习目录</h2>
+            <div class="toc-list">
+                <a href="#s1" class="toc-item"><span class="num">1</span>并发vs并行：概念区分</a>
+                <a href="#s2" class="toc-item"><span class="num">2</span>GIL全局解释器锁</a>
+                <a href="#s3" class="toc-item"><span class="num">3</span>threading模块基础</a>
+                <a href="#s4" class="toc-item"><span class="num">4</span>线程的创建与启动</a>
+                <a href="#s5" class="toc-item"><span class="num">5</span>线程同步与锁</a>
+                <a href="#s6" class="toc-item"><span class="num">6</span>死锁与解决方案</a>
+                <a href="#s7" class="toc-item"><span class="num">7</span>线程间通信</a>
+                <a href="#s8" class="toc-item"><span class="num">8</span>线程池与队列</a>
+                <a href="#s9" class="toc-item"><span class="num">9</span>实战：多线程下载器</a>
+                <a href="#s10" class="toc-item"><span class="num">10</span>本周总结</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2 id="s1">1️⃣ 并发 vs 并行：核心概念</h2>
+            
+            <div class="key-point">
+                <strong>🔑 核心定义</strong>
+                <ul>
+                    <li><strong>并发（Concurrency）</strong>：同一个时间段内多个任务交替执行，CPU在多个任务间快速切换</li>
+                    <li><strong>并行（Parallelism）</strong>：多个任务真正同时执行，需要多核CPU</li>
+                </ul>
+            </div>
+            
+            <h3>📌 生活中的类比</h3>
+            
+            <div class="compare-grid">
+                <div class="compare-card">
+                    <h4>🍳 一个人做早餐（并发）</h4>
+                    <p>先烧水，等水开的间隙去烤面包，烤面包时去煮咖啡...</p>
+                    <p>看似同时做了多件事，实际上是交替执行</p>
+                    <p><strong>→ 单核CPU执行多线程</strong></p>
+                </div>
+                <div class="compare-card">
+                    <h4>👨‍🍳 三个人同时做早餐（并行）</h4>
+                    <p>一人烧水，一人烤面包，一人煮咖啡</p>
+                    <p>真正的同时执行</p>
+                    <p><strong>→ 多核CPU执行多线程</strong></p>
+                </div>
+            </div>
+            
+            <h3>📌 Python中的选择</h3>
+            
+            <table>
+                <tr>
+                    <th>场景</th>
+                    <th>推荐方案</th>
+                    <th>原因</th>
+                </tr>
+                <tr>
+                    <td>I/O密集型（网络请求、文件读写）</td>
+                    <td>多线程 / asyncio</td>
+                    <td>等待时CPU可处理其他任务</td>
+                </tr>
+                <tr>
+                    <td>CPU密集型（计算、图像处理）</td>
+                    <td>多进程</td>
+                    <td>绕过GIL，充分利用多核</td>
+                </tr>
+                <tr>
+                    <td>I/O等待时间长</td>
+                    <td>asyncio</td>
+                    <td>更轻量，无需线程切换开销</td>
+                </tr>
+            </table>
+            
+            <div class="tip">
+                <strong>💡 提示</strong>
+                Python中约80%的任务属于I/O密集型（网络请求、文件操作、数据库查询等），多线程在这些场景下非常有效！
+            </div>
+            
+            <h2 id="s2">2️⃣ GIL全局解释器锁</h2>
+            
+            <div class="warning">
+                <strong>⚠️ 重要概念</strong>
+                <p>GIL（Global Interpreter Lock）是Python最重要的性能特性之一，理解它对于选择并发方案至关重要！</p>
+            </div>
+            
+            <h3>📌 什么是GIL？</h3>
+            <p>GIL是Python解释器（CPython）中的一个互斥锁，它确保任意时刻只有一个线程执行Python字节码。</p>
+            
+            <div class="diagram">
+                <pre><code>┌─────────────────────────────────────┐
+│            CPU 核心                   │
+│  ┌─────────────────────────────────┐  │
+│  │        Python 进程               │  │
+│  │  ┌─────────┐  ┌─────────┐       │  │
+│  │  │ 线程1   │  │ 线程2   │       │  │
+│  │  │ (等待)  │  │ (执行)  │       │  │
+│  │  └─────────┘  └─────────┘       │  │
+│  │                                 │  │
+│  │  ┌─────────────────────────┐   │  │
+│  │  │       🔒 GIL 锁          │   │  │
+│  │  │   (一次只允许一个线程)    │   │  │
+│  │  └─────────────────────────┘   │  │
+│  └─────────────────────────────────┘  │
+└─────────────────────────────────────┘</code></pre>
+            </div>
+            
+            <h3>📌 GIL的影响</h3>
+            
+            <div class="compare-grid">
+                <div class="compare-card">
+                    <h4>❌ CPU密集型任务</h4>
+                    <pre><code>import time
+
+def cpu_task():
+    total = 0
+    for i in range(10_000_000):
+        total += i
+    return total
+
+# 单线程
+start = time.time()
+cpu_task()
+print(f"单线程: {time.time() - start:.2f}s")
+
+# 多线程（没有加速！）
+import threading
+start = time.time()
+t1 = threading.Thread(target=cpu_task)
+t2 = threading.Thread(target=cpu_task)
+t1.start(); t2.start()
+t1.join(); t2.join()
+print(f"多线程: {time.time() - start:.2f}s")  # 可能更慢！</code></pre>
+                    <p><strong>结果</strong>：多线程可能比单线程更慢，因为线程切换也有开销</p>
+                </div>
+                <div class="compare-card">
+                    <h4>✅ I/O密集型任务</h4>
+                    <pre><code>import time
+import requests
+
+def fetch_url(url):
+    response = requests.get(url)
+    return len(response.content)
+
+urls = ['https://example.com'] * 10
+
+# 单线程（串行执行）
+start = time.time()
+for url in urls:
+    fetch_url(url)
+print(f"单线程: {time.time() - start:.2f}s")
+
+# 多线程（并发执行）
+from concurrent.futures import ThreadPoolExecutor
+start = time.time()
+with ThreadPoolExecutor(max_workers=5) as executor:
+    results = list(executor.map(fetch_url, urls))
+print(f"多线程: {time.time() - start:.2f}s")  # 显著加速！</code></pre>
+                    <p><strong>结果</strong>：多线程大幅加速，因为等待I/O时可以切换</p>
+                </div>
+            </div>
+            
+            <div class="success">
+                <strong>✅ 记住这个原则</strong>
+                <p><strong>多线程适合I/O密集型任务，多进程适合CPU密集型任务</strong></p>
+            </div>
+            
+            <h2 id="s3">3️⃣ threading模块基础</h2>
+            
+            <p>Python的标准库<code>threading</code>提供了强大的多线程支持，是最常用的并发编程方式。</p>
+            
+            <h3>📌 线程状态图</h3>
+            
+            <div class="diagram">
+                <pre><code>┌─────────┐     start()     ┌──────────┐     完成      ┌──────────┐
+│  创建   │ ─────────────> │   就绪   │ ─────────────> │  运行中  │
+└─────────┘                └──────────┘               └──────────┘
+                              ^                            │
+                              │                            │
+                         获得CPU                        join()
+                              │                            │
+                              │                     ┌──────────────┐
+                              └──────────────────── │   终止/死亡   │
+                                                    └──────────────┘</code></pre>
+            </div>
+            
+            <h3>📌 常用方法一览</h3>
+            
+            <table>
+                <tr>
+                    <th>方法/属性</th>
+                    <th>说明</th>
+                </tr>
+                <tr>
+                    <td><code>thread.start()</code></td>
+                    <td>启动线程</td>
+                </tr>
+                <tr>
+                    <td><code>thread.join(timeout)</code></td>
+                    <td>等待线程结束，可设置超时</td>
+                </tr>
+                <tr>
+                    <td><code>thread.is_alive()</code></td>
+                    <td>检查线程是否存活</td>
+                </tr>
+                <tr>
+                    <td><code>thread.name</code></td>
+                    <td>获取/设置线程名称</td>
+                </tr>
+                <tr>
+                    <td><code>thread.daemon</code></td>
+                    <td>守护线程标志，True则主线程结束它也结束</td>
+                </tr>
+                <tr>
+                    <td><code>threading.current_thread()</code></td>
+                    <td>获取当前线程对象</td>
+                </tr>
+                <tr>
+                    <td><code>threading.active_count()</code></td>
+                    <td>返回当前活跃线程数</td>
+                </tr>
+                <tr>
+                    <td><code>threading.enumerate()</code></td>
+                    <td>返回所有活跃线程的列表</td>
+                </tr>
+            </table>
+            
+            <h2 id="s4">4️⃣ 线程的创建与启动</h2>
+            
+            <h3>📌 方法一：直接创建线程函数</h3>
+            
+            <pre><code>import threading
+import time
+
+def task(name, seconds):
+    print(f"线程 {name} 开始")
+    time.sleep(seconds)
+    print(f"线程 {name} 完成")
+
+# 创建线程
+t1 = threading.Thread(target=task, args=("A", 2))
+t2 = threading.Thread(target=task, args=("B", 1))
+
+# 启动线程
+t1.start()
+t2.start()
+
+# 等待线程完成
+t1.join()
+t2.join()
+
+print("所有线程完成")</code></pre>
+            
+            <div class="tip">
+                <strong>💡 运行结果</strong>
+                <p>线程 B 开始（因为sleep时间更短）<br>
+                线程 A 开始<br>
+                线程 B 完成<br>
+                线程 A 完成<br>
+                所有线程完成</p>
+            </div>
+            
+            <h3>📌 方法二：继承Thread类</h3>
+            
+            <pre><code>import threading
+import time
+
+class MyThread(threading.Thread):
+    def __init__(self, name, seconds):
+        super().__init__()
+        self.name = name
+        self.seconds = seconds
+    
+    def run(self):  # 线程执行的入口
+        print(f"线程 {self.name} 开始")
+        time.sleep(self.seconds)
+        print(f"线程 {self.name} 完成")
+
+# 使用
+threads = []
+for i in range(3):
+    t = MyThread(f"Worker-{i}", 2-i)
+    threads.append(t)
+    t.start()
+
+# 等待所有线程
+for t in threads:
+    t.join()
+
+print("全部完成")</code></pre>
+            
+            <h3>📌 方法三：守护线程</h3>
+            
+            <pre><code>import threading
+import time
+
+def background_task():
+    """后台任务 - 守护线程"""
+    while True:
+        print("后台监控中...")
+        time.sleep(2)
+
+# 创建守护线程
+daemon = threading.Thread(target=background_task, daemon=True)
+daemon.start()
+
+# 主线程工作
+print("主线程开始工作...")
+time.sleep(5)
+print("主线程完成，程序退出")
+# 注意：主线程结束后，守护线程也会自动结束</code></pre>
+            
+            <div class="warning">
+                <strong>⚠️ 注意事项</strong>
+                <ul>
+                    <li>守护线程(<code>daemon=True</code>)会在主线程结束时被强制终止</li>
+                    <li>适用于日志记录、健康检查等后台任务</li>
+                    <li>需要优雅关闭的任务不要用守护线程</li>
+                </ul>
+            </div>
+            
+            <h2 id="s5">5️⃣ 线程同步与锁</h2>
+            
+            <div class="key-point">
+                <strong>🔑 为什么要锁？</strong>
+                <p>多个线程同时访问共享资源时，可能导致数据竞争（Race Condition），造成数据不一致。</p>
+            </div>
+            
+            <h3>📌 数据竞争示例</h3>
+            
+            <pre><code>import threading
+
+counter = 0
+
+def increment():
+    global counter
+    for _ in range(1000000):
+        counter += 1  # 这不是原子操作！
+
+# 两个线程各加100万次
+t1 = threading.Thread(target=increment)
+t2 = threading.Thread(target=increment)
+
+t1.start(); t2.start()
+t1.join(); t2.join()
+
+print(f"计数器结果: {counter}")
+# 期望: 2000000
+# 实际: 可能小于2000000！</code></pre>
+            
+            <div class="warning">
+                <strong>⚠️ 问题原因</strong>
+                <p><code>counter += 1</code>实际上是三步操作：</p>
+                <ol>
+                    <li>读取counter的值</li>
+                    <li>加1</li>
+                    <li>写回counter</li>
+                </ol>
+                <p>线程A在线程B还没写回时就读取了，导致数据丢失！</p>
+            </div>
+            
+            <h3>📌 方法一：Lock（互斥锁）</h3>
+            
+            <pre><code>import threading
+
+counter = 0
+lock = threading.Lock()  # 创建锁
+
+def increment():
+    global counter
+    for _ in range(1000000):
+        with lock:  # 获取锁
+            counter += 1  # 安全操作
+
+t1 = threading.Thread(target=increment)
+t2 = threading.Thread(target=increment)
+
+t1.start(); t2.start()
+t1.join(); t2.join()
+
+print(f"计数器结果: {counter}")  # 正确: 2000000</code></pre>
+            
+            <div class="tip">
+                <strong>💡 with语句自动管理锁</strong>
+                <p>使用<code>with lock:</code>会在代码块结束时自动释放锁，即使发生异常也会释放，比手动lock/unlock更安全。</p>
+            </div>
+            
+            <h3>📌 方法二：RLock（可重入锁）</h3>
+            
+            <pre><code>import threading
+
+lock = threading.RLock()
+
+def outer():
+    with lock:
+        print("外层获取锁")
+        inner()  # 同一个线程再次获取锁
+        print("外层继续")
+
+def inner():
+    with lock:  # 同一线程可以再次获取
+        print("内层获取锁")
+
+# RLock允许同一线程多次获取锁
+outer()</code></pre>
+            
+            <h3>📌 方法三：其他同步原语</h3>
+            
+            <table>
+                <tr>
+                    <th>类型</th>
+                    <th>用途</th>
+                    <th>示例</th>
+                </tr>
+                <tr>
+                    <td><code>Lock</code></td>
+                    <td>基本的互斥锁</td>
+                    <td>保护共享数据</td>
+                </tr>
+                <tr>
+                    <td><code>RLock</code></td>
+                    <td>可重入锁</td>
+                    <td>递归调用场景</td>
+                </tr>
+                <tr>
+                    <td><code>Semaphore</code></td>
+                    <td>信号量，限制并发数</td>
+                    <td>连接池、限流</td>
+                </tr>
+                <tr>
+                    <td><code>Event</code></td>
+                    <td>事件触发</td>
+                    <td>线程间通知</td>
+                </tr>
+                <tr>
+                    <td><code>Condition</code></td>
+                    <td>条件变量</td>
+                    <td>生产者-消费者</td>
+                </tr>
+                <tr>
+                    <td><code>Barrier</code></td>
+                    <td>屏障，等待N个线程</td>
+                    <td>同步汇合点</td>
+                </tr>
+            </table>
+            
+            <h3>📌 Semaphore示例：连接池</h3>
+            
+            <pre><code>import threading
+import time
+
+class ConnectionPool:
+    def __init__(self, size):
+        self.size = size
+        self.semaphore = threading.Semaphore(size)
+        self.connections = []
+    
+    def acquire(self):
+        self.semaphore.acquire()
+        conn = f"连接-{id(self)}"
+        self.connections.append(conn)
+        return conn
+    
+    def release(self, conn):
+        self.connections.remove(conn)
+        self.semaphore.release()
+
+pool = ConnectionPool(3)
+
+def worker(name):
+    conn = pool.acquire()
+    print(f"{name} 获取 {conn}")
+    time.sleep(1)
+    print(f"{name} 释放 {conn}")
+    pool.release(conn)
+
+# 同时只有3个线程能获取连接
+threads = [threading.Thread(target=worker, args=(f"Worker-{i}",)) for i in range(6)]
+for t in threads: t.start()
+for t in threads: t.join()</code></pre>
+            
+            <h2 id="s6">6️⃣ 死锁与解决方案</h2>
+            
+            <div class="warning">
+                <strong>⚠️ 死锁是并发编程中最危险的问题之一</strong>
+                <p>死锁发生时，程序会完全卡住，无法继续执行也无法退出。</p>
+            </div>
+            
+            <h3>📌 死锁的四个必要条件</h3>
+            
+            <ol>
+                <li><strong>互斥</strong>：资源只能被一个线程持有</li>
+                <li><strong>持有并等待</strong>：线程持有资源的同时请求其他资源</li>
+                <li><strong>不可抢占</strong>：资源不能被强制释放</li>
+                <li><strong>循环等待</strong>：形成线程间的循环等待链</li>
+            </ol>
+            
+            <p><strong>破坏任意一个条件即可避免死锁。</strong></p>
+            
+            <h3>📌 经典死锁示例</h3>
+            
+            <pre><code>import threading
+
+lock_a = threading.Lock()
+lock_b = threading.Lock()
+
+def task1():
+    with lock_a:
+        print("任务1: 获取锁A")
+        time.sleep(0.1)  # 模拟处理
+        with lock_b:  # 等待锁B
+            print("任务1: 获取锁B")
+            print("任务1: 完成")
+
+def task2():
+    with lock_b:
+        print("任务2: 获取锁B")
+        time.sleep(0.1)
+        with lock_a:  # 等待锁A
+            print("任务2: 获取锁A")
+            print("任务2: 完成")
+
+# 死锁！
+t1 = threading.Thread(target=task1)
+t2 = threading.Thread(target=task2)
+t1.start(); t2.start()
+# 程序会卡住...</code></pre>
+            
+            <h3>📌 解决方案一：固定加锁顺序</h3>
+            
+            <pre><code>import threading
+
+lock_a = threading.Lock()
+lock_b = threading.Lock()
+
+def task1_fixed():
+    with lock_a:
+        print("任务1: 获取锁A")
+        time.sleep(0.1)
+        with lock_b:  # 保持与task2相同的顺序
+            print("任务1: 获取锁B")
+            print("任务1: 完成")
+
+def task2_fixed():
+    with lock_a:  # 固定顺序：总是先A后B
+        print("任务2: 获取锁A")
+        time.sleep(0.1)
+        with lock_b:
+            print("任务2: 获取锁B")
+            print("任务2: 完成")
+
+# 不会死锁
+t1 = threading.Thread(target=task1_fixed)
+t2 = threading.Thread(target=task2_fixed)
+t1.start(); t2.start()</code></pre>
+            
+            <h3>📌 解决方案二：try_lock（超时获取）</h3>
+            
+            <pre><code>import threading
+
+lock_a = threading.Lock()
+lock_b = threading.Lock()
+
+def task1_try():
+    while True:
+        if lock_a.acquire(timeout=1):  # 尝试获取A
+            print("任务1: 获取锁A")
+            if lock_b.acquire(timeout=1):  # 尝试获取B
+                print("任务1: 获取锁B")
+                print("任务1: 完成")
+                lock_b.release()
+                lock_a.release()
+                break
+            else:
+                lock_a.release()  # 获取B失败，释放A重试
+                time.sleep(0.1)
+        else:
+            time.sleep(0.1)
+
+def task2_try():
+    while True:
+        if lock_a.acquire(timeout=1):
+            print("任务2: 获取锁A")
+            if lock_b.acquire(timeout=1):
+                print("任务2: 获取锁B")
+                print("任务2: 完成")
+                lock_b.release()
+                lock_a.release()
+                break
+            else:
+                lock_a.release()
+                time.sleep(0.1)
+        else:
+            time.sleep(0.1)</code></pre>
+            
+            <h3>📌 解决方案三：LockOrderWarning</h3>
+            
+            <p>Python 3.10+ 引入了调试工具来检测锁顺序问题：</p>
+            
+            <pre><code># 设置环境变量启用死锁检测
+import os
+os.environ['PYTHONPHUBACKUP'] = '1'
+# 或使用命令行
+# python -X faulthandler your_script.py</code></pre>
+            
+            <div class="success">
+                <strong>✅ 最佳实践</strong>
+                <ul>
+                    <li>尽量减少锁的使用范围</li>
+                    <li>多个锁时保持固定的获取顺序</li>
+                    <li>使用超时避免永久等待</li>
+                    <li>考虑使用高级抽象（队列、线程池）</li>
+                </ul>
+            </div>
+            
+            <h2 id="s7">7️⃣ 线程间通信</h2>
+            
+            <h3>📌 Event事件</h3>
+            
+            <pre><code>import threading
+import time
+
+# 创建事件
+event = threading.Event()
+
+def waiter():
+    print("等待事件...")
+    event.wait()  # 阻塞等待
+    print("事件触发，继续执行!")
+
+def setter():
+    time.sleep(2)
+    print("设置事件!")
+    event.set()  # 触发事件
+
+t1 = threading.Thread(target=waiter)
+t2 = threading.Thread(target=setter)
+
+t1.start()
+t2.start()</code></pre>
+            
+            <h3>📌 Condition条件变量</h3>
+            
+            <pre><code>import threading
+import time
+
+class Buffer:
+    def __init__(self, maxsize=10):
+        self.buffer = []
+        self.maxsize = maxsize
+        self.condition = threading.Condition()
+    
+    def produce(self, item):
+        with self.condition:
+            while len(self.buffer) >= self.maxsize:
+                self.condition.wait()  # 缓冲区满，等待
+            self.buffer.append(item)
+            print(f"生产: {item}")
+            self.condition.notify()  # 通知消费者
+    
+    def consume(self):
+        with self.condition:
+            while not self.buffer:
+                self.condition.wait()  # 缓冲区空，等待
+            item = self.buffer.pop(0)
+            print(f"消费: {item}")
+            self.condition.notify()  # 通知生产者
+            return item
+
+buffer = Buffer()
+
+def producer():
+    for i in range(5):
+        buffer.produce(i)
+        time.sleep(0.5)
+
+def consumer():
+    for _ in range(5):
+        item = buffer.consume()
+        time.sleep(1)
+
+t1 = threading.Thread(target=producer)
+t2 = threading.Thread(target=consumer)
+t1.start(); t2.start()</code></pre>
+            
+            <h3>📌 Queue队列（推荐方式）</h3>
+            
+            <pre><code>import threading
+import queue
+import time
+
+# 创建线程安全的队列
+q = queue.Queue(maxsize=5)
+
+def producer():
+    for i in range(10):
+        q.put(i)  # 阻塞直到队列不满
+        print(f"生产: {i}")
+        time.sleep(0.3)
+
+def consumer():
+    while True:
+        item = q.get()  # 阻塞直到队列不空
+        print(f"消费: {item}")
+        q.task_done()  # 标记完成
+        time.sleep(0.5)
+        if item == 9:  # 最后一项
+            break
+
+# 启动生产者
+t1 = threading.Thread(target=producer)
+# 启动消费者
+t2 = threading.Thread(target=consumer)
+
+t1.start()
+t2.start()
+t1.join()
+t2.join()
+print("完成")</code></pre>
+            
+            <div class="tip">
+                <strong>💡 Queue的优势</strong>
+                <ul>
+                    <li>线程安全，无需手动加锁</li>
+                    <li>支持阻塞操作（put/get）</li>
+                    <li>内置大小限制</li>
+                    <li>支持join等待所有任务完成</li>
+                </ul>
+            </div>
+            
+            <h2 id="s8">8️⃣ 线程池与concurrent.futures</h2>
+            
+            <div class="key-point">
+                <strong>🔑 为什么需要线程池？</strong>
+                <p>创建/销毁线程有开销，线程池复用线程，避免频繁创建销毁的开销。</p>
+            </div>
+            
+            <h3>📌 ThreadPoolExecutor基本用法</h3>
+            
+            <pre><code>from concurrent.futures import ThreadPoolExecutor, as_completed
+import time
+
+def task(n):
+    time.sleep(1)
+    return n * n
+
+# 创建线程池（5个工作线程）
+with ThreadPoolExecutor(max_workers=5) as executor:
+    # 提交多个任务
+    futures = [executor.submit(task, i) for i in range(10)]
+    
+    # 等待所有任务完成并获取结果
+    for future in as_completed(futures):
+        result = future.result()
+        print(f"结果: {result}")</code></pre>
+            
+            <h3>📌 map方法（更简洁）</h3>
+            
+            <pre><code>from concurrent.futures import ThreadPoolExecutor
+
+def fetch_data(url):
+    return f"数据: {url}"
+
+urls = [f"http://api.com/item/{i}" for i in range(20)]
+
+with ThreadPoolExecutor(max_workers=10) as executor:
+    # 自动分配任务，结果按提交顺序返回
+    results = executor.map(fetch_data, urls)
+    
+    for result in results:
+        print(result)</code></pre>
+            
+            <h3>📌 回调函数</h3>
+            
+            <pre><code>from concurrent.futures import ThreadPoolExecutor
+
+def download(url):
+    return f"下载完成: {url}"
+
+def process_result(future):
+    print(f"回调处理: {future.result()}")
+
+with ThreadPoolExecutor(max_workers=3) as executor:
+    for url in ["file1.txt", "file2.txt", "file3.txt"]:
+        future = executor.submit(download, url)
+        future.add_done_callback(process_result)  # 完成后自动调用</code></pre>
+            
+            <h3>📌 线程池大小选择</h3>
+            
+            <table>
+                <tr>
+                    <th>任务类型</th>
+                    <th>推荐线程数</th>
+                    <th>原因</th>
+                </tr>
+                <tr>
+                    <td>I/O密集型</td>
+                    <td>CPU核心数 × 2~4</td>
+                    <td>I/O等待时CPU空闲，可多一些</td>
+                </tr>
+                <tr>
+                    <td>CPU密集型</td>
+                    <td>CPU核心数 + 1</td>
+                    <td>避免过度上下文切换</td>
+                </tr>
+                <tr>
+                    <td>网络爬虫</td>
+                    <td>50-100（I/O等待长）</td>
+                    <td>大量等待网络响应</td>
+                </tr>
+                <tr>
+                    <td>数据库连接池</td>
+                    <td>连接池大小</td>
+                    <td>不超过数据库最大连接数</td>
+                </tr>
+            </table>
+            
+            <h2 id="s9">9️⃣ 实战：多线程下载器</h2>
+            
+            <div class="key-point">
+                <strong>🔑 项目目标</strong>
+                <p>使用多线程实现一个文件下载器，支持并发下载多个文件。</p>
+            </div>
+            
+            <pre><code>import threading
+import queue
+import time
+import os
+from urllib.request import urlopen
+from urllib.error import URLError
+
+class MultiThreadDownloader:
+    def __init__(self, max_workers=5):
+        self.queue = queue.Queue()
+        self.max_workers = max_workers
+        self.results = []
+        self.lock = threading.Lock()
+    
+    def download(self, url, filename):
+        """下载单个文件"""
+        try:
+            print(f"[下载] {url} -> {filename}")
+            
+            with urlopen(url, timeout=30) as response:
+                content = response.read()
+            
+            with open(filename, 'wb') as f:
+                f.write(content)
+            
+            result = {"status": "success", "url": url, "file": filename}
+            print(f"[完成] {filename} ({len(content)} bytes)")
+            
+        except Exception as e:
+            result = {"status": "error", "url": url, "error": str(e)}
+            print(f"[失败] {url}: {e}")
+        
+        with self.lock:
+            self.results.append(result)
+    
+    def worker(self):
+        """工作线程"""
+        while True:
+            try:
+                url, filename = self.queue.get(timeout=1)
+                self.download(url, filename)
+            except queue.Empty:
+                break
+            finally:
+                self.queue.task_done()
+    
+    def download_all(self, urls):
+        """并发下载所有URL"""
+        # 添加任务到队列
+        for url in urls:
+            filename = os.path.basename(url)
+            if not filename:
+                filename = f"download_{hash(url)}"
+            self.queue.put((url, filename))
+        
+        # 启动工作线程
+        threads = []
+        for _ in range(self.max_workers):
+            t = threading.Thread(target=self.worker)
+            t.start()
+            threads.append(t)
+        
+        # 等待所有任务完成
+        self.queue.join()
+        
+        # 停止线程
+        for t in threads:
+            t.join()
+        
+        return self.results
+
+# 使用示例
+if __name__ == "__main__":
+    urls = [
+        "https://example.com/file1.txt",
+        "https://example.com/file2.txt",
+        "https://example.com/file3.txt",
+    ]
+    
+    downloader = MultiThreadDownloader(max_workers=3)
+    results = downloader.download_all(urls)
+    
+    # 统计结果
+    success = sum(1 for r in results if r["status"] == "success")
+    print(f"\n下载完成: 成功 {success}/{len(results)}")</code></pre>
+            
+            <h3>📌 进阶：带进度条的下载器</h3>
+            
+            <pre><code>import threading
+import queue
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from urllib.request import urlopen
+
+class ProgressDownloader:
+    def __init__(self, max_workers=3):
+        self.max_workers = max_workers
+        self.lock = threading.Lock()
+        self.completed = 0
+        self.total = 0
+    
+    def download_with_progress(self, url, filename):
+        self.total += 1
+        
+        try:
+            with urlopen(url, timeout=30) as resp:
+                total_size = int(resp.headers.get('Content-Length', 0))
+                downloaded = 0
+                chunk_size = 8192
+                
+                with open(filename, 'wb') as f:
+                    while True:
+                        chunk = resp.read(chunk_size)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        
+                        if total_size:
+                            progress = downloaded / total_size * 100
+                            print(f"\r{filename}: {progress:.1f}%", end='', flush=True)
+        except Exception as e:
+            print(f"\n下载失败: {url} - {e}")
+        finally:
+            with self.lock:
+                self.completed += 1
+                print(f"\n进度: {self.completed}/{self.total}")
+    
+    def download_all(self, urls):
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            futures = {}
+            for url in urls:
+                filename = url.split('/')[-1]
+                future = executor.submit(self.download_with_progress, url, filename)
+                futures[future] = url
+            
+            # 等待完成
+            for future in as_completed(futures):
+                pass
+        
+        print(f"\n全部完成! 共 {self.total} 个文件")</code></pre>
+            
+            <h2 id="s10">🔟 本周总结</h2>
+            
+            <div class="success">
+                <strong>✅ 核心要点回顾</strong>
+            </div>
+            
+            <table>
+                <tr>
+                    <th>知识点</th>
+                    <th>关键内容</th>
+                </tr>
+                <tr>
+                    <td>并发 vs 并行</td>
+                    <td>并发是交替执行，并行是同时执行；多线程适合I/O密集型</td>
+                </tr>
+                <tr>
+                    <td>GIL</td>
+                    <td>Python解释器锁，限制多线程执行Python字节码；I/O等待时可释放</td>
+                </tr>
+                <tr>
+                    <td>threading模块</td>
+                    <td>Thread类、start()、join()、daemon等核心方法</td>
+                </tr>
+                <tr>
+                    <td>锁机制</td>
+                    <td>Lock、RLock、Semaphore；保护共享资源，避免数据竞争</td>
+                </tr>
+                <tr>
+                    <td>死锁避免</td>
+                    <td>固定加锁顺序、使用超时、减少锁粒度</td>
+                </tr>
+                <tr>
+                    <td>线程通信</td>
+                    <td>Event、Condition、Queue；推荐使用Queue</td>
+                </tr>
+                <tr>
+                    <td>线程池</td>
+                    <td>ThreadPoolExecutor，复用线程、限制并发数</td>
+                </tr>
+            </table>
+            
+            <h3>📌 下周预告</h3>
+            <p>第16周我们将学习<strong>多进程编程</strong>，解决GIL对CPU密集型任务的限制，充分利用多核CPU！</p>
+            
+            <div class="bottom-nav">
+                <a href="python-week14.html" class="nav-btn">← 第14周：数据库操作</a>
+                <a href="python-week16.html" class="nav-btn">第16周：多进程编程 →</a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Python学习之路 · 第15周 · 并发编程：多线程基础</p>
+            <p>让程序同时执行多个任务，提升效率！</p>
+        </footer>
+    </div>
+</body>
+</html>
