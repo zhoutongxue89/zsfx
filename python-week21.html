@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路·第21周 - Web开发入门</title>
+    <style>
+        :root { --primary: #306998; --bg: #f8f9fa; --card-bg: #ffffff; --text: #333; --border: #e1e4e8; --tip-bg: #e7f5ff; --tip-border: #1971c2; --warning-bg: #fff3bf; --warning-border: #f08c00; --success-bg: #d3f9d8; --success-border: #2f9e44; --code-bg: #f6f8fa; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.8; background: var(--bg); color: var(--text); }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .nav { background: var(--primary); padding: 12px 20px; display: flex; justify-content: space-between; }
+        .nav a { color: white; text-decoration: none; font-size: 14px; }
+        .breadcrumb { color: rgba(255,255,255,0.8); font-size: 13px; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, #1e5799 100%); color: white; padding: 50px 40px; text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 15px; }
+        .header .subtitle { font-size: 1.3em; opacity: 0.9; margin-bottom: 20px; }
+        .header-meta { display: flex; justify-content: center; gap: 30px; font-size: 14px; }
+        .header-meta span { background: rgba(255,255,255,0.15); padding: 6px 16px; border-radius: 20px; }
+        .toc { background: var(--card-bg); border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .toc h2 { color: var(--primary); margin-bottom: 20px; }
+        .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        .toc-item { display: flex; align-items: center; padding: 10px 15px; background: var(--bg); border-radius: 8px; text-decoration: none; color: var(--text); border-left: 3px solid var(--primary); }
+        .toc-item .num { font-weight: bold; margin-right: 10px; color: var(--primary); }
+        .content { background: var(--card-bg); border-radius: 12px; padding: 40px; margin-bottom: 30px; }
+        h2 { color: var(--primary); font-size: 1.8em; margin: 40px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+        h2:first-of-type { margin-top: 0; }
+        h3 { color: #2c3e50; font-size: 1.4em; margin: 30px 0 15px; }
+        .tip, .warning, .success, .key-point { padding: 18px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+        .tip { background: var(--tip-bg); border-color: var(--tip-border); }
+        .warning { background: var(--warning-bg); border-color: var(--warning-border); }
+        .success { background: var(--success-bg); border-color: var(--success-border); }
+        .key-point { background: linear-gradient(135deg, #e8f4f8 0%, #d4e6ed 100%); border-color: #3498db; }
+        .tip strong, .warning strong, .success strong, .key-point strong { display: block; margin-bottom: 8px; }
+        code { background: var(--code-bg); padding: 2px 8px; border-radius: 4px; font-family: 'Fira Code', monospace; color: #e74c3c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; }
+        pre code { background: none; color: inherit; }
+        ul, ol { margin: 15px 0 15px 25px; }
+        li { margin: 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px 15px; border: 1px solid var(--border); }
+        th { background: var(--primary); color: white; }
+        tr:nth-child(even) { background: var(--bg); }
+        .bottom-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px solid var(--border); }
+        .nav-btn { display: flex; padding: 12px 24px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; }
+        footer { text-align: center; padding: 30px; color: #666; }
+    </style>
+</head>
+<body>
+    <nav class="nav"><a href="index.html">🏠 首页</a><span class="breadcrumb">Python学习之路 &gt; 第21周</span></nav>
+    <header class="header">
+        <h1>🐍 Python 学习之路 · 第21周</h1>
+        <p class="subtitle">Web开发入门 —— Flask框架快速上手</p>
+        <div class="header-meta"><span>📅 第21周 / 共52周</span><span>⏱️ 建议学习 10-12 小时</span><span>🎯 难度 ★★★★☆</span><span>📌 阶段四：工程实践</span></div>
+    </header>
+    <div class="container">
+        <div class="toc"><h2>📋 本周学习目录</h2>
+            <div class="toc-list">
+                <a href="#s1" class="toc-item"><span class="num">1</span>Web基础概念</a>
+                <a href="#s2" class="toc-item"><span class="num">2</span>Flask快速入门</a>
+                <a href="#s3" class="toc-item"><span class="num">3</span>路由与视图函数</a>
+                <a href="#s4" class="toc-item"><span class="num">4</span>模板引擎Jinja2</a>
+                <a href="#s5" class="toc-item"><span class="num">5</span>请求与响应</a>
+                <a href="#s6" class="toc-item"><span class="num">6</span>数据库集成</a>
+                <a href="#s7" class="toc-item"><span class="num">7</span>用户认证</a>
+                <a href="#s8" class="toc-item"><span class="num">8</span>RESTful API</a>
+                <a href="#s9" class="toc-item"><span class="num">9</span>项目实战</a>
+                <a href="#s10" class="toc-item"><span class="num">10</span>本周总结</a>
+            </div>
+        </div>
+        <div class="content">
+            <h2 id="s1">1️⃣ Web基础概念</h2>
+            <div class="key-point"><strong>🔑 核心概念</strong><ul><li><strong>HTTP</strong>：Web通信协议</li><li><strong>客户端/服务器</strong>：请求-响应模型</li><li><strong>URL</strong>：资源定位符</li></ul></div>
+            <h3>📌 HTTP方法</h3>
+            <table><tr><th>方法</th><th>说明</th><th>幂等</th></tr><tr><td>GET</td><td>获取资源</td><td>是</td></tr><tr><td>POST</td><td>创建资源</td><td>否</td></tr><tr><td>PUT</td><td>更新资源</td><td>是</td></tr><tr><td>DELETE</td><td>删除资源</td><td>是</td></tr></table>
+
+            <h2 id="s2">2️⃣ Flask快速入门</h2>
+            <pre><code># 安装
+pip install flask
+
+# app.py
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return 'Hello, Flask!'
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
+
+# 运行
+# python app.py
+# 访问 http://127.0.0.1:5000</code></pre>
+            <div class="tip"><strong>💡 Flask特点</strong><ul><li>轻量级、灵活</li><li>自带的Werkzeug工具箱强大</li><li>扩展丰富</li></ul></div>
+
+            <h2 id="s3">3️⃣ 路由与视图函数</h2>
+            <pre><code>from flask import Flask, render_template, redirect, url_for
+
+app = Flask(__name__)
+
+# 基本路由
+@app.route('/')
+def index():
+    return '首页'
+
+# 路径参数
+@app.route('/user/<username>')
+def user_profile(username):
+    return f'用户: {username}'
+
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    return f'文章ID: {post_id}'
+
+# HTTP方法
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # 处理登录
+        return redirect(url_for('index'))
+    return render_template('login.html')
+
+# URL构建
+@app.route('/hello')
+def hello():
+    url = url_for('user_profile', username='Alice')
+    return f'跳转: <a href="{url}">用户页面</a>'</code></pre>
+
+            <h2 id="s4">4️⃣ 模板引擎Jinja2</h2>
+            <p>Flask内置的模板引擎，语法简洁强大。</p>
+            <pre><code># app.py
+from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    title = "欢迎来到我的博客"
+    articles = [
+        {"title": "第一篇", "content": "内容1"},
+        {"title": "第二篇", "content": "内容2"},
+    ]
+    return render_template('index.html', title=title, articles=articles)</code></pre>
+            <pre><code>{# templates/index.html #}
+<!DOCTYPE html>
+<html>
+<head><title>{{ title }}</title></head>
+<body>
+    <h1>{{ title }}</h1>
+    <ul>
+    {% for article in articles %}
+        <li>
+            <h2>{{ article.title }}</h2>
+            <p>{{ article.content }}</p>
+        </li>
+    {% endfor %}
+    </ul>
+    
+    {# 条件判断 #}
+    {% if user_logged_in %}
+        <a href="/logout">退出</a>
+    {% else %}
+        <a href="/login">登录</a>
+    {% endif %}
+</body>
+</html></code></pre>
+            <div class="tip"><strong>💡 Jinja2常用语法</strong><ul><li><code>{{ variable }}</code>：输出变量</li><li><code>{% for %}{% endfor %}</code>：循环</li><li><code>{% if %}{% endif %}</code>：条件</li><li><code>{# 注释 #}</code>：注释</li></ul></div>
+
+            <h2 id="s5">5️⃣ 请求与响应</h2>
+            <pre><code>from flask import Flask, request, jsonify, make_response, redirect
+
+app = Flask(__name__)
+
+# 获取请求数据
+@app.route('/search')
+def search():
+    query = request.args.get('q', '')  # URL参数
+    page = request.args.get('page', 1, type=int)
+    return f'搜索: {query}, 第{page}页'
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    name = request.form.get('name')    # 表单数据
+    email = request.form.get('email')
+    data = request.get_json()          # JSON数据
+    return jsonify({'status': 'success', 'name': name})
+
+# 返回JSON
+@app.route('/api/user')
+def get_user():
+    return jsonify({
+        'id': 1,
+        'name': 'Alice',
+        'email': 'alice@example.com'
+    })
+
+# 设置Cookie
+@app.route('/login')
+def login():
+    response = make_response('登录成功')
+    response.set_cookie('username', 'Alice')
+    return response
+
+# 读取Cookie
+@app.route('/profile')
+def profile():
+    username = request.cookies.get('username')
+    return f'欢迎, {username}'</code></pre>
+
+            <h2 id="s6">6️⃣ 数据库集成</h2>
+            <pre><code># 使用Flask-SQLAlchemy
+pip install flask-sqlalchemy
+
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+# 定义模型
+class User(db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True)
+    
+    def to_dict(self):
+        return {'id': self.id, 'username': self.username}
+
+# 创建表
+with app.app_context():
+    db.create_all()
+
+# 使用
+@app.route('/users')
+def users():
+    all_users = User.query.all()
+    return jsonify([u.to_dict() for u in all_users])</code></pre>
+
+            <h2 id="s7">7️⃣ 用户认证</h2>
+            <pre><code>from flask import Flask, request, session, redirect, url_for
+from flask_login import LoginManager, UserMixin, login_user, logout_user
+
+app = Flask(__name__)
+app.secret_key = 'your-secret-key'
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# 用户模型
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User(user_id)
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form['username']
+    user = User(username)
+    login_user(user)
+    return redirect(url_for('index'))
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('index'))
+
+@app.route('/profile')
+def profile():
+    if not current_user.is_authenticated:
+        return redirect(url_for('login'))
+    return f'欢迎, {current_user.id}'</code></pre>
+
+            <h2 id="s8">8️⃣ RESTful API</h2>
+            <pre><code>from flask import Flask, jsonify, request
+from flask import abort
+
+app = Flask(__name__)
+
+# 模拟数据
+users = [
+    {'id': 1, 'name': 'Alice'},
+    {'id': 2, 'name': 'Bob'},
+]
+
+# GET - 获取所有用户
+@app.route('/api/users', methods=['GET'])
+def get_users():
+    return jsonify(users)
+
+# GET - 获取单个用户
+@app.route('/api/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = next((u for u in users if u['id'] == user_id), None)
+    if user is None:
+        abort(404)
+    return jsonify(user)
+
+# POST - 创建用户
+@app.route('/api/users', methods=['POST'])
+def create_user():
+    data = request.get_json()
+    new_user = {'id': max(u['id'] for u in users) + 1, 'name': data['name']}
+    users.append(new_user)
+    return jsonify(new_user), 201
+
+# PUT - 更新用户
+@app.route('/api/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    user = next((u for u in users if u['id'] == user_id), None)
+    if user is None:
+        abort(404)
+    data = request.get_json()
+    user['name'] = data.get('name', user['name'])
+    return jsonify(user)
+
+# DELETE - 删除用户
+@app.route('/api/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    global users
+    users = [u for u in users if u['id'] != user_id]
+    return jsonify({'message': 'Deleted'})</code></pre>
+
+            <h2 id="s9">9️⃣ 项目实战：博客系统</h2>
+            <div class="key-point"><strong>🔑 项目结构</strong></div>
+            <pre><code>blog/
+├── app.py
+├── models.py
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── post.html
+│   └── login.html
+├── static/
+│   └── style.css
+└── requirements.txt</code></pre>
+            <pre><code># app.py - 博客系统
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
+from flask_login import LoginManager, UserMixin, login_required, current_user
+
+app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret-key'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blog.db'
+
+db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# 模型
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True)
+    password = db.Column(db.String(80))
+
+class Post(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200))
+    content = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+@app.route('/')
+def index():
+    posts = Post.query.order_by(Post.created_at.desc()).all()
+    return render_template('index.html', posts=posts)
+
+@app.route('/post/<int:post_id>')
+def view_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', post=post)
+
+@app.route('/create', methods=['GET', 'POST'])
+@login_required
+def create_post():
+    if request.method == 'POST':
+        post = Post(
+            title=request.form['title'],
+            content=request.form['content'],
+            author_id=current_user.id
+        )
+        db.session.add(post)
+        db.session.commit()
+        flash('文章创建成功！')
+        return redirect(url_for('index'))
+    return render_template('create_post.html')
+
+if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)</code></pre>
+
+            <h2 id="s10">🔟 本周总结</h2>
+            <ul>
+                <li><strong>Flask</strong>：轻量级Web框架</li>
+                <li><strong>路由</strong>：URL与视图函数映射</li>
+                <li><strong>Jinja2</strong>：模板引擎</li>
+                <li><strong>请求响应</strong>：request/response处理</li>
+                <li><strong>SQLAlchemy</strong>：ORM数据库操作</li>
+                <li><strong>Flask-Login</strong>：用户认证</li>
+            </ul>
+            <p>下周<strong>第22周：RESTful API开发</strong>深入学习API设计！</p>
+            <div class="bottom-nav">
+                <a href="python-week20.html" class="nav-btn">← 第20周：测试调试</a>
+                <a href="python-week22.html" class="nav-btn">第22周：API开发 →</a>
+            </div>
+        </div>
+        <footer><p>Python学习之路 · 第21周 · Web开发入门</p></footer>
+    </div>
+</body>
+</html>
