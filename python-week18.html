@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路·第18周 - 装饰器与元编程</title>
+    <style>
+        :root {
+            --primary: #306998;
+            --secondary: #FFD43B;
+            --bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #333;
+            --text-light: #666;
+            --border: #e1e4e8;
+            --tip-bg: #e7f5ff;
+            --tip-border: #1971c2;
+            --warning-bg: #fff3bf;
+            --warning-border: #f08c00;
+            --success-bg: #d3f9d8;
+            --success-border: #2f9e44;
+            --code-bg: #f6f8fa;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.8; background: var(--bg); color: var(--text); }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .nav { background: var(--primary); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav a { color: white; text-decoration: none; font-size: 14px; }
+        .nav a:hover { text-decoration: underline; }
+        .breadcrumb { color: rgba(255,255,255,0.8); font-size: 13px; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, #1e5799 100%); color: white; padding: 50px 40px; text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+        .header .subtitle { font-size: 1.3em; opacity: 0.9; margin-bottom: 20px; }
+        .header-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; font-size: 14px; }
+        .header-meta span { background: rgba(255,255,255,0.15); padding: 6px 16px; border-radius: 20px; }
+        .toc { background: var(--card-bg); border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .toc h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.5em; display: flex; align-items: center; gap: 10px; }
+        .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        .toc-item { display: flex; align-items: center; padding: 10px 15px; background: var(--bg); border-radius: 8px; text-decoration: none; color: var(--text); transition: all 0.2s; border-left: 3px solid var(--primary); }
+        .toc-item:hover { background: var(--primary); color: white; transform: translateX(5px); }
+        .toc-item .num { font-weight: bold; margin-right: 10px; color: var(--primary); }
+        .toc-item:hover .num { color: white; }
+        .content { background: var(--card-bg); border-radius: 12px; padding: 40px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 { color: var(--primary); font-size: 1.8em; margin: 40px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+        h2:first-of-type { margin-top: 0; }
+        h3 { color: #2c3e50; font-size: 1.4em; margin: 30px 0 15px; }
+        h4 { color: #34495e; font-size: 1.2em; margin: 25px 0 10px; }
+        p { margin: 15px 0; line-height: 1.9; }
+        .tip, .warning, .success, .key-point { padding: 18px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+        .tip { background: var(--tip-bg); border-color: var(--tip-border); }
+        .warning { background: var(--warning-bg); border-color: var(--warning-border); }
+        .success { background: var(--success-bg); border-color: var(--success-border); }
+        .key-point { background: linear-gradient(135deg, #e8f4f8 0%, #d4e6ed 100%); border-color: #3498db; }
+        .tip strong, .warning strong, .success strong, .key-point strong { display: block; margin-bottom: 8px; }
+        code { background: var(--code-bg); padding: 2px 8px; border-radius: 4px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9em; color: #e74c3c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 14px; line-height: 1.6; }
+        pre code { background: none; color: inherit; padding: 0; font-size: inherit; }
+        ul, ol { margin: 15px 0 15px 25px; }
+        li { margin: 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14px; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid var(--border); }
+        th { background: var(--primary); color: white; font-weight: 600; }
+        tr:nth-child(even) { background: var(--bg); }
+        .compare-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 20px 0; }
+        .compare-card { background: var(--bg); border-radius: 12px; padding: 25px; border-top: 4px solid var(--primary); }
+        .compare-card h4 { margin-top: 0; color: var(--primary); }
+        .bottom-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; transition: all 0.2s; }
+        .nav-btn:hover { background: #245a8a; transform: translateY(-2px); }
+        footer { text-align: center; padding: 30px; color: var(--text-light); font-size: 14px; }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <a href="index.html">🏠 首页</a>
+        <span class="breadcrumb">Python学习之路 &gt; 第18周</span>
+    </nav>
+    
+    <header class="header">
+        <h1>🐍 Python 学习之路 · 第18周</h1>
+        <p class="subtitle">装饰器与元编程 —— Python的魔法世界</p>
+        <div class="header-meta">
+            <span>📅 第18周 / 共52周</span>
+            <span>⏱️ 建议学习 8-10 小时</span>
+            <span>🎯 难度 ★★★★★</span>
+            <span>📌 阶段四：进阶特性</span>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="toc">
+            <h2>📋 本周学习目录</h2>
+            <div class="toc-list">
+                <a href="#s1" class="toc-item"><span class="num">1</span>什么是装饰器</a>
+                <a href="#s2" class="toc-item"><span class="num">2</span>函数即对象</a>
+                <a href="#s3" class="toc-item"><span class="num">3</span>简单装饰器</a>
+                <a href="#s4" class="toc-item"><span class="num">4</span>带参数的装饰器</a>
+                <a href="#s5" class="toc-item"><span class="num">5</span>装饰器堆叠</a>
+                <a href="#s6" class="toc-item"><span class="num">6</span>@functools.wraps</a>
+                <a href="#s7" class="toc-item"><span class="num">7</span>类装饰器</a>
+                <a href="#s8" class="toc-item"><span class="num">8</span>装饰器工厂</a>
+                <a href="#s9" class="toc-item"><span class="num">9</span>实战应用</a>
+                <a href="#s10" class="toc-item"><span class="num">10</span>本周总结</a>
+            </div>
+        </div>
+        
+        <div class="content">
+            <h2 id="s1">1️⃣ 什么是装饰器</h2>
+            
+            <div class="key-point">
+                <strong>🔑 核心定义</strong>
+                <p>装饰器（Decorator）是一种高级语法糖，允许在不修改原函数的情况下，给函数添加新功能。</p>
+            </div>
+            
+            <h3>📌 生活中的类比</h3>
+            <p>就像给手机装保护壳：不需要改变手机本身，但能添加保护功能。</p>
+            
+            <h3>📌 装饰器解决的问题</h3>
+            
+            <pre><code># 问题：给多个函数添加计时功能
+import time
+
+def func1():
+    start = time.time()
+    print("执行功能1")
+    time.sleep(1)
+    print(f"耗时: {time.time() - start:.2f}s")
+
+def func2():
+    start = time.time()
+    print("执行功能2")
+    time.sleep(2)
+    print(f"耗时: {time.time() - start:.2f}s")
+
+# 问题：重复代码！每个函数都要加一遍
+
+# 解决方案：装饰器
+def timer(func):
+    def wrapper():
+        start = time.time()
+        result = func()
+        print(f"耗时: {time.time() - start:.2f}s")
+        return result
+    return wrapper
+
+@timer
+def func1():
+    print("执行功能1")
+    time.sleep(1)
+
+@timer
+def func2():
+    print("执行功能2")
+    time.sleep(2)</code></pre>
+            
+            <h2 id="s2">2️⃣ 函数即对象</h2>
+            
+            <p>理解装饰器前，需要理解Python的一个核心特性：<strong>函数是一等公民</strong>。</p>
+            
+            <h3>📌 函数可以赋值给变量</h3>
+            
+            <pre><code>def greet(name):
+    return f"Hello, {name}!"
+
+# 赋值给变量
+say_hello = greet
+
+# 通过变量调用
+print(say_hello("World"))  # Hello, World!
+
+# 函数可以作为参数传递
+def call_twice(func, arg):
+    return func(func(arg))
+
+print(call_twice(greet, "Python"))  # Hello, Hello, Python!</code></pre>
+            
+            <h3>📌 函数可以嵌套定义</h3>
+            
+            <pre><code>def outer():
+    x = 10
+    def inner():
+        print(f"x = {x}")  # 可以访问外层变量
+    inner()
+    print(f"外部x = {x}")
+
+outer()
+
+# 闭包：内部函数记住外层变量
+def outer_with_return():
+    x = 10
+    def inner():
+        return x * 2
+    return inner  # 返回函数本身
+
+double = outer_with_return()
+print(double())  # 20</code></pre>
+            
+            <h3>📌 高阶函数</h3>
+            
+            <pre><code># map：对每个元素应用函数
+numbers = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x ** 2, numbers))
+print(squared)  # [1, 4, 9, 16, 25]
+
+# filter：过滤元素
+evens = list(filter(lambda x: x % 2 == 0, numbers))
+print(evens)  # [2, 4]
+
+# reduce：累积计算
+from functools import reduce
+total = reduce(lambda a, b: a + b, numbers)
+print(total)  # 15</code></pre>
+            
+            <h2 id="s3">3️⃣ 简单装饰器</h2>
+            
+            <h3>📌 装饰器原理</h3>
+            
+            <pre><code>import time
+
+# 装饰器本质：高阶函数
+def my_decorator(func):
+    """装饰器：接收一个函数，返回一个新函数"""
+    def wrapper():
+        print("=== 执行前 ===")
+        result = func()  # 调用原函数
+        print("=== 执行后 ===")
+        return result
+    return wrapper
+
+# 使用方式1：直接包装
+def say_hello():
+    print("Hello!")
+
+wrapped = my_decorator(say_hello)
+wrapped()
+
+# 使用方式2：@装饰器语法（更简洁）
+@my_decorator
+def say_goodbye():
+    print("Goodbye!")
+
+say_goodbye()</code></pre>
+            
+            <div class="diagram">
+                <pre><code>@my_decorator
+def func():
+    pass
+
+# 等价于
+def func():
+    pass
+func = my_decorator(func)</code></pre>
+            </div>
+            
+            <h3>📌 通用装饰器</h3>
+            
+            <pre><code>import time
+
+def timer(func):
+    """计时装饰器"""
+    def wrapper(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print(f"{func.__name__} 耗时: {time.time() - start:.3f}s")
+        return result
+    return wrapper
+
+@timer
+def slow_function(n):
+    time.sleep(n)
+    return n * 2
+
+result = slow_function(1)
+print(f"结果: {result}")</code></pre>
+            
+            <h2 id="s4">4️⃣ 带参数的装饰器</h2>
+            
+            <h3>📌 装饰器带参数：装饰器工厂</h3>
+            
+            <pre><code>def repeat(times):
+    """重复执行指定次数"""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            results = []
+            for _ in range(times):
+                result = func(*args, **kwargs)
+                results.append(result)
+            return results
+        return wrapper
+    return decorator
+
+@repeat(3)
+def greet(name):
+    return f"Hello, {name}!"
+
+print(greet("Alice"))
+# ['Hello, Alice!', 'Hello, Alice!', 'Hello, Alice!']</code></pre>
+            
+            <h3>📌 带配置的装饰器</h3>
+            
+            <pre><code>import time
+
+def log(level="INFO"):
+    """日志装饰器"""
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            print(f"[{level}] 调用 {func.__name__}")
+            result = func(*args, **kwargs)
+            print(f"[{level}] {func.__name__} 执行完成")
+            return result
+        return wrapper
+    return decorator
+
+@log("DEBUG")
+def debug_function():
+    print("调试信息")
+
+@log("ERROR")
+def error_function():
+    print("错误信息")
+
+debug_function()
+error_function()</code></pre>
+            
+            <h3>📌 使用类实现装饰器</h3>
+            
+            <pre><code>class CountCalls:
+    """计数装饰器"""
+    def __init__(self, func):
+        self.func = func
+        self.calls = 0
+    
+    def __call__(self, *args, **kwargs):
+        self.calls += 1
+        print(f"{self.func.__name__} 被调用了 {self.calls} 次")
+        return self.func(*args, **kwargs)
+
+@CountCalls
+def add(a, b):
+    return a + b
+
+add(1, 2)  # add 被调用了 1 次
+add(3, 4)  # add 被调用了 2 次
+add(5, 6)  # add 被调用了 3 次</code></pre>
+            
+            <h2 id="s5">5️⃣ 装饰器堆叠</h2>
+            
+            <p>多个装饰器可以叠加使用，执行顺序从下到上。</p>
+            
+            <pre><code>def deco_a(func):
+    def wrapper():
+        print("A: 开始")
+        result = func()
+        print("A: 结束")
+        return result
+    return wrapper
+
+def deco_b(func):
+    def wrapper():
+        print("B: 开始")
+        result = func()
+        print("B: 结束")
+        return result
+    return wrapper
+
+@deco_a
+@deco_b
+def my_func():
+    print("my_func 执行")
+
+my_func()
+# 输出:
+# A: 开始
+# B: 开始
+# my_func 执行
+# B: 结束
+# A: 结束</code></pre>
+            
+            <div class="tip">
+                <strong>💡 执行顺序</strong>
+                <p>装饰器从下到上执行（靠近函数先执行），但从功能上看是从外到内。</p>
+            </div>
+            
+            <h2 id="s6">6️⃣ @functools.wraps</h2>
+            
+            <div class="warning">
+                <strong>⚠️ 问题</strong>
+                <p>装饰器会替换原函数，导致函数元信息（名字、文档、注释）丢失。</p>
+            </div>
+            
+            <pre><code>def simple_decorator(func):
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+@simple_decorator
+def my_function():
+    """这是我的函数"""
+    pass
+
+print(my_function.__name__)  # wrapper （错误！）
+print(my_function.__doc__)   # None （丢失！）</code></pre>
+            
+            <h3>📌 使用wraps保留元信息</h3>
+            
+            <pre><code>import functools
+
+def smart_decorator(func):
+    @functools.wraps(func)  # 保留原函数元信息
+    def wrapper(*args, **kwargs):
+        return func(*args, **kwargs)
+    return wrapper
+
+@smart_decorator
+def documented_function():
+    """这是带文档的函数"""
+    pass
+
+print(documented_function.__name__)  # documented_function
+print(documented_function.__doc__)   # 这是带文档的函数</code></pre>
+            
+            <h2 id="s7">7️⃣ 类装饰器</h2>
+            
+            <p>装饰器不仅能用于函数，也能用于类。</p>
+            
+            <h3>📌 类装饰器原理</h3>
+            
+            <pre><code>class MyClassDecorator:
+    def __init__(self, cls):
+        self.cls = cls
+    
+    def __call__(self, *args, **kwargs):
+        # 可以修改类实例化过程
+        instance = self.cls(*args, **kwargs)
+        return instance
+
+@MyClassDecorator
+class MyClass:
+    def __init__(self, name):
+        self.name = name
+
+# 等价于
+MyClass = MyClassDecorator(MyClass)</code></pre>
+            
+            <h3>📌 实战：单例模式</h3>
+            
+            <pre><code>class Singleton:
+    """单例装饰器"""
+    _instances = {}
+    
+    def __init__(self, func):
+        self.func = func
+    
+    def __call__(self, *args, **kwargs):
+        if self.func not in self._instances:
+            self._instances[self.func] = self.func(*args, **kwargs)
+        return self._instances[self.func]
+
+@Singleton
+class Database:
+    def __init__(self):
+        print("数据库连接建立")
+    
+    def query(self, sql):
+        print(f"执行: {sql}")
+
+db1 = Database()
+db2 = Database()
+print(db1 is db2)  # True，同一个实例</code></pre>
+            
+            <h3>📌 实战：缓存装饰器</h3>
+            
+            <pre><code>import functools
+
+def memoize(func):
+    """记忆化缓存装饰器"""
+    cache = {}
+    
+    @functools.wraps(func)
+    def wrapper(*args):
+        if args not in cache:
+            cache[args] = func(*args)
+        return cache[args]
+    
+    wrapper.cache = cache  # 暴露缓存
+    return wrapper
+
+@memoize
+def fibonacci(n):
+    if n < 2:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+print(fibonacci(100))  # 很快！
+print(f"缓存大小: {len(fibonacci.cache)}")</code></pre>
+            
+            <h2 id="s8">8️⃣ 装饰器工厂</h2>
+            
+            <h3>📌 带参数的类装饰器</h3>
+            
+            <pre><code>class ValidityChecker:
+    """参数验证装饰器工厂"""
+    def __init__(self, **constraints):
+        self.constraints = constraints
+    
+    def __call__(self, func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # 验证参数
+            for name, constraint in self.constraints.items():
+                if name in kwargs:
+                    value = kwargs[name]
+                    if 'min' in constraint and value < constraint['min']:
+                        raise ValueError(f"{name} 不能小于 {constraint['min']}")
+                    if 'max' in constraint and value > constraint['max']:
+                        raise ValueError(f"{name} 不能大于 {constraint['max']}")
+            return func(*args, **kwargs)
+        return wrapper
+
+@ValidityChecker(age=(18, 120), score=(0, 100))
+def register(name, age, score):
+    print(f"{name} 注册成功: 年龄{age}, 分数{score}")
+
+register("Alice", age=25, score=95)
+# register("Bob", age=15, score=80)  # ValueError</code></pre>
+            
+            <h2 id="s9">9️⃣ 实战应用</h2>
+            
+            <div class="key-point">
+                <strong>🔑 常见装饰器应用场景</strong>
+            </div>
+            
+            <h3>📌 1. 日志记录</h3>
+            
+            <pre><code>import functools
+import logging
+
+def logged(func=None, *, level=logging.DEBUG):
+    """日志装饰器"""
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            logging.log(level, f"调用 {f.__name__}")
+            try:
+                result = f(*args, **kwargs)
+                logging.log(level, f"{f.__name__} 返回 {result}")
+                return result
+            except Exception as e:
+                logging.error(f"{f.__name__} 抛出异常: {e}")
+                raise
+        return wrapper
+    
+    if func is None:
+        return decorator
+    else:
+        return decorator(func)
+
+@logged
+def divide(a, b):
+    return a / b
+
+@logged(level=logging.WARNING)
+def risky_function():
+    pass</code></pre>
+            
+            <h3>📌 2. 权限验证</h3>
+            
+            <pre><code>class User:
+    def __init__(self, name, role):
+        self.name = name
+        self.role = role
+
+def require_permission(*permissions):
+    """权限检查装饰器"""
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(user, *args, **kwargs):
+            if not hasattr(user, 'role'):
+                raise PermissionError("无效用户")
+            for perm in permissions:
+                if perm not in get_permissions(user.role):
+                    raise PermissionError(f"需要权限: {perm}")
+            return func(user, *args, **kwargs)
+        return wrapper
+    return decorator
+
+def get_permissions(role):
+    permissions = {
+        'admin': ['read', 'write', 'delete', 'admin'],
+        'editor': ['read', 'write'],
+        'viewer': ['read'],
+    }
+    return permissions.get(role, [])
+
+@require_permission('write')
+def edit_content(user):
+    print(f"{user.name} 编辑内容")
+
+admin = User("Admin", "admin")
+editor = User("Editor", "editor")
+
+edit_content(admin)   # 成功
+edit_content(editor)  # 成功
+# viewer = User("Viewer", "viewer")
+# edit_content(viewer)  # PermissionError</code></pre>
+            
+            <h3>📌 3. 重试机制</h3>
+            
+            <pre><code>import functools
+import time
+
+def retry(max_attempts=3, delay=1, exceptions=(Exception,)):
+    """重试装饰器"""
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(max_attempts):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    if attempt == max_attempts - 1:
+                        raise
+                    print(f"尝试 {attempt + 1} 失败: {e}")
+                    time.sleep(delay)
+            return None
+        return wrapper
+    return decorator
+
+@retry(max_attempts=3, delay=2, exceptions=(ConnectionError,))
+def fetch_data():
+    # 模拟可能失败的网络请求
+    import random
+    if random.random() < 0.7:
+        raise ConnectionError("网络连接失败")
+    return "数据获取成功"</code></pre>
+            
+            <h3>📌 4. 性能监控</h3>
+            
+            <pre><code>import functools
+import time
+
+def performance_monitor(func):
+    """性能监控装饰器"""
+    call_count = 0
+    total_time = 0
+    
+    @functools.wraps(func)
+    def wrapper(*args, **kwargs):
+        nonlocal call_count, total_time
+        start = time.perf_counter()
+        result = func(*args, **kwargs)
+        elapsed = time.perf_counter() - start
+        
+        call_count += 1
+        total_time += elapsed
+        
+        print(f"{func.__name__}: 耗时 {elapsed*1000:.2f}ms "
+              f"(累计 {call_count} 次, 平均 {total_time/call_count*1000:.2f}ms)")
+        return result
+    
+    wrapper.stats = lambda: (call_count, total_time)
+    return wrapper
+
+@performance_monitor
+def heavy_computation():
+    time.sleep(0.1)
+    return 42
+
+for _ in range(5):
+    heavy_computation()</code></pre>
+            
+            <h2 id="s10">🔟 本周总结</h2>
+            
+            <div class="success">
+                <strong>✅ 核心要点回顾</strong>
+            </div>
+            
+            <table>
+                <tr>
+                    <th>知识点</th>
+                    <th>关键内容</th>
+                </tr>
+                <tr>
+                    <td>函数即对象</td>
+                    <td>函数可以赋值、传递、嵌套</td>
+                </tr>
+                <tr>
+                    <td>装饰器原理</td>
+                    <td>接收函数，返回包装后的新函数</td>
+                </tr>
+                <tr>
+                    <td>@functools.wraps</td>
+                    <td>保留原函数元信息</td>
+                </tr>
+                <tr>
+                    <td>带参数装饰器</td>
+                    <td>装饰器工厂：返回装饰器的函数</td>
+                </tr>
+                <tr>
+                    <td>装饰器堆叠</td>
+                    <td>多个装饰器从下到上执行</td>
+                </tr>
+                <tr>
+                    <td>类装饰器</td>
+                    <td>装饰类，实现单例、缓存等</td>
+                </tr>
+            </table>
+            
+            <h3>📌 下周预告</h3>
+            <p>第19周我们将学习<strong>设计模式</strong>，掌握编程中的经典解决方案！</p>
+            
+            <div class="bottom-nav">
+                <a href="python-week17.html" class="nav-btn">← 第17周：异步编程</a>
+                <a href="python-week19.html" class="nav-btn">第19周：设计模式 →</a>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Python学习之路 · 第18周 · 装饰器与元编程</p>
+            <p>掌握Python的魔法！</p>
+        </footer>
+    </div>
+</body>
+</html>
