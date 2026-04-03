@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python学习之路·第20周 - 测试与调试</title>
+    <style>
+        :root { --primary: #306998; --bg: #f8f9fa; --card-bg: #ffffff; --text: #333; --border: #e1e4e8; --tip-bg: #e7f5ff; --tip-border: #1971c2; --warning-bg: #fff3bf; --warning-border: #f08c00; --success-bg: #d3f9d8; --success-border: #2f9e44; --code-bg: #f6f8fa; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; line-height: 1.8; background: var(--bg); color: var(--text); }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .nav { background: var(--primary); padding: 12px 20px; display: flex; justify-content: space-between; }
+        .nav a { color: white; text-decoration: none; font-size: 14px; }
+        .breadcrumb { color: rgba(255,255,255,0.8); font-size: 13px; }
+        .header { background: linear-gradient(135deg, var(--primary) 0%, #1e5799 100%); color: white; padding: 50px 40px; text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 15px; }
+        .header .subtitle { font-size: 1.3em; opacity: 0.9; margin-bottom: 20px; }
+        .header-meta { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; font-size: 14px; }
+        .header-meta span { background: rgba(255,255,255,0.15); padding: 6px 16px; border-radius: 20px; }
+        .toc { background: var(--card-bg); border-radius: 12px; padding: 30px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .toc h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.5em; }
+        .toc-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+        .toc-item { display: flex; align-items: center; padding: 10px 15px; background: var(--bg); border-radius: 8px; text-decoration: none; color: var(--text); border-left: 3px solid var(--primary); }
+        .toc-item .num { font-weight: bold; margin-right: 10px; color: var(--primary); }
+        .content { background: var(--card-bg); border-radius: 12px; padding: 40px; margin-bottom: 30px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 { color: var(--primary); font-size: 1.8em; margin: 40px 0 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+        h2:first-of-type { margin-top: 0; }
+        h3 { color: #2c3e50; font-size: 1.4em; margin: 30px 0 15px; }
+        .tip, .warning, .success, .key-point { padding: 18px 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid; }
+        .tip { background: var(--tip-bg); border-color: var(--tip-border); }
+        .warning { background: var(--warning-bg); border-color: var(--warning-border); }
+        .success { background: var(--success-bg); border-color: var(--success-border); }
+        .key-point { background: linear-gradient(135deg, #e8f4f8 0%, #d4e6ed 100%); border-color: #3498db; }
+        .tip strong, .warning strong, .success strong, .key-point strong { display: block; margin-bottom: 8px; }
+        code { background: var(--code-bg); padding: 2px 8px; border-radius: 4px; font-family: 'Fira Code', 'Consolas', monospace; font-size: 0.9em; color: #e74c3c; }
+        pre { background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 20px 0; font-size: 14px; line-height: 1.6; }
+        pre code { background: none; color: inherit; }
+        ul, ol { margin: 15px 0 15px 25px; }
+        li { margin: 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px 15px; text-align: left; border: 1px solid var(--border); }
+        th { background: var(--primary); color: white; }
+        tr:nth-child(even) { background: var(--bg); }
+        .bottom-nav { display: flex; justify-content: space-between; margin-top: 40px; padding-top: 30px; border-top: 2px solid var(--border); }
+        .nav-btn { display: flex; align-items: center; gap: 10px; padding: 12px 24px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; }
+        footer { text-align: center; padding: 30px; color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <nav class="nav"><a href="index.html">🏠 首页</a><span class="breadcrumb">Python学习之路 &gt; 第20周</span></nav>
+    <header class="header">
+        <h1>🐍 Python 学习之路 · 第20周</h1>
+        <p class="subtitle">测试与调试 —— 编写高质量代码的保障</p>
+        <div class="header-meta"><span>📅 第20周 / 共52周</span><span>⏱️ 建议学习 8-10 小时</span><span>🎯 难度 ★★★★☆</span><span>📌 阶段四：进阶特性</span></div>
+    </header>
+    <div class="container">
+        <div class="toc"><h2>📋 本周学习目录</h2>
+            <div class="toc-list">
+                <a href="#s1" class="toc-item"><span class="num">1</span>为什么要测试</a>
+                <a href="#s2" class="toc-item"><span class="num">2</span>unittest框架</a>
+                <a href="#s3" class="toc-item"><span class="num">3</span>pytest框架</a>
+                <a href="#s4" class="toc-item"><span class="num">4</span>断言与异常</a>
+                <a href="#s5" class="toc-item"><span class="num">5</span>测试覆盖率</a>
+                <a href="#s6" class="toc-item"><span class="num">6</span>Mock与patch</a>
+                <a href="#s7" class="toc-item"><span class="num">7</span>调试技术</a>
+                <a href="#s8" class="toc-item"><span class="num">8</span>日志记录</a>
+                <a href="#s9" class="toc-item"><span class="num">9</span>TDD开发模式</a>
+                <a href="#s10" class="toc-item"><span class="num">10</span>本周总结</a>
+            </div>
+        </div>
+        <div class="content">
+            <h2 id="s1">1️⃣ 为什么要测试</h2>
+            <div class="key-point"><strong>🔑 测试的价值</strong><ul><li>确保代码正确性</li><li>防止回归（改代码引入新bug）</li><li>文档作用（测试即文档）</li><li>增强重构信心</li></ul></div>
+            <div class="tip"><strong>💡 测试金字塔</strong><ul><li><strong>单元测试</strong>：测试单个函数/方法（最多）</li><li><strong>集成测试</strong>：测试模块间协作</li><li><strong>端到端测试</strong>：测试整个系统（最少）</li></ul></div>
+
+            <h2 id="s2">2️⃣ unittest框架</h2>
+            <p>Python标准库提供的单元测试框架。</p>
+            <pre><code>import unittest
+
+def add(a, b):
+    return a + b
+
+class TestMath(unittest.TestCase):
+    def test_add_positive(self):
+        self.assertEqual(add(1, 2), 3)
+    
+    def test_add_negative(self):
+        self.assertEqual(add(-1, -2), -3)
+    
+    def test_add_zero(self):
+        self.assertEqual(add(0, 5), 5)
+    
+    def test_add_strings(self):
+        self.assertEqual(add("Hello ", "World"), "Hello World")
+
+if __name__ == '__main__':
+    unittest.main()</code></pre>
+            <h3>📌 常用断言</h3>
+            <table>
+                <tr><th>方法</th><th>说明</th></tr>
+                <tr><td>assertEqual(a, b)</td><td>a == b</td></tr>
+                <tr><td>assertNotEqual(a, b)</td><td>a != b</td></tr>
+                <tr><td>assertTrue(x)</td><td>bool(x) is True</td></tr>
+                <tr><td>assertFalse(x)</td><td>bool(x) is False</td></tr>
+                <tr><td>assertRaises(exc)</td><td>抛出指定异常</td></tr>
+                <tr><td>assertIsNone(x)</td><td>x is None</td></tr>
+            </table>
+
+            <h2 id="s3">3️⃣ pytest框架</h2>
+            <p>更简洁、功能更强大的测试框架。</p>
+            <pre><code># 安装
+pip install pytest
+
+# test_example.py
+import pytest
+
+def add(a, b):
+    return a + b
+
+def multiply(a, b):
+    return a * b
+
+class TestMath:
+    def test_add(self):
+        assert add(1, 2) == 3
+    
+    def test_add_negative(self):
+        assert add(-1, -2) == -3
+    
+    @pytest.mark.parametrize("a,b,expected", [
+        (1, 2, 3),
+        (0, 0, 0),
+        (-1, 1, 0),
+    ])
+    def test_add_params(self, a, b, expected):
+        assert add(a, b) == expected
+    
+    @pytest.fixture
+    def sample_list(self):
+        return [1, 2, 3]
+    
+    def test_multiply(self, sample_list):
+        assert multiply(2, 3) == 6</code></pre>
+            <div class="tip"><strong>💡 运行命令</strong><ul><li><code>pytest</code> - 运行所有测试</li><li><code>pytest -v</code> - 详细输出</li><li><code>pytest -k "test_name"</code> - 只运行匹配的测试</li><li><code>pytest --tb=short</code> - 简短错误信息</li></ul></div>
+
+            <h2 id="s4">4️⃣ 断言与异常测试</h2>
+            <pre><code>import pytest
+
+def divide(a, b):
+    if b == 0:
+        raise ValueError("除数不能为零")
+    return a / b
+
+class TestDivide:
+    def test_normal(self):
+        assert divide(10, 2) == 5
+    
+    def test_zero_division(self):
+        with pytest.raises(ValueError, match="除数不能为零"):
+            divide(10, 0)
+    
+    def test_float_division(self):
+        result = divide(10, 3)
+        assert abs(result - 3.333) < 0.001
+
+# 使用pytest.raises测试异常
+def test_exception():
+    with pytest.raises(ZeroDivisionError):
+        1 / 0</code></pre>
+
+            <h2 id="s5">5️⃣ 测试覆盖率</h2>
+            <pre><code># 安装coverage
+pip install pytest-cov
+
+# 运行并生成覆盖率报告
+pytest --cov=my_module --cov-report=html
+
+# 查看详细报告
+pytest --cov=my_module --cov-report=term-missing
+
+# .coveragerc配置
+# [run]
+# source = my_module
+# omit = */tests/*</code></pre>
+            <div class="success"><strong>✅ 目标覆盖率</strong><ul><li>核心业务代码：80%+</li><li>开源项目：90%+</li><li>关键系统：100%</li></ul></div>
+
+            <h2 id="s6">6️⃣ Mock与patch</h2>
+            <pre><code>import pytest
+from unittest.mock import Mock, patch, MagicMock
+
+# 模拟函数
+def get_user_name(user_id):
+    # 实际会调用数据库
+    return f"User_{user_id}"
+
+def test_with_mock():
+    mock_get_name = Mock(return_value="MockUser")
+    result = mock_get_name(123)
+    assert result == "MockUser"
+
+# patch装饰器
+@patch('requests.get')
+def test_api_call(mock_get):
+    mock_response = Mock()
+    mock_response.status_code = 200
+    mock_response.json.return_value = {"name": "test"}
+    mock_get.return_value = mock_response
+    
+    # 调用实际函数
+    # import service
+    # result = service.get_user()
+    # assert result["name"] == "test"</code></pre>
+
+            <h2 id="s7">7️⃣ 调试技术</h2>
+            <h3>📌 print调试</h3>
+            <pre><code># 最简单但有效
+def buggy_function(data):
+    result = []
+    for i, item in enumerate(data):
+        print(f"处理第{i}项: {item}")  # 调试打印
+        result.append(item * 2)
+    return result</code></pre>
+            <h3>📌 pdb调试器</h3>
+            <pre><code>import pdb
+
+def buggy_function(data):
+    pdb.set_trace()  # 设置断点
+    result = []
+    for item in data:
+        result.append(item * 2)
+    return result
+
+# 常用命令：
+# n (next) - 执行下一行
+# s (step) - 进入函数
+# c (continue) - 继续执行
+# p variable - 打印变量
+# l (list) - 显示代码
+# q (quit) - 退出</code></pre>
+            <h3>📌 breakpoint() (Python 3.7+)</h3>
+            <pre><code>def buggy_function(data):
+    breakpoint()  # 等价于 pdb.set_trace()
+    return [x * 2 for x in data]</code></pre>
+
+            <h2 id="s8">8️⃣ 日志记录</h2>
+            <pre><code>import logging
+
+# 配置日志
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('app.log'),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+def process_data(data):
+    logger.debug(f"输入数据: {data}")
+    try:
+        result = data * 2
+        logger.info(f"处理成功: {result}")
+        return result
+    except Exception as e:
+        logger.error(f"处理失败: {e}")
+        raise</code></pre>
+
+            <h2 id="s9">9️⃣ TDD开发模式</h2>
+            <div class="key-point"><strong>🔑 TDD流程</strong><ol><li><strong>红</strong>：先写一个失败的测试</li><li><strong>绿</strong>：写最少的代码让测试通过</li><li><strong>重构</strong>：优化代码，保持测试通过</li></ol></div>
+            <pre><code># 1. 先写测试
+def test_calculator_add():
+    calc = Calculator()
+    assert calc.add(1, 2) == 3
+
+# 2. 实现功能
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+# 3. 重构优化...</code></pre>
+
+            <h2 id="s10">🔟 本周总结</h2>
+            <ul>
+                <li><strong>unittest</strong>：标准库单元测试框架</li>
+                <li><strong>pytest</strong>：更简洁强大的测试框架</li>
+                <li><strong>Mock</strong>：模拟外部依赖</li>
+                <li><strong>覆盖率</strong>：衡量测试完整性</li>
+                <li><strong>调试</strong>：pdb、breakpoint、日志</li>
+            </ul>
+            <p>下周<strong>第21周：Web开发入门</strong>学习Flask框架！</p>
+            <div class="bottom-nav">
+                <a href="python-week19.html" class="nav-btn">← 第19周：设计模式</a>
+                <a href="python-week21.html" class="nav-btn">第21周：Web开发 →</a>
+            </div>
+        </div>
+        <footer><p>Python学习之路 · 第20周 · 测试与调试</p></footer>
+    </div>
+</body>
+</html>
