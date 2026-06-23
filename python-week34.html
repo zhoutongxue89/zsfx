@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路·第34周 - 爬虫进阶 - BeautifulSoup与Selenium</title>
+<style>
+:root{--primary:#306998;--bg:#f8f9fa;--card-bg:#fff;--text:#333;--border:#e1e4e8;--tip-bg:#e7f5ff;--tip-border:#1971c2;--success-bg:#d3f9d8;--success-border:#2f9e44;--warning-bg:#fff3bf;--warning-border:#f08c00;--code-bg:#f6f8fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;line-height:1.8;background:var(--bg);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.nav{background:var(--primary);padding:12px 20px}.nav a{color:#fff;text-decoration:none}
+.header{background:linear-gradient(135deg,var(--primary),#1e5799);color:#fff;padding:50px 40px;text-align:center;margin-bottom:30px}
+.header h1{font-size:2.5em}.header .subtitle{font-size:1.3em;opacity:.9}
+.header-meta{display:flex;justify-content:center;gap:30px;font-size:14px;flex-wrap:wrap;margin-top:15px}
+.header-meta span{background:rgba(255,255,255,.15);padding:6px 16px;border-radius:20px}
+.toc{background:var(--card-bg);border-radius:12px;padding:30px;margin-bottom:30px}.toc h2{color:var(--primary);margin-bottom:20px}
+.toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.toc-item{display:flex;padding:10px 15px;background:var(--bg);border-radius:8px;border-left:3px solid var(--primary);text-decoration:none;color:var(--text)}.toc-item .num{font-weight:bold;margin-right:10px;color:var(--primary)}
+.content{background:var(--card-bg);border-radius:12px;padding:40px}
+h2{color:var(--primary);font-size:1.8em;margin:40px 0 20px;border-bottom:2px solid var(--border)}h3{color:#2c3e50;font-size:1.4em;margin:30px 0 15px}
+.tip,.success,.key-point,.warning{padding:18px 20px;border-radius:8px;margin:20px 0;border-left:4px solid}
+.tip{background:var(--tip-bg);border-color:var(--tip-border)}.success{background:var(--success-bg);border-color:var(--success-border)}
+.warning{background:var(--warning-bg);border-color:var(--warning-border)}.key-point{background:linear-gradient(135deg,#e8f4f8,#d4e6ed);border-color:#3498db}
+code{background:var(--code-bg);padding:2px 8px;border-radius:4px;font-family:monospace;color:#e74c3c}
+pre{background:#1e1e1e;color:#d4d4d4;padding:20px;border-radius:8px;overflow-x:auto;margin:20px 0}pre code{background:none;color:inherit}
+ul,ol{margin:15px 0 15px 25px}li{margin:8px 0}
+table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:12px 15px;border:1px solid var(--border);text-align:left}th{background:var(--primary);color:#fff}tr:nth-child(even){background:var(--bg)}
+.week-nav{display:flex;justify-content:space-between;margin:30px 0}.week-nav a{padding:12px 24px;background:var(--primary);color:#fff;text-decoration:none;border-radius:8px}
+footer{text-align:center;padding:30px;color:#666}
+@media(max-width:768px){.content{padding:20px}.header h1{font-size:1.8em}}
+</style></head><body>
+<nav class="nav"><a href="index.html">🏠 首页</a></nav>
+<header class="header"><h1>🐍 Python 学习之路 · 第34周</h1><p class="subtitle">爬虫进阶 —— HTML解析与动态页面</p>
+<div class="header-meta"><span>📅 第34周</span><span>⏱️ 10-12小时</span><span>🎯 ★★★★☆</span><span>🕷️ 网络爬虫</span></div></header>
+<div class="container"><div class="toc"><h2>📋 本周内容</h2><div class="toc-list"><a href="#s1" class="toc-item"><span class="num">1</span>BeautifulSoup解析</a>
+<a href="#s2" class="toc-item"><span class="num">2</span>CSS选择器</a>
+<a href="#s3" class="toc-item"><span class="num">3</span>Selenium动态页面</a>
+<a href="#s4" class="toc-item"><span class="num">4</span>反爬虫应对</a>
+<a href="#s5" class="toc-item"><span class="num">5</span>数据存储</a>
+<a href="#s6" class="toc-item"><span class="num">6</span>实战：完整爬虫</a>
+<a href="#s7" class="toc-item"><span class="num">7</span>本周总结</a>
+<a href="#s8" class="toc-item"><span class="num">8</span>下周预告</a></div></div>
+<div class="content">
+<h2 id="s1">1️⃣ BeautifulSoup解析</h2>
+<pre><code>pip install beautifulsoup4 lxml
+from bs4 import BeautifulSoup
+
+soup = BeautifulSoup(html, 'lxml')
+soup.find('h1')           # 第一个h1
+soup.find_all('li')       # 所有li
+soup.find('div', class_='article')  # 按class
+soup.find('h1', id='title')         # 按id
+link = soup.find('a')
+link['href']              # 获取属性
+link.text                 # 获取文本</code></pre>
+
+<h2 id="s2">2️⃣ CSS选择器</h2>
+<pre><code>soup.select('div.article')          # class
+soup.select('h1#title')             # id
+soup.select('div.article h1')       # 后代
+soup.select('a[href]')              # 有href的a
+soup.select('a[href^="https"]')     # href以https开头</code></pre>
+
+<h2 id="s3">3️⃣ Selenium动态页面</h2>
+<pre><code>from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+driver = webdriver.Chrome()
+driver.get('https://example.com')
+
+# 查找元素
+el = driver.find_element(By.ID, 'username')
+el = driver.find_element(By.CSS_SELECTOR, 'div.content p')
+el.send_keys('搜索内容')  # 输入
+el.click()               # 点击
+
+# 等待加载
+wait = WebDriverWait(driver, 10)
+el = wait.until(EC.presence_of_element_located((By.ID, 'result')))
+
+# 获取数据
+html = driver.page_source
+text = el.text
+driver.quit()</code></pre>
+
+<h2 id="s4">4️⃣ 反爬虫应对</h2>
+<table><tr><th>反爬手段</th><th>应对</th></tr>
+<tr><td>UA检测</td><td>随机UA（fake-useragent）</td></tr>
+<tr><td>IP限制</td><td>代理IP池</td></tr>
+<tr><td>验证码</td><td>打码平台/OCR</td></tr>
+<tr><td>动态渲染</td><td>Selenium/Playwright</td></tr></table>
+<pre><code>from fake_useragent import UserAgent
+import random, time
+ua = UserAgent()
+headers = {'User-Agent': ua.random}
+time.sleep(random.uniform(1, 3))  # 随机延迟</code></pre>
+
+<h2 id="s5">5️⃣ 数据存储</h2>
+<pre><code># CSV
+import csv
+with open('data.csv','w',newline='',encoding='utf-8-sig') as f:
+    writer = csv.DictWriter(f, fieldnames=['title','url'])
+    writer.writeheader()
+    for item in data: writer.writerow(item)
+# JSON
+import json
+json.dump(data, open('data.json','w',encoding='utf-8'), ensure_ascii=False, indent=2)
+# Excel
+import pandas as pd
+pd.DataFrame(data).to_excel('data.xlsx', index=False)</code></pre>
+
+<h2 id="s6">6️⃣ 实战：完整爬虫</h2>
+<pre><code>class BookSpider:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers = {'User-Agent':'Mozilla/5.0 ...'}
+        self.data = []
+    
+    def scrape_page(self, page):
+        url = f'{self.base}/catalogue/page-{page}.html'
+        r = self.session.get(url, timeout=10)
+        soup = BeautifulSoup(r.text, 'lxml')
+        for book in soup.select('article.product_pod'):
+            self.data.append({
+                'title': book.select_one('h3 a')['title'],
+                'price': book.select_one('p.price_color').text,
+            })
+    
+    def run(self, max_pages=10):
+        for p in range(1, max_pages+1):
+            self.scrape_page(p)
+            time.sleep(random.uniform(0.5, 1.5))
+        pd.DataFrame(self.data).to_csv('books.csv', index=False)</code></pre>
+
+<h2 id="s7">7️⃣ 本周总结</h2>
+<table><tr><th>知识点</th><th>掌握</th></tr>
+<tr><td>BeautifulSoup</td><td>⭐⭐⭐⭐</td></tr>
+<tr><td>CSS选择器</td><td>⭐⭐⭐⭐</td></tr>
+<tr><td>Selenium</td><td>⭐⭐⭐</td></tr>
+<tr><td>反爬虫</td><td>⭐⭐⭐</td></tr></table>
+
+<h2 id="s8">8️⃣ 下周预告</h2>
+<p>学习 <strong>Scrapy框架</strong>：专业级爬虫框架。</p>
+</div>
+<div class="week-nav"><a href="python-week33.html">← 第33周</a><a href="python-week35.html">第35周 →</a></div>
+<footer><p>📚 周同学的知识分享 | <a href="index.html">返回首页</a></p><p>📅 2026-06-23</p></footer></div></body></html>
