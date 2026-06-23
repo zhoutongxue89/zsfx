@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路·第30周 - Pandas数据处理入门</title>
+<style>
+:root{--primary:#306998;--bg:#f8f9fa;--card-bg:#fff;--text:#333;--border:#e1e4e8;--tip-bg:#e7f5ff;--tip-border:#1971c2;--success-bg:#d3f9d8;--success-border:#2f9e44;--warning-bg:#fff3bf;--warning-border:#f08c00;--code-bg:#f6f8fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;line-height:1.8;background:var(--bg);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.nav{background:var(--primary);padding:12px 20px}.nav a{color:#fff;text-decoration:none}
+.header{background:linear-gradient(135deg,var(--primary),#1e5799);color:#fff;padding:50px 40px;text-align:center;margin-bottom:30px}
+.header h1{font-size:2.5em}.header .subtitle{font-size:1.3em;opacity:.9}
+.header-meta{display:flex;justify-content:center;gap:30px;font-size:14px;flex-wrap:wrap;margin-top:15px}
+.header-meta span{background:rgba(255,255,255,.15);padding:6px 16px;border-radius:20px}
+.toc{background:var(--card-bg);border-radius:12px;padding:30px;margin-bottom:30px}
+.toc h2{color:var(--primary);margin-bottom:20px}
+.toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.toc-item{display:flex;padding:10px 15px;background:var(--bg);border-radius:8px;border-left:3px solid var(--primary);text-decoration:none;color:var(--text)}
+.toc-item .num{font-weight:bold;margin-right:10px;color:var(--primary)}
+.content{background:var(--card-bg);border-radius:12px;padding:40px}
+h2{color:var(--primary);font-size:1.8em;margin:40px 0 20px;border-bottom:2px solid var(--border)}
+h3{color:#2c3e50;font-size:1.4em;margin:30px 0 15px}h4{color:#34495e;font-size:1.15em;margin:20px 0 10px}
+.tip,.success,.key-point,.warning{padding:18px 20px;border-radius:8px;margin:20px 0;border-left:4px solid}
+.tip{background:var(--tip-bg);border-color:var(--tip-border)}.success{background:var(--success-bg);border-color:var(--success-border)}
+.warning{background:var(--warning-bg);border-color:var(--warning-border)}.key-point{background:linear-gradient(135deg,#e8f4f8,#d4e6ed);border-color:#3498db}
+code{background:var(--code-bg);padding:2px 8px;border-radius:4px;font-family:monospace;color:#e74c3c}
+pre{background:#1e1e1e;color:#d4d4d4;padding:20px;border-radius:8px;overflow-x:auto;margin:20px 0}pre code{background:none;color:inherit}
+ul,ol{margin:15px 0 15px 25px}li{margin:8px 0}
+table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:12px 15px;border:1px solid var(--border);text-align:left}th{background:var(--primary);color:#fff}tr:nth-child(even){background:var(--bg)}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin:20px 0}
+.compare-card{background:var(--bg);border-radius:12px;padding:25px;border-top:4px solid var(--primary)}.compare-card h4{margin-top:0;color:var(--primary)}
+.week-nav{display:flex;justify-content:space-between;margin:30px 0}.week-nav a{padding:12px 24px;background:var(--primary);color:#fff;text-decoration:none;border-radius:8px}
+footer{text-align:center;padding:30px;color:#666}
+@media(max-width:768px){.content{padding:20px}.header h1{font-size:1.8em}}
+</style></head><body>
+<nav class="nav"><a href="index.html">🏠 首页</a></nav>
+<header class="header"><h1>🐍 Python 学习之路 · 第30周</h1><p class="subtitle">数据分析方向 —— Pandas数据处理</p>
+<div class="header-meta"><span>📅 第30周</span><span>⏱️ 10-12小时</span><span>🎯 ★★★☆☆</span><span>📊 数据分析</span></div></header>
+<div class="container"><div class="toc"><h2>📋 本周内容</h2><div class="toc-list"><a href="#s1" class="toc-item"><span class="num">1</span>Pandas简介</a>
+<a href="#s2" class="toc-item"><span class="num">2</span>Series</a>
+<a href="#s3" class="toc-item"><span class="num">3</span>DataFrame</a>
+<a href="#s4" class="toc-item"><span class="num">4</span>数据读取与保存</a>
+<a href="#s5" class="toc-item"><span class="num">5</span>查看与筛选</a>
+<a href="#s6" class="toc-item"><span class="num">6</span>数据清洗</a>
+<a href="#s7" class="toc-item"><span class="num">7</span>实战：成绩分析</a>
+<a href="#s8" class="toc-item"><span class="num">8</span>本周总结</a></div></div>
+<div class="content">
+<h2 id="s1">1️⃣ Pandas简介</h2>
+<pre><code>pip install pandas
+import pandas as pd, numpy as np</code></pre>
+
+<h2 id="s2">2️⃣ Series一维数据</h2>
+<pre><code>s = pd.Series([90,85,78,92], index=['语文','数学','英语','物理'])
+s['语文']      # 90
+s[s>80]       # 筛选
+s.mean()      # 均值
+s.describe()  # 统计摘要</code></pre>
+
+<h2 id="s3">3️⃣ DataFrame二维数据</h2>
+<pre><code>df = pd.DataFrame({
+    'name': ['张三','李四','王五','赵六'],
+    'age': [20,22,21,23],
+    'city': ['北京','上海','广州','深圳'],
+    'score': [85,92,78,88]
+})
+df.shape     # (4,4)
+df.columns   # 列名
+df.dtypes    # 数据类型
+df.describe()# 统计摘要</code></pre>
+
+<h2 id="s4">4️⃣ 数据读取与保存</h2>
+<pre><code>df = pd.read_csv('data.csv')
+df = pd.read_excel('data.xlsx')
+df = pd.read_json('data.json')
+
+df.to_csv('output.csv', index=False)
+df.to_excel('output.xlsx', index=False)
+df.to_json('output.json', force_ascii=False)</code></pre>
+
+<h2 id="s5">5️⃣ 查看与筛选</h2>
+<pre><code>df.head()        # 前5行
+df.tail()        # 后5行
+df['name']       # 选列
+df[['name','age']]# 多列
+df.iloc[0:3]     # 按位置
+df.loc[0,'name'] # 按标签
+
+# 条件筛选
+df[df['age']>21]
+df[(df['age']>20) & (df['score']>80)]
+df[df['city'].isin(['北京','上海'])]
+df.sort_values('score', ascending=False)</code></pre>
+
+<h2 id="s6">6️⃣ 数据清洗</h2>
+<pre><code># 缺失值
+df.isnull().sum()     # 缺失数
+df.dropna()           # 删除缺失行
+df.fillna(0)          # 填充0
+df.fillna({'age':20,'score':df['score'].mean()})
+
+# 重复值
+df.drop_duplicates()
+
+# 新增列
+df['pass'] = df['score'] >= 60
+df['grade'] = df['score'].apply(
+    lambda x: 'A' if x>=90 else 'B' if x>=80 else 'C')</code></pre>
+
+<h2 id="s7">7️⃣ 实战：成绩分析</h2>
+<pre><code>df = pd.DataFrame({
+    'name': ['张三','李四','王五','赵六','钱七'],
+    'class': ['A','A','B','B','C'],
+    'chinese': [85,78,92,65,88],
+    'math': [90,85,78,72,95],
+    'english': [78,92,85,80,73],
+})
+df['total'] = df['chinese']+df['math']+df['english']
+df['avg'] = df['total']/3
+
+# 按班级分组统计
+print(df.groupby('class').agg({
+    'chinese':['mean','max'],'math':'mean','total':'mean'
+}))
+
+# 排名
+df['rank'] = df['total'].rank(ascending=False,method='dense').astype(int)
+print(df.sort_values('rank'))</code></pre>
+
+<h2 id="s8">8️⃣ 本周总结</h2>
+<table><tr><th>知识点</th><th>掌握</th></tr>
+<tr><td>Series与DataFrame</td><td>⭐⭐⭐⭐</td></tr>
+<tr><td>数据读取保存</td><td>⭐⭐⭐⭐</td></tr>
+<tr><td>筛选与清洗</td><td>⭐⭐⭐⭐⭐</td></tr>
+<tr><td>分组聚合</td><td>⭐⭐⭐</td></tr></table>
+</div>
+<div class="week-nav"><a href="python-week29.html">← 第29周</a><a href="python-week31.html">第31周 →</a></div>
+<footer><p>📚 周同学的知识分享 | <a href="index.html">返回首页</a></p><p>📅 2026-06-23</p></footer></div></body></html>
