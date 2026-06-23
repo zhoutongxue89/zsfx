@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路·第40周 - 综合项目实战</title>
+<style>
+:root{--primary:#306998;--bg:#f8f9fa;--card-bg:#fff;--text:#333;--border:#e1e4e8;--tip-bg:#e7f5ff;--tip-border:#1971c2;--success-bg:#d3f9d8;--success-border:#2f9e44;--warning-bg:#fff3bf;--warning-border:#f08c00;--code-bg:#f6f8fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;line-height:1.8;background:var(--bg);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.nav{background:var(--primary);padding:12px 20px}.nav a{color:#fff;text-decoration:none}
+.header{background:linear-gradient(135deg,var(--primary),#1e5799);color:#fff;padding:50px 40px;text-align:center;margin-bottom:30px}
+.header h1{font-size:2.5em}.header .subtitle{font-size:1.3em;opacity:.9}
+.header-meta{display:flex;justify-content:center;gap:30px;font-size:14px;flex-wrap:wrap;margin-top:15px}
+.header-meta span{background:rgba(255,255,255,.15);padding:6px 16px;border-radius:20px}
+.toc{background:var(--card-bg);border-radius:12px;padding:30px;margin-bottom:30px}.toc h2{color:var(--primary);margin-bottom:20px}
+.toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.toc-item{display:flex;padding:10px 15px;background:var(--bg);border-radius:8px;border-left:3px solid var(--primary);text-decoration:none;color:var(--text)}.toc-item .num{font-weight:bold;margin-right:10px;color:var(--primary)}
+.content{background:var(--card-bg);border-radius:12px;padding:40px}
+h2{color:var(--primary);font-size:1.8em;margin:40px 0 20px;border-bottom:2px solid var(--border)}h3{color:#2c3e50;font-size:1.4em;margin:30px 0 15px}
+.tip,.success,.key-point,.warning{padding:18px 20px;border-radius:8px;margin:20px 0;border-left:4px solid}
+.tip{background:var(--tip-bg);border-color:var(--tip-border)}.success{background:var(--success-bg);border-color:var(--success-border)}
+.warning{background:var(--warning-bg);border-color:var(--warning-border)}.key-point{background:linear-gradient(135deg,#e8f4f8,#d4e6ed);border-color:#3498db}
+code{background:var(--code-bg);padding:2px 8px;border-radius:4px;font-family:monospace;color:#e74c3c}
+pre{background:#1e1e1e;color:#d4d4d4;padding:20px;border-radius:8px;overflow-x:auto;margin:20px 0}pre code{background:none;color:inherit}
+ul,ol{margin:15px 0 15px 25px}li{margin:8px 0}
+table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:12px 15px;border:1px solid var(--border);text-align:left}th{background:var(--primary);color:#fff}tr:nth-child(even){background:var(--bg)}
+.compare-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin:20px 0}
+.compare-card{background:var(--bg);border-radius:12px;padding:25px;border-top:4px solid var(--primary)}.compare-card h4{margin-top:0;color:var(--primary)}
+.week-nav{display:flex;justify-content:space-between;margin:30px 0}.week-nav a{padding:12px 24px;background:var(--primary);color:#fff;text-decoration:none;border-radius:8px}
+footer{text-align:center;padding:30px;color:#666}
+@media(max-width:768px){.content{padding:20px}.header h1{font-size:1.8em}}
+</style></head><body>
+<nav class="nav"><a href="index.html">🏠 首页</a></nav>
+<header class="header"><h1>🐍 Python 学习之路 · 第40周</h1><p class="subtitle">阶段五总结 —— 综合项目实战</p>
+<div class="header-meta"><span>📅 第40周</span><span>⏱️ 12-15小时</span><span>🎯 ★★★★★</span><span>🏆 阶段五总结</span></div></header>
+<div class="container"><div class="toc"><h2>📋 本周内容</h2><div class="toc-list"><a href="#s1" class="toc-item"><span class="num">1</span>阶段五回顾</a>
+<a href="#s2" class="toc-item"><span class="num">2</span>项目：全栈数据分析平台</a>
+<a href="#s3" class="toc-item"><span class="num">3</span>项目：新闻聚合系统</a>
+<a href="#s4" class="toc-item"><span class="num">4</span>项目架构设计</a>
+<a href="#s5" class="toc-item"><span class="num">5</span>部署上线</a>
+<a href="#s6" class="toc-item"><span class="num">6</span>阶段五总结</a>
+<a href="#s7" class="toc-item"><span class="num">7</span>下一步路线</a>
+<a href="#s8" class="toc-item"><span class="num">8</span>学习建议</a></div></div>
+<div class="content">
+<h2 id="s1">1️⃣ 阶段五回顾（第25-40周）</h2>
+<table><tr><th>周</th><th>主题</th><th>方向</th></tr>
+<tr><td>25-28</td><td>Flask+FastAPI</td><td>🌐 Web开发</td></tr>
+<tr><td>29-32</td><td>NumPy+Pandas+可视化</td><td>📊 数据分析</td></tr>
+<tr><td>33-35</td><td>requests+Scrapy</td><td>🕷️ 网络爬虫</td></tr>
+<tr><td>36</td><td>scikit-learn</td><td>🤖 机器学习</td></tr>
+<tr><td>37-38</td><td>MySQL+Redis</td><td>💾 数据库</td></tr>
+<tr><td>39</td><td>Docker+Nginx</td><td>🚀 部署</td></tr></table>
+
+<h2 id="s2">2️⃣ 项目：全栈数据分析平台</h2>
+<div class="key-point"><strong>🎯 项目描述：</strong>爬取数据→存储→分析→可视化→Web展示，全链路项目</div>
+<pre><code># 项目结构
+data_platform/
+├── spider/          # 爬虫模块(Scrapy)
+│   └── spider.py
+├── analysis/        # 分析模块(Pandas)
+│   └── analyzer.py
+├── api/             # API服务(FastAPI)
+│   └── main.py
+├── web/             # 前端(Flask+Chart.js)
+│   └── app.py
+├── database/        # 数据库
+│   └── models.py
+├── docker-compose.yml
+└── requirements.txt</code></pre>
+<pre><code># 爬虫模块
+class DataSpider(scrapy.Spider):
+    name = 'data_spider'
+    def parse(self, response):
+        yield {'title': ..., 'price': ..., 'date': ...}
+
+# 分析模块
+class DataAnalyzer:
+    def analyze(self, df):
+        return df.groupby('category')['price'].describe()
+    
+    def trend(self, df):
+        return df.resample('M', on='date')['price'].mean()
+
+# API服务
+@app.get("/api/analysis")
+async def get_analysis():
+    df = pd.read_sql('SELECT * FROM data', engine)
+    analyzer = DataAnalyzer()
+    return {"stats": analyzer.analyze(df).to_dict(),
+            "trend": analyzer.trend(df).to_dict()}</code></pre>
+
+<h2 id="s3">3️⃣ 项目：新闻聚合系统</h2>
+<pre><code># 功能：爬取多个新闻源→去重→分类→存储→展示
+class NewsAggregator:
+    def __init__(self):
+        self.sources = ['source1.com', 'source2.com']
+    
+    def crawl(self):
+        """爬取新闻"""
+        for source in self.sources:
+            yield from self.scrape(source)
+    
+    def deduplicate(self, articles):
+        """基于标题相似度去重"""
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.metrics.pairwise import cosine_similarity
+        # TF-IDF + 余弦相似度
+        tfidf = TfidfVectorizer().fit_transform([a['title'] for a in articles])
+        sim_matrix = cosine_similarity(tfidf)
+        # 去重逻辑...
+    
+    def classify(self, articles):
+        """使用scikit-learn分类"""
+        model = joblib.load('model.pkl')
+        for a in articles:
+            a['category'] = model.predict([a['title']])[0]
+    
+    def store(self, articles):
+        """存储到MySQL"""
+        for a in articles:
+            db.session.add(News(**a))
+        db.session.commit()</code></pre>
+
+<h2 id="s4">4️⃣ 项目架构设计</h2>
+<pre><code># docker-compose.yml
+version: '3.8'
+services:
+  web:
+    build: ./web
+    ports: ["5000:5000"]
+    depends_on: [api, db, redis]
+  
+  api:
+    build: ./api
+    ports: ["8000:8000"]
+    depends_on: [db]
+  
+  spider:
+    build: ./spider
+    depends_on: [db]
+    # 定时任务: scrapy crawl news
+  
+  db:
+    image: mysql:8.0
+    volumes: ["db_data:/var/lib/mysql"]
+  
+  redis:
+    image: redis:7-alpine
+  
+  nginx:
+    image: nginx:alpine
+    ports: ["80:80"]
+    depends_on: [web]
+
+volumes:
+  db_data:</code></pre>
+
+<h2 id="s5">5️⃣ 部署上线</h2>
+<pre><code># 构建并启动
+docker-compose build
+docker-compose up -d
+
+# 查看状态
+docker-compose ps
+docker-compose logs -f
+
+# 数据库迁移
+docker-compose exec web flask db upgrade
+
+# 定时爬虫（crontab）
+0 */6 * * * cd /app && docker-compose exec spider scrapy crawl news</code></pre>
+
+<h2 id="s6">6️⃣ 阶段五总结</h2>
+<div class="success"><strong>🎉 阶段五（第25-40周）全部完成！</strong></div>
+<p>你已经掌握了：</p>
+<ul>
+<li>🌐 Web开发：Flask + FastAPI，能独立开发Web应用和API</li>
+<li>📊 数据分析：NumPy + Pandas + 可视化，能处理和分析数据</li>
+<li>🕷️ 网络爬虫：requests + Scrapy，能抓取大规模数据</li>
+<li>🤖 机器学习：scikit-learn，能构建分类和回归模型</li>
+<li>💾 数据库：MySQL + Redis，能设计数据模型和缓存策略</li>
+<li>🚀 部署：Docker + Nginx，能容器化部署应用</li>
+</ul>
+
+<h2 id="s7">7️⃣ 下一步路线</h2>
+<table><tr><th>阶段</th><th>内容</th><th>周数</th></tr>
+<tr><td>阶段六</td><td>项目实战 & 求职准备</td><td>41-52周</td></tr></table>
+<p>下一步重点：</p>
+<ul>
+<li>独立完成2-3个完整项目</li>
+<li>LeetCode刷题100+</li>
+<li>打磨GitHub主页和简历</li>
+<li>准备技术面试</li>
+</ul>
+
+<h2 id="s8">8️⃣ 学习建议</h2>
+<div class="key-point">
+<strong>💡 给阶段五毕业生的建议：</strong>
+<ul>
+<li>📌 选择一个方向深入，不要贪多</li>
+<li>📌 做项目比看教程更重要</li>
+<li>📌 把项目放到GitHub，写好README</li>
+<li>📌 开始刷算法题，为面试做准备</li>
+<li>📌 写技术博客，展示深度思考</li>
+<li>📌 加入开发者社区，交流学习</li>
+</ul>
+</div>
+</div>
+<div class="week-nav"><a href="python-week39.html">← 第39周</a><a href="python-week41.html">第41周 →</a></div>
+<footer><p>📚 周同学的知识分享 | <a href="index.html">返回首页</a></p><p>📅 2026-06-23</p></footer></div></body></html>
