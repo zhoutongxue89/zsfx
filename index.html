@@ -29,9 +29,10 @@
         
         .section-label { display: inline-block; background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.75em; margin-bottom: 15px; font-weight: bold; }
         
-        .phase-pill { display: flex; align-items: center; background: #f8f9fa; padding: 12px 15px; border-radius: 50px; margin-bottom: 10px; transition: all 0.2s; cursor: pointer; text-decoration: none; }
+        .phase-pill { display: flex; align-items: center; background: #f8f9fa; padding: 12px 15px; border-radius: 50px; margin-bottom: 10px; transition: all 0.2s; cursor: pointer; text-decoration: none; border: none; width: 100%; text-align: left; }
         .phase-pill:hover { background: #e9ecef; transform: translateX(5px); }
         .phase-pill.doing { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .phase-pill.doing:hover { background: linear-gradient(135deg, #5a6fd6, #6a3d8f); transform: translateX(5px); }
         .phase-pill.doing .phase-text { color: white; }
         .phase-pill.doing .phase-weeks { color: rgba(255,255,255,0.8); }
         .phase-pill.todo { background: #f0f0f0; }
@@ -77,10 +78,6 @@
             .tool-grid { gap: 10px; }
             .tool-item { padding: 10px 12px; }
             .tool-name { font-size: 0.85em; }
-            
-            .modal { padding: 20px; }
-            .modal-title { font-size: 1em; }
-            .week-item { padding: 10px 12px; }
         }
         
         @media (max-width: 480px) {
@@ -106,31 +103,52 @@
             .tool-item { padding: 10px; flex-direction: column; text-align: center; }
             .tool-icon { margin-right: 0; margin-bottom: 5px; width: 32px; height: 32px; font-size: 0.7em; }
             .tool-name { font-size: 0.75em; }
-            
-            .modal { max-width: 95%; border-radius: 15px; }
-            .week-list { gap: 8px; }
-            .week-item { padding: 8px 10px; }
-            .week-num { width: 24px; height: 24px; font-size: 0.7em; margin-right: 10px; }
-            .week-text { font-size: 0.8em; }
         }
         
         /* 弹窗样式 */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
         .modal-overlay.active { display: flex; }
-        .modal { background: white; border-radius: 20px; padding: 30px; max-width: 400px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .modal-header { display: flex; align-items: center; margin-bottom: 20px; }
-        .modal-title { font-size: 1.2em; font-weight: bold; color: #333; }
-        .modal-close { margin-left: auto; background: #f0f0f0; border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.2em; }
-        .week-list { display: flex; flex-direction: column; gap: 10px; }
-        .week-item { display: flex; align-items: center; padding: 12px 15px; background: #f8f9fa; border-radius: 50px; text-decoration: none; color: #333; transition: all 0.2s; }
-        .week-item:hover { background: #e9ecef; }
-        .week-item.locked { background: #f0f0f0; color: #999; cursor: default; pointer-events: none; }
-        .week-num { background: #667eea; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75em; margin-right: 12px; font-weight: bold; }
-        .week-item.locked .week-num { background: #ccc; }
-        .week-text { flex: 1; font-size: 0.9em; }
-        .status-tag { padding: 3px 10px; border-radius: 12px; font-size: 0.7em; font-weight: 500; }
+        .modal { background: white; border-radius: 20px; padding: 0; max-width: 460px; width: 100%; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 30px 80px rgba(0,0,0,0.3); }
+        
+        /* 弹窗头部 */
+        .modal-header { padding: 22px 24px 18px; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; flex-shrink: 0; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 20px 20px 0 0; }
+        .modal-title { font-size: 1.1em; font-weight: bold; color: white; flex: 1; }
+        .modal-subtitle { font-size: 0.8em; color: rgba(255,255,255,0.8); margin-top: 2px; }
+        .modal-close { background: rgba(255,255,255,0.2); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1em; color: white; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.2s; }
+        .modal-close:hover { background: rgba(255,255,255,0.35); }
+        
+        /* 弹窗内容可滚动区域 */
+        .modal-body { overflow-y: auto; flex: 1; padding: 16px 20px 20px; }
+        
+        /* 阶段分组 */
+        .stage-group { margin-bottom: 16px; }
+        .stage-group:last-child { margin-bottom: 0; }
+        .stage-group-title { display: flex; align-items: center; padding: 8px 12px; margin-bottom: 8px; background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1)); border-radius: 10px; border-left: 3px solid #667eea; }
+        .stage-group-icon { font-size: 1em; margin-right: 8px; }
+        .stage-group-label { font-size: 0.82em; font-weight: 600; color: #667eea; flex: 1; }
+        .stage-group-range { font-size: 0.72em; color: #999; }
+        
+        /* 周次列表 */
+        .week-list { display: flex; flex-direction: column; gap: 8px; }
+        .week-item { display: flex; align-items: center; padding: 11px 14px; background: #f8f9fa; border-radius: 50px; text-decoration: none; color: #333; transition: all 0.2s; }
+        .week-item:hover { background: #e9ecef; transform: translateX(4px); }
+        .week-item.locked { background: #f5f5f5; color: #bbb; cursor: default; pointer-events: none; }
+        .week-num { background: #667eea; color: white; width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.72em; margin-right: 11px; font-weight: bold; flex-shrink: 0; }
+        .week-item.locked .week-num { background: #ddd; }
+        .week-text { flex: 1; font-size: 0.87em; }
+        .status-tag { padding: 3px 10px; border-radius: 12px; font-size: 0.7em; font-weight: 500; flex-shrink: 0; }
         .status-tag.done { background: #d4edda; color: #155724; }
-        .status-tag:not(.done) { background: #f0f0f0; color: #999; }
+        .status-tag.pending { background: #f0f0f0; color: #999; }
+
+        @media (max-width: 480px) {
+            .modal { border-radius: 15px; }
+            .modal-header { border-radius: 15px 15px 0 0; padding: 18px 16px 14px; }
+            .modal-title { font-size: 1em; }
+            .modal-body { padding: 12px 14px 16px; }
+            .week-item { padding: 9px 12px; }
+            .week-num { width: 24px; height: 24px; font-size: 0.68em; margin-right: 10px; }
+            .week-text { font-size: 0.82em; }
+        }
     </style>
 </head>
 <body>
@@ -154,36 +172,36 @@
                     
                     <span class="section-label">6大阶段</span>
                     <div class="phases">
-                        <a class="phase-pill doing" onclick="openModal()">
+                        <button class="phase-pill doing" onclick="openModal(1)">
                             <span class="phase-num">1</span>
                             <span class="phase-text">环境搭建 & 入门起步</span>
                             <span class="phase-weeks">1-2周</span>
-                        </a>
-                        <a class="phase-pill todo">
+                        </button>
+                        <button class="phase-pill doing" onclick="openModal(2)">
                             <span class="phase-num">2</span>
                             <span class="phase-text">Python基础语法</span>
                             <span class="phase-weeks">3-8周</span>
-                        </a>
-                        <a class="phase-pill todo">
+                        </button>
+                        <button class="phase-pill doing" onclick="openModal(3)">
                             <span class="phase-num">3</span>
                             <span class="phase-text">面向对象 & 模块化</span>
                             <span class="phase-weeks">9-14周</span>
-                        </a>
-                        <a class="phase-pill todo">
+                        </button>
+                        <button class="phase-pill doing" onclick="openModal(4)">
                             <span class="phase-num">4</span>
                             <span class="phase-text">进阶特性 & 工程实践</span>
                             <span class="phase-weeks">15-24周</span>
-                        </a>
-                        <a class="phase-pill todo">
+                        </button>
+                        <button class="phase-pill todo" onclick="openModal(5)">
                             <span class="phase-num">5</span>
                             <span class="phase-text">方向选择 & 专项深入</span>
                             <span class="phase-weeks">25-40周</span>
-                        </a>
-                        <a class="phase-pill todo">
+                        </button>
+                        <button class="phase-pill todo" onclick="openModal(6)">
                             <span class="phase-num">6</span>
                             <span class="phase-text">项目实战 & 求职准备</span>
                             <span class="phase-weeks">41-52周</span>
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -279,7 +297,7 @@
         </div>
         
         <footer>
-            <p>📅 最后更新：2026-03-22</p>
+            <p>📅 最后更新：2026-06-23</p>
             <p style="margin-top: 10px;">
                 <a href="https://github.com/zhoutongxue89/zsfx" target="_blank">GitHub仓库</a>
             </p>
@@ -287,159 +305,166 @@
     </div>
     
     <!-- 弹窗 -->
-    <div class="modal-overlay" id="weekModal">
+    <div class="modal-overlay" id="weekModal" onclick="handleOverlayClick(event)">
         <div class="modal">
             <div class="modal-header">
-                <span class="modal-title">🐍 第1阶段：环境搭建 & 入门起步</span>
+                <div style="flex:1;">
+                    <div class="modal-title" id="modalTitle">Python学习笔记</div>
+                    <div class="modal-subtitle" id="modalSubtitle"></div>
+                </div>
                 <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div class="week-list">
-                <a href="python-week1.html" class="week-item">
-                    <span class="week-num">1</span>
-                    <span class="week-text">环境搭建与第一个程序</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week2.html" class="week-item">
-                    <span class="week-num">2</span>
-                    <span class="week-text">变量、数据类型与运算符</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week3.html" class="week-item">
-                    <span class="week-num">3</span>
-                    <span class="week-text">条件判断if-elif-else</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week4.html" class="week-item">
-                    <span class="week-num">4</span>
-                    <span class="week-text">循环结构for & while</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week5.html" class="week-item">
-                    <span class="week-num">5</span>
-                    <span class="week-text">列表list与元组tuple</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week6.html" class="week-item">
-                    <span class="week-num">6</span>
-                    <span class="week-text">字典dict与集合set</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week7.html" class="week-item">
-                    <span class="week-num">7</span>
-                    <span class="week-text">函数基础</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week8.html" class="week-item">
-                    <span class="week-num">8</span>
-                    <span class="week-text">字符串进阶与文件操作</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week9.html" class="week-item">
-                    <span class="week-num">9</span>
-                    <span class="week-text">面向对象编程OOP基础</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week10.html" class="week-item">
-                    <span class="week-num">10</span>
-                    <span class="week-text">面向对象进阶与异常处理</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week11.html" class="week-item">
-                    <span class="week-num">11</span>
-                    <span class="week-text">模块进阶与标准库</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week12.html" class="week-item">
-                    <span class="week-num">12</span>
-                    <span class="week-text">文件与IO操作</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week13.html" class="week-item">
-                    <span class="week-num">13</span>
-                    <span class="week-text">网络编程基础</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week14.html" class="week-item">
-                    <span class="week-num">14</span>
-                    <span class="week-text">数据库操作</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-            </div>
-        </div>
-        
-        <!-- 阶段四 -->
-        <div class="stage-section">
-            <div class="stage-header" onclick="toggleStage(this)">
-                <div class="stage-title">
-                    <span class="stage-icon">🚀</span>
-                    <span>阶段四：进阶特性与工程实践</span>
-                </div>
-                <span class="toggle-icon">▼</span>
-            </div>
-            <div class="stage-weeks">
-                <a href="python-week15.html" class="week-item">
-                    <span class="week-num">15</span>
-                    <span class="week-text">并发编程-多线程</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week16.html" class="week-item">
-                    <span class="week-num">16</span>
-                    <span class="week-text">多进程编程</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week17.html" class="week-item">
-                    <span class="week-num">17</span>
-                    <span class="week-text">异步编程asyncio</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week18.html" class="week-item">
-                    <span class="week-num">18</span>
-                    <span class="week-text">装饰器与元编程</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week19.html" class="week-item">
-                    <span class="week-num">19</span>
-                    <span class="week-text">设计模式</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week20.html" class="week-item">
-                    <span class="week-num">20</span>
-                    <span class="week-text">测试与调试</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week21.html" class="week-item">
-                    <span class="week-num">21</span>
-                    <span class="week-text">Web开发入门</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week22.html" class="week-item">
-                    <span class="week-num">22</span>
-                    <span class="week-text">RESTful API开发</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week23.html" class="week-item">
-                    <span class="week-num">23</span>
-                    <span class="week-text">数据处理与分析</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
-                <a href="python-week24.html" class="week-item">
-                    <span class="week-num">24</span>
-                    <span class="week-text">项目实战</span>
-                    <span class="status-tag done">已完成</span>
-                </a>
+            <div class="modal-body" id="modalBody">
+                <!-- 动态内容 -->
             </div>
         </div>
     </div>
     
     <script>
-        function openModal() {
+        // 各阶段数据配置
+        const stages = {
+            1: {
+                title: '第1阶段：环境搭建 & 入门起步',
+                subtitle: '第1-2周 · 2篇笔记',
+                icon: '🌱',
+                label: '阶段一：入门起步',
+                range: '第1-2周',
+                weeks: [
+                    { num: 1, text: '环境搭建与第一个程序', url: 'python-week1.html', done: true },
+                    { num: 2, text: '变量、数据类型与运算符', url: 'python-week2.html', done: true },
+                ]
+            },
+            2: {
+                title: '第2阶段：Python基础语法',
+                subtitle: '第3-8周 · 6篇笔记',
+                icon: '📖',
+                label: '阶段二：基础语法',
+                range: '第3-8周',
+                weeks: [
+                    { num: 3, text: '条件判断if-elif-else', url: 'python-week3.html', done: true },
+                    { num: 4, text: '循环结构for & while', url: 'python-week4.html', done: true },
+                    { num: 5, text: '列表list与元组tuple', url: 'python-week5.html', done: true },
+                    { num: 6, text: '字典dict与集合set', url: 'python-week6.html', done: true },
+                    { num: 7, text: '函数基础', url: 'python-week7.html', done: true },
+                    { num: 8, text: '字符串进阶与文件操作', url: 'python-week8.html', done: true },
+                ]
+            },
+            3: {
+                title: '第3阶段：面向对象 & 模块化',
+                subtitle: '第9-14周 · 6篇笔记',
+                icon: '🏗️',
+                label: '阶段三：面向对象与模块化',
+                range: '第9-14周',
+                weeks: [
+                    { num: 9, text: '面向对象编程OOP基础', url: 'python-week9.html', done: true },
+                    { num: 10, text: '面向对象进阶与异常处理', url: 'python-week10.html', done: true },
+                    { num: 11, text: '模块进阶与标准库', url: 'python-week11.html', done: true },
+                    { num: 12, text: '文件与IO操作', url: 'python-week12.html', done: true },
+                    { num: 13, text: '网络编程基础', url: 'python-week13.html', done: true },
+                    { num: 14, text: '数据库操作', url: 'python-week14.html', done: true },
+                ]
+            },
+            4: {
+                title: '第4阶段：进阶特性 & 工程实践',
+                subtitle: '第15-24周 · 10篇笔记',
+                icon: '🚀',
+                label: '阶段四：进阶特性与工程实践',
+                range: '第15-24周',
+                weeks: [
+                    { num: 15, text: '并发编程-多线程', url: 'python-week15.html', done: true },
+                    { num: 16, text: '多进程编程', url: 'python-week16.html', done: true },
+                    { num: 17, text: '异步编程asyncio', url: 'python-week17.html', done: true },
+                    { num: 18, text: '装饰器与元编程', url: 'python-week18.html', done: true },
+                    { num: 19, text: '设计模式', url: 'python-week19.html', done: true },
+                    { num: 20, text: '测试与调试', url: 'python-week20.html', done: true },
+                    { num: 21, text: 'Web开发入门', url: 'python-week21.html', done: true },
+                    { num: 22, text: 'RESTful API开发', url: 'python-week22.html', done: true },
+                    { num: 23, text: '数据处理与分析', url: 'python-week23.html', done: true },
+                    { num: 24, text: '项目实战', url: 'python-week24.html', done: true },
+                ]
+            },
+            5: {
+                title: '第5阶段：方向选择 & 专项深入',
+                subtitle: '第25-40周 · 敬请期待',
+                icon: '🎯',
+                label: '阶段五：方向选择与专项深入',
+                range: '第25-40周',
+                weeks: [
+                    { num: 25, text: 'Web开发方向', url: '#', done: false },
+                    { num: 26, text: '数据科学方向', url: '#', done: false },
+                    { num: 27, text: '爬虫与自动化', url: '#', done: false },
+                    { num: 28, text: '机器学习基础', url: '#', done: false },
+                    { num: 29, text: '深度学习入门', url: '#', done: false },
+                    { num: 30, text: '更多内容规划中...', url: '#', done: false },
+                ]
+            },
+            6: {
+                title: '第6阶段：项目实战 & 求职准备',
+                subtitle: '第41-52周 · 敬请期待',
+                icon: '💼',
+                label: '阶段六：项目实战与求职准备',
+                range: '第41-52周',
+                weeks: [
+                    { num: 41, text: '完整项目实战一', url: '#', done: false },
+                    { num: 42, text: '完整项目实战二', url: '#', done: false },
+                    { num: 43, text: '面试题精讲', url: '#', done: false },
+                    { num: 44, text: '简历与求职技巧', url: '#', done: false },
+                    { num: 45, text: '更多内容规划中...', url: '#', done: false },
+                ]
+            }
+        };
+
+        function openModal(stageNum) {
+            const stage = stages[stageNum];
+            if (!stage) return;
+
+            document.getElementById('modalTitle').textContent = stage.title;
+            document.getElementById('modalSubtitle').textContent = stage.subtitle;
+
+            // 生成周次列表
+            const body = document.getElementById('modalBody');
+            let html = '';
+            
+            // 阶段标签
+            html += `<div class="stage-group">`;
+            html += `<div class="stage-group-title">
+                <span class="stage-group-icon">${stage.icon}</span>
+                <span class="stage-group-label">${stage.label}</span>
+                <span class="stage-group-range">${stage.range}</span>
+            </div>`;
+            html += `<div class="week-list">`;
+            
+            stage.weeks.forEach(w => {
+                const itemClass = w.done ? 'week-item' : 'week-item locked';
+                const tagClass = w.done ? 'status-tag done' : 'status-tag pending';
+                const tagText = w.done ? '已完成' : '待更新';
+                const href = w.done ? w.url : '#';
+                html += `<a href="${href}" class="${itemClass}" ${!w.done ? 'onclick="return false;"' : ''}>
+                    <span class="week-num">${w.num}</span>
+                    <span class="week-text">${w.text}</span>
+                    <span class="${tagClass}">${tagText}</span>
+                </a>`;
+            });
+            
+            html += `</div></div>`;
+            body.innerHTML = html;
+
             document.getElementById('weekModal').classList.add('active');
         }
+
         function closeModal() {
             document.getElementById('weekModal').classList.remove('active');
         }
-        document.getElementById('weekModal').addEventListener('click', function(e) {
-            if (e.target === this) closeModal();
+
+        function handleOverlayClick(e) {
+            if (e.target === document.getElementById('weekModal')) {
+                closeModal();
+            }
+        }
+
+        // 键盘ESC关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
         });
     </script>
 </body>
