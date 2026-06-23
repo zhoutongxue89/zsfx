@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python学习之路·第33周 - 网络爬虫基础</title>
+<style>
+:root{--primary:#306998;--bg:#f8f9fa;--card-bg:#fff;--text:#333;--border:#e1e4e8;--tip-bg:#e7f5ff;--tip-border:#1971c2;--success-bg:#d3f9d8;--success-border:#2f9e44;--warning-bg:#fff3bf;--warning-border:#f08c00;--code-bg:#f6f8fa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,sans-serif;line-height:1.8;background:var(--bg);color:var(--text)}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.nav{background:var(--primary);padding:12px 20px}.nav a{color:#fff;text-decoration:none}
+.header{background:linear-gradient(135deg,var(--primary),#1e5799);color:#fff;padding:50px 40px;text-align:center;margin-bottom:30px}
+.header h1{font-size:2.5em}.header .subtitle{font-size:1.3em;opacity:.9}
+.header-meta{display:flex;justify-content:center;gap:30px;font-size:14px;flex-wrap:wrap;margin-top:15px}
+.header-meta span{background:rgba(255,255,255,.15);padding:6px 16px;border-radius:20px}
+.toc{background:var(--card-bg);border-radius:12px;padding:30px;margin-bottom:30px}.toc h2{color:var(--primary);margin-bottom:20px}
+.toc-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.toc-item{display:flex;padding:10px 15px;background:var(--bg);border-radius:8px;border-left:3px solid var(--primary);text-decoration:none;color:var(--text)}.toc-item .num{font-weight:bold;margin-right:10px;color:var(--primary)}
+.content{background:var(--card-bg);border-radius:12px;padding:40px}
+h2{color:var(--primary);font-size:1.8em;margin:40px 0 20px;border-bottom:2px solid var(--border)}h3{color:#2c3e50;font-size:1.4em;margin:30px 0 15px}
+.tip,.success,.key-point,.warning{padding:18px 20px;border-radius:8px;margin:20px 0;border-left:4px solid}
+.tip{background:var(--tip-bg);border-color:var(--tip-border)}.success{background:var(--success-bg);border-color:var(--success-border)}
+.warning{background:var(--warning-bg);border-color:var(--warning-border)}.key-point{background:linear-gradient(135deg,#e8f4f8,#d4e6ed);border-color:#3498db}
+code{background:var(--code-bg);padding:2px 8px;border-radius:4px;font-family:monospace;color:#e74c3c}
+pre{background:#1e1e1e;color:#d4d4d4;padding:20px;border-radius:8px;overflow-x:auto;margin:20px 0}pre code{background:none;color:inherit}
+ul,ol{margin:15px 0 15px 25px}li{margin:8px 0}
+table{width:100%;border-collapse:collapse;margin:20px 0}th,td{padding:12px 15px;border:1px solid var(--border);text-align:left}th{background:var(--primary);color:#fff}tr:nth-child(even){background:var(--bg)}
+.week-nav{display:flex;justify-content:space-between;margin:30px 0}.week-nav a{padding:12px 24px;background:var(--primary);color:#fff;text-decoration:none;border-radius:8px}
+footer{text-align:center;padding:30px;color:#666}
+@media(max-width:768px){.content{padding:20px}.header h1{font-size:1.8em}}
+</style></head><body>
+<nav class="nav"><a href="index.html">🏠 首页</a></nav>
+<header class="header"><h1>🐍 Python 学习之路 · 第33周</h1><p class="subtitle">爬虫方向 —— HTTP协议与requests库</p>
+<div class="header-meta"><span>📅 第33周</span><span>⏱️ 10-12小时</span><span>🎯 ★★★☆☆</span><span>🕷️ 网络爬虫</span></div></header>
+<div class="container"><div class="toc"><h2>📋 本周内容</h2><div class="toc-list"><a href="#s1" class="toc-item"><span class="num">1</span>HTTP协议基础</a>
+<a href="#s2" class="toc-item"><span class="num">2</span>requests库</a>
+<a href="#s3" class="toc-item"><span class="num">3</span>请求与响应</a>
+<a href="#s4" class="toc-item"><span class="num">4</span>Session会话</a>
+<a href="#s5" class="toc-item"><span class="num">5</span>实战：爬取网页</a>
+<a href="#s6" class="toc-item"><span class="num">6</span>爬虫礼仪</a>
+<a href="#s7" class="toc-item"><span class="num">7</span>本周总结</a>
+<a href="#s8" class="toc-item"><span class="num">8</span>下周预告</a></div></div>
+<div class="content">
+<h2 id="s1">1️⃣ HTTP协议基础</h2>
+<table><tr><th>方法</th><th>说明</th><th>场景</th></tr>
+<tr><td>GET</td><td>获取资源</td><td>浏览网页</td></tr>
+<tr><td>POST</td><td>提交数据</td><td>登录表单</td></tr></table>
+<table><tr><th>状态码</th><th>含义</th></tr>
+<tr><td>200</td><td>成功</td></tr><tr><td>301/302</td><td>重定向</td></tr>
+<tr><td>403</td><td>禁止访问</td></tr><tr><td>404</td><td>不存在</td></tr>
+<tr><td>429</td><td>请求过频</td></tr></table>
+
+<h2 id="s2">2️⃣ requests库</h2>
+<pre><code>pip install requests
+import requests
+
+# GET请求
+r = requests.get('https://httpbin.org/get')
+print(r.status_code, r.text, r.json())
+
+# 带参数
+r = requests.get('https://httpbin.org/get', params={'q':'Python','page':1})
+
+# POST请求
+r = requests.post('https://httpbin.org/post', data={'user':'admin'})
+r = requests.post(url, json={'key':'value'})  # JSON
+
+# 请求头
+headers = {'User-Agent':'Mozilla/5.0 ...'}
+r = requests.get(url, headers=headers)</code></pre>
+
+<h2 id="s3">3️⃣ 请求与响应</h2>
+<pre><code>response = requests.get(url)
+response.status_code   # 状态码
+response.text          # 文本
+response.content       # 二进制（图片）
+response.json()        # JSON解析
+response.headers       # 响应头
+response.cookies       # Cookie
+
+# 超时与异常
+from requests.exceptions import Timeout, ConnectionError
+try:
+    r = requests.get(url, timeout=5)
+    r.raise_for_status()
+except Timeout:
+    print('超时')
+except ConnectionError:
+    print('连接失败')</code></pre>
+
+<h2 id="s4">4️⃣ Session会话</h2>
+<pre><code>session = requests.Session()
+session.headers.update({'User-Agent':'Mozilla/5.0 ...'})
+# 登录（Cookie自动保存）
+session.post(url+'/login', data={'user':'admin','pwd':'123'})
+# 后续请求自动携带Cookie
+r = session.get(url+'/dashboard')
+# 代理
+session.proxies = {'http':'http://127.0.0.1:7890'}</code></pre>
+
+<h2 id="s5">5️⃣ 实战：爬取网页</h2>
+<pre><code>import requests, time
+from bs4 import BeautifulSoup
+
+def scrape_quotes(page=1):
+    url = f'https://quotes.toscrape.com/page/{page}/'
+    r = requests.get(url, headers={'User-Agent':'Mozilla/5.0 ...'})
+    soup = BeautifulSoup(r.text, 'html.parser')
+    quotes = []
+    for q in soup.find_all('div', class_='quote'):
+        text = q.find('span', class_='text').get_text()
+        author = q.find('small', class_='author').get_text()
+        quotes.append({'text':text, 'author':author})
+    return quotes
+
+all_quotes = []
+for p in range(1, 6):
+    all_quotes.extend(scrape_quotes(p))
+    time.sleep(1)  # 礼貌延迟
+print(f'共获取{len(all_quotes)}条名言')</code></pre>
+
+<h2 id="s6">6️⃣ 爬虫礼仪</h2>
+<div class="warning"><strong>⚠️ 爬虫道德准则：</strong></div>
+<ul>
+<li>遵守robots.txt协议</li>
+<li>控制请求频率（间隔1-3秒）</li>
+<li>不爬取个人隐私和商业机密</li>
+<li>遵守《网络安全法》《数据安全法》</li>
+<li>设置合理的User-Agent</li>
+</ul>
+
+<h2 id="s7">7️⃣ 本周总结</h2>
+<table><tr><th>知识点</th><th>掌握</th></tr>
+<tr><td>HTTP协议</td><td>⭐⭐⭐</td></tr>
+<tr><td>requests库</td><td>⭐⭐⭐⭐⭐</td></tr>
+<tr><td>Session会话</td><td>⭐⭐⭐⭐</td></tr></table>
+
+<h2 id="s8">8️⃣ 下周预告</h2>
+<p>学习 <strong>BeautifulSoup与Selenium</strong>：HTML解析、动态页面爬取。</p>
+</div>
+<div class="week-nav"><a href="python-week32.html">← 第32周</a><a href="python-week34.html">第34周 →</a></div>
+<footer><p>📚 周同学的知识分享 | <a href="index.html">返回首页</a></p><p>📅 2026-06-23</p></footer></div></body></html>
